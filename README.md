@@ -4,4 +4,3 @@ Trabalho de Desenvolvimento Web II. Participantes:
 - Emanuel
 - André
 - Vinicius
-- ...
