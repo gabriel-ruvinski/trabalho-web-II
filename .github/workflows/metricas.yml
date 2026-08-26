@@ -22,7 +22,7 @@ jobs:
           dias_desde_sexta=$(( (dia_semana - 5 + 7) % 7 ))
           desde=$(date -d "-$dias_desde_sexta days" +%Y-%m-%d)
           echo "desde=$desde" >> "$GITHUB_OUTPUT"
-
+          
       - name: Calcular linhas por autor
         run: |
           echo "# Métricas da semana" > METRICAS.md
@@ -33,7 +33,7 @@ jobs:
           echo "|---|---|" >> METRICAS.md
           git log main --since="${{ steps.periodo.outputs.desde }} 00:00:00" --pretty="%an" --numstat | awk '
             /^[a-zA-Z]/ { author=$0; next }
-            NF==3 { added[author]+=$1 }
+            NF==3 && $3 !~ /\.(md|json|lock|svg|png|jpg|jpeg|gif|ico)$/ && $3 !~ /package-lock\.json$/ { added[author]+=$1 }
             END { for (a in added) print "| " a " | " added[a] " |" }' >> METRICAS.md
 
       - name: Commit do relatório
