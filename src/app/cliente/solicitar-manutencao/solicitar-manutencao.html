@@ -1,0 +1,57 @@
+<header>
+  <div class="titulo1">
+    <h1>Manutenção</h1>
+  </div>
+
+  <div class="m_recepcao">
+    <span>Olá usuário(a)</span>
+    <button type="button" (click)="sair()">Sair</button>
+  </div>
+</header>
+
+<div class="container">
+  <aside>
+    <nav>
+      <a routerLink="/dashboard">Inicio</a>
+      <a routerLink="/solicitar-manutencao" routerLinkActive="ativo">Solicitar Manutenção</a>
+      <a routerLink="/dashboard">Minhas Solicitações</a>
+    </nav>
+  </aside>
+
+  <main>
+    <section class="formulario">
+      <h2>Solicitação de manutenção</h2>
+      <p class="subtitulo">Informe o equipamento, a categoria e o defeito. A solicitação será aberta para orçamento.</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <label for="descricaoEquipamento">Descrição do equipamento</label>
+        <input id="descricaoEquipamento" type="text" formControlName="descricaoEquipamento" />
+        @if (form.get('descricaoEquipamento')?.invalid && form.get('descricaoEquipamento')?.touched) {
+          <small>Informe a descrição do equipamento (mínimo 3 caracteres).</small>
+        }
+
+        <label for="categoriaId">Categoria do equipamento</label>
+        <select id="categoriaId" formControlName="categoriaId">
+          <option [ngValue]="null">Selecione</option>
+          @for (categoria of categorias; track categoria.id) {
+            <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
+          }
+        </select>
+        @if (form.get('categoriaId')?.invalid && form.get('categoriaId')?.touched) {
+          <small>Selecione a categoria.</small>
+        }
+
+        <label for="descricaoDefeito">Descrição do defeito</label>
+        <textarea id="descricaoDefeito" rows="5" formControlName="descricaoDefeito"></textarea>
+        @if (form.get('descricaoDefeito')?.invalid && form.get('descricaoDefeito')?.touched) {
+          <small>Informe a descrição do defeito (mínimo 5 caracteres).</small>
+        }
+
+        <div class="acoes">
+          <button type="button" class="secundario" routerLink="/dashboard">Cancelar</button>
+          <button type="submit">Registrar solicitação</button>
+        </div>
+      </form>
+    </section>
+  </main>
+</div>
