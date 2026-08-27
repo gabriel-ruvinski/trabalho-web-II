@@ -42,18 +42,18 @@ export class Login {
       this.form.markAllAsTouched();
       return;
     }
-    else {
+
       const email = this.email;
       const senha = this.senha;
-      this.authService.fazerLogin(email, senha);
-    }
+      const sucesso = this.authService.fazerLogin(email, senha);
+    
 
-  if (this.authService.autenticado) {
-    this.router.navigate(['/']);
+  if (sucesso) {
+    this.router.navigate(['/dashboard']);
   }
   // TODO: Redirecionar o usuário de acordo com seu perfil
  
-  if (!this.authService.autenticado) {
+  else{
     alert('E-mail ou senha incorretos. Por favor, tente novamente.');
   } 
   // TODO: Tratar erros de comunicação com o backend

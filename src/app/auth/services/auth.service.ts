@@ -18,7 +18,7 @@ export class AuthService {
   fazerLogin(email: string, senha: string): boolean {
   if (email === 'teste@gmail.com' && senha === '1234') {
     this._autenticado = true;
-    this.router.navigate(['/']);
+    
     return true;
   }
 
@@ -44,6 +44,9 @@ export class AuthService {
   // TODO: Criar método obterUsuario()
 
   // TODO: Criar método logout()
+  logout(): void{
+    this._autenticado = false;
+  }
 
   // TODO: Remover informações da sessão no logout
 

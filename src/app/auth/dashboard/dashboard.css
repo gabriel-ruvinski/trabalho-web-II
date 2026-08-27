@@ -1,11 +1,19 @@
-body{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:host {
+    display: block;
+    min-height: 100vh;
     background-color: #0b0c0d;
     color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+
 header, .titulo-chamado{
-    margin: 16px;
+    padding: 16px;
+    margin: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
