@@ -7,3 +7,4 @@ Período, desde sexta 2026-08-21 até agora
 | Vinicius Backes | 125 |
 | André Felipe Leite de Souza | 75 |
 | Gabriel Ruvinski | 72 |
+| emanuelprodossimo-maker | 131 |
