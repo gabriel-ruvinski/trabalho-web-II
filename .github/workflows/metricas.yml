@@ -1,0 +1,45 @@
+name: Métricas da Semana
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'METRICAS.md'
+
+jobs:
+  metricas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calcular data da última sexta
+        id: periodo
+        run: |
+          dia_semana=$(date +%u)
+          dias_desde_sexta=$(( (dia_semana - 5 + 7) % 7 ))
+          desde=$(date -d "-$dias_desde_sexta days" +%Y-%m-%d)
+          echo "desde=$desde" >> "$GITHUB_OUTPUT"
+
+      - name: Calcular linhas por autor
+        run: |
+          echo "# Métricas da semana" > METRICAS.md
+          echo "" >> METRICAS.md
+          echo "Período, desde sexta ${{ steps.periodo.outputs.desde }} até agora" >> METRICAS.md
+          echo "" >> METRICAS.md
+          echo "| Autor | Linhas adicionadas |" >> METRICAS.md
+          echo "|---|---|" >> METRICAS.md
+          git log main --since="${{ steps.periodo.outputs.desde }} 00:00:00" --pretty="%an" --numstat | awk '
+            /^[a-zA-Z]/ { author=$0; next }
+            NF==3 && $3 !~ /\.(md|json|lock|svg|png|jpg|jpeg|gif|ico|txt|yml|yaml)$/ { added[author]+=$1 }
+            END { for (a in added) print "| " a " | " added[a] " |" }' >> METRICAS.md
+
+      - name: Commit do relatório
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add METRICAS.md
+          git commit -m "Atualiza métricas da semana" || echo "Nada para commitar"
+          git push
