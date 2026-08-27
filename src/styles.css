@@ -1,3 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
+/* ESTILOS GLOBAIS */
+/* Estamos utilizando o framework Tailwind CSS */
 
 @import 'tailwindcss';
+
+@theme {
+    --color-primaria: #2563eb;
+    --color-secundaria: #64748b;
+    --color-sucesso: #16a34a;
+    --color-erro: #dc2626;
+    
+    /* De acordo com o RF013 */
+    --color-estado-aberta: #6b7280;
+    --color-estado-orcada: #92400e;
+    --color-estado-rejeitada: #dc2626;
+    --color-estado-aprovada: #ca8a04;
+    --color-estado-redirecionada: #7c3aed;
+    --color-estado-arrumada: #2563eb;
+    --color-estado-paga: #ea580c;
+    --color-estado-finalizada: #16a34a;
+ 
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+
+    --font-sans: 'Inter', sans-serif;
+}
