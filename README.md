@@ -6,7 +6,7 @@ O fluxo é baseado em solicitações de serviço, com histórico de mudança de 
 
 ## Participantes
 
-- Gabriel Henrique Ruvinski
+- Gabriel
 - Emanuel
 - André
 - Vinicius
