@@ -1,38 +1,40 @@
-<div>
-    <p>Registre-se agora!</p>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+<div class="registro-wrapper">
+    <div class="registro-container">
+        <p>Registre-se agora!</p>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-        <label for="nome">Nome:</label><br>
-        <input type="text" id="nome" formControlName="nome"><br>
-        @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
-            <small>Nome é obrigatório</small><br>
-        }
+            <label for="nome">Nome:</label><br>
+            <input type="text" id="nome" formControlName="nome"><br>
+            @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
+                <small>Nome é obrigatório</small><br>
+            }
 
-        <!-- Olá, esse é apenas um teste! -->
-        <label for="sobrenome">Sobrenome:</label><br>
-        <input type="text" id="sobrenome" formControlName="sobrenome"><br>
-        @if (form.get('sobrenome')?.invalid && form.get('sobrenome')?.touched) {
-            <small>Sobrenome é obrigatório</small><br>
-        }
+            <!-- Olá, esse é apenas um teste! -->
+            <label for="sobrenome">Sobrenome:</label><br>
+            <input type="text" id="sobrenome" formControlName="sobrenome"><br>
+            @if (form.get('sobrenome')?.invalid && form.get('sobrenome')?.touched) {
+                <small>Sobrenome é obrigatório</small><br>
+            }
 
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" formControlName="email"><br>
-        @if (form.get('email')?.invalid && form.get('email')?.touched) {
-            <small>Informe um email válido</small><br>
-        }
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" formControlName="email"><br>
+            @if (form.get('email')?.invalid && form.get('email')?.touched) {
+                <small>Informe um email válido</small><br>
+            }
 
-        <label for="senha">Senha:</label><br>
-        <input type="password" id="senha" formControlName="senha"><br>
-        @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
-            <small>Senha deve ter no mínimo 6 caracteres</small><br>
-        }
+            <label for="senha">Senha:</label><br>
+            <input type="password" id="senha" formControlName="senha"><br>
+            @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
+                <small>Senha deve ter no mínimo 6 caracteres</small><br>
+            }
 
-        <label for="confirmarSenha">Confirmar senha:</label><br>
-        <input type="password" id="confirmarSenha" formControlName="confirmarSenha"><br>
-        @if (form.errors?.['senhasDiferentes'] && form.get('confirmarSenha')?.touched) {
-            <small>As senhas não coincidem</small><br>
-        }
+            <label for="confirmarSenha">Confirmar senha:</label><br>
+            <input type="password" id="confirmarSenha" formControlName="confirmarSenha"><br>
+            @if (form.errors?.['senhasDiferentes'] && form.get('confirmarSenha')?.touched) {
+                <small>As senhas não coincidem</small><br>
+            }
 
-        <input type="submit" value="Registrar">
-    </form>
+            <input type="submit" value="Registrar">
+        </form>
+    </div>
 </div>
