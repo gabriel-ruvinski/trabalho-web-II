@@ -24,6 +24,7 @@ yarn-error.log
 .vscode/
 
 # Miscellaneous
+.github/
 /.angular/cache
 .sass-cache/
 /connect.lock
