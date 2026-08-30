@@ -1,18 +1,66 @@
-<div class="login-wrapper">
-  <div class="login-container">
-    <h1>Sistema de Controle de Manutenções</h1>
-    <h2>Login</h2>
+<!-- CONTAINER PRINCIPAR -->
+<div class="flex min-h-screen items-center justify-center bg-terciaria p-4">
 
-    <form>
-      <label for="email">E-mail:</label>
-      <input type="email" id="email" name="email" required>
+  <!-- CARTÃO PRINCIPAL -->
+  <div class="grid w-full max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl md:grid-cols-2">
 
-      <label for="senha">Senha:</label>
-      <input type="password" id="senha" name="senha" maxlength="4" minlength="4" required>
+    <!-- LADO ESQUERDO -->
+    <div class="flex flex-col items-center justify-center p-8 lg:p-12 text-center bg-secundaria">
+      <h2 class="mb-6 text-2xl font-bold tracking-tight text-primaria md:text-3xl">
+        Cuidado e Precisão na Manutenção dos Seus Equipamentos.
+      </h2>
+    </div>
 
-      <button type="submit">Entrar</button>
-    </form>
+    <!-- LADO DIREITO -->
+    <div class="flex items-center justify-center bg-primaria p-8 lg:p-16">
 
-    <a href="/registro">Ainda não possui cadastro? Cadastre-se</a>
+      <!-- CAIXA DE LOGIN -->
+      <div class="w-full rounded-xl bg-secundaria p-8 shadow-xl">
+
+        <!-- TÍTULO -->
+        <div class="mb-6 flex flex-col items-center">
+          <div class="flex items-center gap-2 text-xl font-bold text-gray-800">
+            Nome da Empresa
+          </div>
+          <h3 class="mt-4 text-lg font-medium text-gray-700">Entrar</h3>
+        </div>
+
+        <!-- FORMULÁRIO -->
+        <form class="space-y-4">
+          <!-- EMAIL -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">Email</label>
+            <input type="email" placeholder="email@examplo.com" class="input-padrao" />
+          </div>
+
+          <!-- SENHA -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">Senha</label>
+            <input type="password" placeholder="Insira sua senha" class="input-padrao" />
+          </div>
+
+          <!-- EXTRAS -->
+          <div class="flex items-center justify-between text-xs text-gray-500">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" class="rounded border-gray-300 text-primaria focus:ring-primaria" />
+              Manter conectado
+            </label>
+            <a href="#" class="hover:underline">Recuperar senha</a>
+          </div>
+
+          <!-- BOTÕES-->
+          <div class="flex gap-3 pt-2">
+            <button type="submit" class="w-1/2 btn-primario">
+              ENTRAR
+            </button>
+            <a routerLink="/registro" class="w-1/2 btn-secundario text-center">
+              CADASTRE-SE
+            </a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
   </div>
 </div>
