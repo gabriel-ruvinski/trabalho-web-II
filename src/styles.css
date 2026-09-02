@@ -8,9 +8,9 @@
     --color-primaria: rgba(8, 38, 45, 1);
     --color-secundaria: rgba(255, 255, 255);
     --color-terciaria: rgba(8, 38, 45, 0.1);
+    --color-erro: rgba(198, 40, 40, 1);
     /* a definir:
     --color-sucesso: x;
-    --color-erro: x;
     */
 
     /* De acordo com o RF013 */

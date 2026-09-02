@@ -6,9 +6,9 @@
 </header>
 
 <div class="flex min-h-screen">
-  <aside class="w-50 bg-primaria text-white p-5 pt-16">
-    <h2 class="text-xl font-bold mb-4">Menu</h2>
-    <nav class="flex flex-col gap-5 py-10">
+  <aside class="w-56 bg-primaria text-white p-5 pt-16">
+    <nav class="flex flex-col gap-5 py-4">
+      <h2 class="text-xl font-bold mb-4 text-white text-center">Menu</h2>
       <a routerLink="/dashboard">Inicio</a>
       <a routerLink="/solicitar-manutencao" routerLinkActive="ativo">Solicitar Manutenção</a>
       <a routerLink="/dashboard">Minhas Solicitações</a>
@@ -16,35 +16,41 @@
   </aside>
 
   <main class="flex-1 p-6 bg-terciaria pt-16">
-    <section class="max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl md:grid-cols-2 m-7 p-10">
+    <section class="max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl m-7 p-10">
       <h2>Solicitação de manutenção</h2>
       <p class="subtitulo">Informe o equipamento, a categoria e o defeito. A solicitação será aberta para orçamento.</p>
 
-      <form class="space-y-4" [formGroup]="form" (ngSubmit)="onSubmit()">
-        <label for="descricaoEquipamento">Descrição do equipamento</label>
-        <input id="descricaoEquipamento" class="input-padrao w-[30%]" type="text" formControlName="descricaoEquipamento" />
-        @if (form.get('descricaoEquipamento')?.invalid && form.get('descricaoEquipamento')?.touched) {
-        <small>Informe a descrição do equipamento (mínimo 3 caracteres).</small>
-        }
-
-        <label for="categoriaId">Categoria do equipamento</label>
-        <select id="categoriaId" class="input-padrao" formControlName="categoriaId">
-          <option [ngValue]="null">(Selecionar)</option>
-          @for (categoria of categorias; track categoria.id) {
-          <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
+      <form class="my-3" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="w-2/3">
+          <label for="descricaoEquipamento" class="block text-xs font-semibold text-gray-500 mb-1">Descrição do equipamento</label>
+          <input id="descricaoEquipamento" class="input-padrao" type="text" formControlName="descricaoEquipamento" />
+          @if (form.get('descricaoEquipamento')?.invalid && form.get('descricaoEquipamento')?.touched) {
+          <small class="text-erro">Informe a descrição do equipamento (mínimo 3 caracteres).</small>
           }
-        </select>
-        @if (form.get('categoriaId')?.invalid && form.get('categoriaId')?.touched) {
-        <small>Selecione a categoria.</small>
-        }
+        </div>
 
-        <label for="descricaoDefeito">Descrição do defeito</label>
-        <textarea class="input-padrao" id="descricaoDefeito" rows="5" formControlName="descricaoDefeito"></textarea>
-        @if (form.get('descricaoDefeito')?.invalid && form.get('descricaoDefeito')?.touched) {
-        <small>Informe a descrição do defeito (mínimo 5 caracteres).</small>
-        }
+        <div class="w-1/3 my-3">
+          <label for="categoriaId" class="block text-xs font-semibold text-gray-500 mb-1">Categoria do equipamento</label>
+          <select id="categoriaId" class="input-padrao" formControlName="categoriaId">
+            <option [ngValue]="null">(Selecionar)</option>
+            @for (categoria of categorias; track categoria.id) {
+            <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
+            }
+          </select>
+          @if (form.get('categoriaId')?.invalid && form.get('categoriaId')?.touched) {
+          <small class="text-erro">Selecione a categoria.</small>
+          }
+        </div>
 
-        <div class="flex gap-3">
+        <div>
+          <label for="descricaoDefeito" class="block text-xs font-semibold text-gray-500 mb-1">Descrição do defeito</label>
+          <textarea class="input-padrao" id="descricaoDefeito" rows="5" formControlName="descricaoDefeito"></textarea>
+          @if (form.get('descricaoDefeito')?.invalid && form.get('descricaoDefeito')?.touched) {
+          <small class="text-erro">Informe a descrição do defeito (mínimo 5 caracteres).</small>
+          }
+        </div>
+
+        <div class="my-2 flex gap-3">
           <button type="button" class="btn-secundario" routerLink="/dashboard">Cancelar</button>
           <button type="submit" class="btn-primario">Registrar solicitação</button>
         </div>
