@@ -1,40 +1,80 @@
-<div class="registro-wrapper">
-    <div class="registro-container">
-        <p>Registre-se agora!</p>
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+<!-- CONTAINER PRINCIPAL-->
+<div class="flex min-h-screen items-center justify-center bg-terciaria p-4">
+    <!-- CARTÃO PRINCIPAL -->
+    <div class="grid w-40% max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl md:grid p-10">
+        <!-- TÍTULO -->
+        <div class="mb-6 flex flex-col items-center">
+            <div class="flex items-center gap-2 text-xl font-bold text-gray-800">
+                Nome da Empresa
+            </div>
+            <h3 class="mt-4 text-lg font-medium text-gray-700">Registrar</h3>
+        </div>
 
-            <label for="nome">Nome:</label><br>
-            <input type="text" id="nome" formControlName="nome"><br>
-            @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
-                <small>Nome é obrigatório</small><br>
-            }
+        <!-- FORMULÁRIO -->
+        <form class="space-y-4">
+            <!-- NOME -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Nome completo</label>
+                <input type="text" placeholder="Seu nome completo" class="input-padrao" />
+            </div>
 
-            <!-- Olá, esse é apenas um teste! -->
-            <label for="sobrenome">Sobrenome:</label><br>
-            <input type="text" id="sobrenome" formControlName="sobrenome"><br>
-            @if (form.get('sobrenome')?.invalid && form.get('sobrenome')?.touched) {
-                <small>Sobrenome é obrigatório</small><br>
-            }
+            <!-- EMAIL -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Email</label>
+                <input type="email" placeholder="email@examplo.com" class="input-padrao" />
+            </div>
 
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" formControlName="email"><br>
-            @if (form.get('email')?.invalid && form.get('email')?.touched) {
-                <small>Informe um email válido</small><br>
-            }
+            <!-- CEP -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">CEP</label>
+                <div class="flex gap-3">
+                    <input type="text" id="cep" name="cep" placeholder="00000-000" maxlength="9" pattern="\d{5}-\d{3}"
+                        required class="input-padrao" />
+                    <button type="button" class="w-1/3 btn-primario">
+                        BUSCAR
+                    </button>
+                </div>
+            </div>
 
-            <label for="senha">Senha:</label><br>
-            <input type="password" id="senha" formControlName="senha"><br>
-            @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
-                <small>Senha deve ter no mínimo 6 caracteres</small><br>
-            }
+            <!-- ENDEREÇO -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Endereço</label>
+                <input type="text" placeholder="Rua ... " class="input-padrao" />
+            </div>
 
-            <label for="confirmarSenha">Confirmar senha:</label><br>
-            <input type="password" id="confirmarSenha" formControlName="confirmarSenha"><br>
-            @if (form.errors?.['senhasDiferentes'] && form.get('confirmarSenha')?.touched) {
-                <small>As senhas não coincidem</small><br>
-            }
+            <!-- NUMERO, COMPLEMENTO -->
+            <div class="flex gap-3">
+                <div class="w-1/4">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Número</label>
+                    <input class="input-padrao w-1/4" />
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Complemento</label>
+                    <input class="input-padrao" />
+                </div>
+            </div>
 
-            <input type="submit" value="Registrar">
+            <!-- TELEFONE -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Número de telefone</label>
+                <input type="tel" placeholder="(00) 00000-0000" class="input-padrao" />
+            </div>
+
+            <!-- CPF -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">CPF</label>
+                <input type="text" placeholder="000.000.000-00" maxlength="14" class="input-padrao" />
+            </div>
+
+            <!-- BOTÕES-->
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="w-1/2 btn-primario">
+                    REGISTRAR
+                </button>
+                <a routerLink="/" class="w-1/2 btn-secundario text-center">
+                    JÁ TENHO CONTA
+                </a>
+            </div>
         </form>
     </div>
 </div>
