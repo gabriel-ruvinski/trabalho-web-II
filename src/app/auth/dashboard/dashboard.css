@@ -1,4 +1,4 @@
-:host {
+/*:host {
     display: block;
     min-height: 100vh;
     background-color: #0b0c0d;
@@ -127,3 +127,4 @@ th{
 .titulo-chamado button:hover{
     background: linear-gradient(180deg, #ffffff 0%, #a8acb3 100%);
 }
+    */

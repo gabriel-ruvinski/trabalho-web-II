@@ -1,1 +1,97 @@
-<p>home works!</p>
+<header class="fixed h-16 top-0 left-0 right-0 z-50 bg-white shadow-md">
+  
+  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
+
+    <h1>Home Funcionário (Prévia muito porca foi mal)</h1>
+
+  </div>
+
+  <div class="flex justify-end gap-4 mx-5 -mt-11">
+
+    <span class="justify-center">Olá Gerente</span>
+    <p>FALTA BOTÃO SAIR</p>
+
+
+  </div>
+</header>
+
+<div class="flex min-h-screen">
+  <aside class="w-56 bg-primaria text-white p-5 pt-16">
+
+    <nav class="flex flex-col gap-5 py-4">
+
+      <h2 class="text-xl font-bold mb-4 text-white text-center"> Menu </h2>
+
+      <a routerLink="/dashboard" routerLinkActive="ativo">Inicio</a>
+
+      <a routerLink="/solicitar-manutencao">Solicitar Manutenção</a>
+    </nav>
+  </aside>
+
+  <main class="flex-1 p-6 bg-terciaria pt-16">
+    <section class="max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl m-7 p-10">
+
+      <h2 class="text-2xl font-bold ">Olá, Gerente</h2>
+      
+      <p>Bem-vindo ao sistema de manutenção. Aqui você pode acompanhar as solicitações em Aberto.</p>
+    </section>
+
+    <section class="max-w-5xl m-7 grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="bg-secundaria rounded-2xl shadow-xl p-6">
+
+        <h3 class="text-sm font-semibold text-gray-500">Chamados Abertos</h3>
+
+        <strong class="block text-3xl font-bold mt-2">{{ solicitacoes.length }}</strong>
+        <p class="text-sm text-gray-500 mt-1">Solicitações</p>
+      </div>
+    </section>
+
+    <section class="max-w-5xl bg-secundaria rounded-2xl shadow-2xl m-7 p-10">
+
+      <div class="flex items-center justify-between mb-6">
+
+        <h2 class="text-2xl font-bold">Minhas solicitações</h2>
+
+        <button type="button" routerLink="/solicitar-manutencao">Novo Chamado</button>
+      </div>
+
+      <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-300">
+
+            <p>Nome aqui no inicio</p>
+
+            <th class="text-left py-3 px-4">Data/Hora</th>
+
+            <th class="text-left py-3 px-4">Equipamento</th>
+
+            <th class="text-left py-3 px-4">Estado</th>
+
+            <th class="text-left py-3 px-4">Nome:</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+          @if (solicitacoes.length === 0) {
+            <tr>
+              <td colspan="3" class="text-center py-6 text-gray-500">Nenhuma solicitação registrada.</td>
+            </tr>
+          }
+          @for (solicitacao of solicitacoes; track solicitacao.id) {
+            <tr class="border-b border-gray-200 hover:bg-gray-50">
+
+              <td class="py-3 px-4">{{ formatarDataHora(solicitacao.dataHoraAbertura) }}</td>
+
+              <td class="py-3 px-4">{{ descricaoResumida(solicitacao.descricaoEquipamento) }}</td>
+
+              <td class="py-3 px-4">{{ rotuloEstado(solicitacao) }}</td>
+            </tr>
+          }
+         </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
