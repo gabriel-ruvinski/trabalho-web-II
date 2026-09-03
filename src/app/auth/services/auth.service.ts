@@ -1,55 +1,71 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Usuario } from '../../models/usuario';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private _autenticado: boolean = false; // Flag de autenticação
+  private _autenticado: boolean = false;
+  private _usuario: Usuario | null = null;
 
-  get autenticado(): boolean { // Getter para verificar se o usuário está autenticado
+  // Mock temporário de usuários — trocar quando integrar com backend
+  private _usuariosMock: Usuario[] = [
+    {
+      nome: 'Cliente Teste',
+      email: 'cliente@gmail.com',
+      senha: '1234',
+      cpf: '',
+      telefone: '',
+      cep: '',
+      autenticado: false,
+      perfil: 'cliente',
+    },
+    {
+      nome: 'Funcionário Teste',
+      email: 'funcionario@gmail.com',
+      senha: '5678',
+      cpf: '',
+      telefone: '',
+      cep: '',
+      autenticado: false,
+      perfil: 'funcionario',
+    },
+  ];
+
+  get autenticado(): boolean {
     return this._autenticado;
   }
 
-  constructor(
-    private router: Router // Injeção do Router para navegação
-  ) {}
-  // Método para realizar o login do usuário
+  constructor(private router: Router) {}
+
   fazerLogin(email: string, senha: string): boolean {
-  if (email === 'teste@gmail.com' && senha === '1234') {
-    this._autenticado = true;
-    
-    return true;
-  }
+    const encontrado = this._usuariosMock.find(
+      u => u.email === email && u.senha === senha
+    );
 
-  this._autenticado = false;
-  return false;
-}
-  // TODO: Enviar e-mail e senha para o backend
+    if (encontrado) {
+      this._autenticado = true;
+      this._usuario = { ...encontrado, autenticado: true };
+      return true;
+    }
 
-  // TODO: Receber resposta do backend
-
-  // TODO: Verificar se as credenciais são válidas
-
-  // TODO: Obter informações do usuário
-
-  // TODO: Obter perfil do usuário
-
-  // TODO: Armazenar token de autenticação, caso seja utilizado
-
-  // TODO: Armazenar informações necessárias do usuário autenticado
-
-  // TODO: Criar método verificarAutenticacao()
-
-  // TODO: Criar método obterUsuario()
-
-  // TODO: Criar método logout()
-  logout(): void{
     this._autenticado = false;
+    this._usuario = null;
+    return false;
   }
 
-  // TODO: Remover informações da sessão no logout
+  getUsuario(): Usuario | null {
+    return this._usuario;
+  }
 
-  // TODO: Tratar erros retornados pelo backend
+  verificarAutenticacao(): boolean {
+    return this._autenticado;
+  }
 
+  logout(): void {
+    this._autenticado = false;
+    this._usuario = null;
+    this.router.navigate(['/login']);
+  }
 }

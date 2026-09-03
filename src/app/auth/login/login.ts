@@ -38,25 +38,22 @@ export class Login {
   }
   // Envia o form para AuthService
   onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
 
-      const email = this.email;
-      const senha = this.senha;
-      const sucesso = this.authService.fazerLogin(email, senha);
-    
+  const sucesso = this.authService.fazerLogin(this.email, this.senha);
 
   if (sucesso) {
-    this.router.navigate(['/dashboard']);
-  }
-  // TODO: Redirecionar o usuário de acordo com seu perfil
- 
-  else{
+    const usuario = this.authService.getUsuario();
+    if (usuario?.perfil === 'funcionario') {
+      this.router.navigate(['/funcionario/home']);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
+  } else {
     alert('E-mail ou senha incorretos. Por favor, tente novamente.');
-  } 
-  // TODO: Tratar erros de comunicação com o backend
-  
+  }
 }
 }
