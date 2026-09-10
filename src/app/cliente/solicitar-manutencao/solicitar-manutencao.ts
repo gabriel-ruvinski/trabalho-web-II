@@ -41,10 +41,15 @@ export class SolicitarManutencao {
     }
 
     const valor = this.form.getRawValue();
+    const usuario = this.authService.getUsuario();
     this.solicitacaoService.criar({
       descricaoEquipamento: valor.descricaoEquipamento ?? '',
       categoriaId: Number(valor.categoriaId),
       descricaoDefeito: valor.descricaoDefeito ?? '',
+      clienteNome: usuario?.nome,
+      clienteCpf: usuario?.cpf,
+      clienteEmail: usuario?.email,
+      clienteTelefone: usuario?.telefone,
     });
 
     alert('Solicitação registrada com estado ABERTA.');

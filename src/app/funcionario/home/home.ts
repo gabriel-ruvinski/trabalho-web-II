@@ -19,7 +19,7 @@ export class Home {
   solicitacoes: Solicitacao[] = [];
 
   constructor() {
-    this.solicitacoes = this.solicitacaoService.listar();
+    this.solicitacoes = this.solicitacaoService.listarAbertas();
   }
 
   rotuloEstado(solicitacao: Solicitacao): string {

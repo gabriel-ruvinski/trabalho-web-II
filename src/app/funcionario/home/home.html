@@ -70,24 +70,27 @@
 
             <th class="text-left py-3 px-4">Estado</th>
 
-            <th class="text-left py-3 px-4">Nome:</th>
-            
+            <th class="text-left py-3 px-4">Cliente</th>
+            <th class="text-left py-3 px-4">Ação</th>
           </tr>
         </thead>
         <tbody>
           @if (solicitacoes.length === 0) {
             <tr>
-              <td colspan="3" class="text-center py-6 text-gray-500">Nenhuma solicitação registrada.</td>
+              <td colspan="5" class="text-center py-6 text-gray-500">Nenhuma solicitação ABERTA.</td>
             </tr>
           }
           @for (solicitacao of solicitacoes; track solicitacao.id) {
             <tr class="border-b border-gray-200 hover:bg-gray-50">
-
               <td class="py-3 px-4">{{ formatarDataHora(solicitacao.dataHoraAbertura) }}</td>
-
               <td class="py-3 px-4">{{ descricaoResumida(solicitacao.descricaoEquipamento) }}</td>
-
               <td class="py-3 px-4">{{ rotuloEstado(solicitacao) }}</td>
+              <td class="py-3 px-4">{{ solicitacao.clienteNome }}</td>
+              <td class="py-3 px-4">
+                <a class="btn-primario inline-block" [routerLink]="['/funcionario/efetuar-orcamento', solicitacao.id]">
+                  Efetuar Orçamento
+                </a>
+              </td>
             </tr>
           }
          </tbody>

@@ -25,6 +25,26 @@ describe('SolicitacaoService', () => {
     expect(criada.categoriaNome).toBe('Notebook');
     expect(criada.dataHoraAbertura).toBeInstanceOf(Date);
     expect(criada.historico[0].estado).toBe('ABERTA');
-    expect(service.listar()).toHaveLength(1);
+  });
+
+  it('deve orçar uma solicitação ABERTA', () => {
+    const criada = service.criar({
+      descricaoEquipamento: 'Impressora laser',
+      categoriaId: 3,
+      descricaoDefeito: 'Não imprime',
+    });
+    const orcada = service.efetuarOrcamento(criada.id, 199.9, 'Maria');
+    expect(orcada.estado).toBe('ORCADA');
+    expect(orcada.valorOrcamento).toBe(199.9);
+    expect(orcada.historico.at(-1)?.funcionarioNome).toBe('Maria');
+  });
+
+  it('deve finalizar uma solicitação PAGA', () => {
+    localStorage.clear();
+    const paga = service.listar().find((item) => item.estado === 'PAGA');
+    expect(paga).toBeTruthy();
+    const finalizada = service.finalizar(paga!.id, 'Mário');
+    expect(finalizada.estado).toBe('FINALIZADA');
+    expect(finalizada.historico.at(-1)?.funcionarioNome).toBe('Mário');
   });
 });

@@ -272,7 +272,7 @@
                     </div>
 
                     <div class="mt-0.5 max-w-xs truncate text-sm text-gray-600">
-                      {{ solicitacao.titulo }}
+                      {{ solicitacao.descricaoEquipamento }}
                     </div>
 
                   </div>
@@ -284,22 +284,22 @@
 
               <!-- SOLICITANTE -->
               <td class="px-5 py-4 text-sm text-gray-700">
-                {{ solicitacao.solicitante }}
+                {{ solicitacao.clienteNome }}
               </td>
 
 
               <!-- DATA -->
               <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
-                {{ formatarData(solicitacao.dataAbertura) }}
+                {{ formatarData(solicitacao.dataHoraAbertura) }}
               </td>
 
 
               <!-- VALOR -->
               <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700">
 
-                @if (solicitacao.valor) {
+                @if (solicitacao.valorOrcamento) {
 
-                  {{ solicitacao.valor | currency:'BRL' }}
+                  {{ formatarMoeda(solicitacao.valorOrcamento) }}
 
                 } @else {
 
@@ -319,7 +319,7 @@
                   class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
                   [ngClass]="getClasseEstado(solicitacao.estado)"
                 >
-                  {{ solicitacao.estado }}
+                  {{ rotuloEstado(solicitacao.estado) }}
                 </span>
 
               </td>

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { convertToParamMap, provideRouter, ActivatedRoute } from '@angular/router';
 import { EfetuarOrcamento } from './efetuar-orcamento';
 
 describe('EfetuarOrcamento', () => {
@@ -9,6 +9,13 @@ describe('EfetuarOrcamento', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EfetuarOrcamento],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { paramMap: convertToParamMap({ id: '0' }) } },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EfetuarOrcamento);
