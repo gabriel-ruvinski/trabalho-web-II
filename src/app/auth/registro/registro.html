@@ -11,59 +11,113 @@
         </div>
 
         <!-- FORMULÁRIO -->
-        <form class="space-y-4">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
             <!-- NOME -->
             <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1">Nome completo</label>
-                <input type="text" placeholder="Seu nome completo" class="input-padrao" />
+                <input type="text" placeholder="Seu nome completo" class="input-padrao" formControlName="nome" />
+                @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
+                  <p class="mt-1 text-xs text-red-500">Informe seu nome.</p>
+                }
+            </div>
+
+            <!-- SOBRENOME -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Sobrenome</label>
+                <input type="text" placeholder="Seu sobrenome" class="input-padrao" formControlName="sobrenome" />
+                @if (form.get('sobrenome')?.invalid && form.get('sobrenome')?.touched) {
+                  <p class="mt-1 text-xs text-red-500">Informe seu sobrenome.</p>
+                }
             </div>
 
             <!-- EMAIL -->
             <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1">Email</label>
-                <input type="email" placeholder="email@examplo.com" class="input-padrao" />
+                <input type="email" placeholder="email@examplo.com" class="input-padrao" formControlName="email" />
+                @if (form.get('email')?.invalid && form.get('email')?.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    @if (form.get('email')?.errors?.['required']) {
+                      Informe o e-mail.
+                    } @else if (form.get('email')?.errors?.['email']) {
+                      E-mail inválido.
+                    }
+                  </p>
+                }
             </div>
 
             <!-- CEP -->
             <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1">CEP</label>
                 <div class="flex gap-3">
-                    <input type="text" id="cep" name="cep" placeholder="00000-000" maxlength="9" pattern="\d{5}-\d{3}"
-                        required class="input-padrao" />
+                    <input type="text" id="cep" name="cep" placeholder="00000-000" maxlength="9"
+                        class="input-padrao" formControlName="cep" />
                     <button type="button" class="w-1/3 btn-primario">
                         BUSCAR
                     </button>
                 </div>
+                @if (form.get('cep')?.invalid && form.get('cep')?.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    @if (form.get('cep')?.errors?.['required']) {
+                      Informe o CEP.
+                    } @else if (form.get('cep')?.errors?.['pattern']) {
+                      Formato inválido. Use 00000-000.
+                    }
+                  </p>
+                }
             </div>
 
             <!-- ENDEREÇO -->
             <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1">Endereço</label>
-                <input type="text" placeholder="Rua ... " class="input-padrao" />
+                <input type="text" placeholder="Rua ... " class="input-padrao" formControlName="endereco" />
+                @if (form.get('endereco')?.invalid && form.get('endereco')?.touched) {
+                  <p class="mt-1 text-xs text-red-500">Informe o endereço.</p>
+                }
             </div>
 
             <!-- NUMERO, COMPLEMENTO -->
             <div class="flex gap-3">
                 <div class="w-1/4">
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Número</label>
-                    <input class="input-padrao w-1/4" />
+                    <input class="input-padrao w-1/4" formControlName="numero" />
+                    @if (form.get('numero')?.invalid && form.get('numero')?.touched) {
+                      <p class="mt-1 text-xs text-red-500">Obrigatório.</p>
+                    }
                 </div>
                 <div class="flex-1">
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Complemento</label>
-                    <input class="input-padrao" />
+                    <input class="input-padrao" formControlName="complemento" />
                 </div>
             </div>
 
             <!-- TELEFONE -->
             <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1">Número de telefone</label>
-                <input type="tel" placeholder="(00) 00000-0000" class="input-padrao" />
+                <input type="tel" placeholder="(00) 00000-0000" class="input-padrao" formControlName="telefone" />
+                @if (form.get('telefone')?.invalid && form.get('telefone')?.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    @if (form.get('telefone')?.errors?.['required']) {
+                      Informe o telefone.
+                    } @else if (form.get('telefone')?.errors?.['pattern']) {
+                      Formato inválido. Use (00) 00000-0000.
+                    }
+                  </p>
+                }
             </div>
 
             <!-- CPF -->
             <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1">CPF</label>
-                <input type="text" placeholder="000.000.000-00" maxlength="14" class="input-padrao" />
+                <input type="text" placeholder="000.000.000-00" maxlength="14" class="input-padrao" formControlName="cpf" />
+                @if (form.get('cpf')?.invalid && form.get('cpf')?.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    @if (form.get('cpf')?.errors?.['required']) {
+                      Informe o CPF.
+                    } @else if (form.get('cpf')?.errors?.['pattern']) {
+                      Formato inválido. Use 000.000.000-00.
+                    }
+                  </p>
+                }
             </div>
 
             <!-- BOTÕES-->

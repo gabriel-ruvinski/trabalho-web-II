@@ -18,6 +18,9 @@ export class Registro {
       Validators.required,
       Validators.pattern(/^\d{5}-\d{3}$/)
     ]),
+    endereco: new FormControl('', [Validators.required]),
+    numero: new FormControl('' , [Validators.required]),
+    complemento: new FormControl(''),
     telefone: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)
@@ -34,10 +37,10 @@ export class Registro {
   ) {}
 
   onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
 
     const nomeCompleto = `${this.form.value.nome} ${this.form.value.sobrenome}`;
 

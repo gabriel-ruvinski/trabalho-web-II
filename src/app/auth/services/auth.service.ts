@@ -95,5 +95,4 @@ export class AuthService {
   console.log(`Senha enviada para ${dados.email}: ${senhaGerada}`);
   alert(`Cadastro realizado! Sua senha foi enviada para ${dados.email}. (Senha mock: ${senhaGerada})`);
 }
-
 }
