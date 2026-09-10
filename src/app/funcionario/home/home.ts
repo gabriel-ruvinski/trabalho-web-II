@@ -7,7 +7,7 @@ import { SolicitacaoService } from '../../services/solicitacao.service';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

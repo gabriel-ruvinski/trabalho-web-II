@@ -1,1 +1,423 @@
-<p>lista-solicitacoes works!</p>
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+
+  <!-- CABEÇALHO -->
+  <div class="mb-6 flex items-center justify-between">
+
+    <div>
+      <h1>Solicitações</h1>
+
+      <p class="mt-1 text-sm text-gray-500">
+        Visualização de solicitações
+      </p>
+    </div>
+
+    <span class="text-sm text-gray-500">
+      {{ solicitacoesFiltradas.length }}
+      {{ solicitacoesFiltradas.length === 1 ? 'solicitação' : 'solicitações' }}
+    </span>
+
+  </div>
+
+
+  <!-- FILTROS -->
+  <section
+    class="mb-5 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+  >
+
+    <div class="flex flex-wrap items-end gap-3">
+
+      <!-- FILTRO -->
+      <div class="flex rounded-md border border-gray-200 bg-gray-50 p-1">
+
+        <button
+          type="button"
+          class="rounded px-4 py-2 text-xs font-semibold transition"
+          [ngClass]="
+            filtro === 'HOJE'
+              ? 'bg-primaria text-white shadow-sm'
+              : 'text-gray-600 hover:bg-gray-100'
+          "
+          (click)="filtro = 'HOJE'"
+        >
+          Hoje
+        </button>
+
+        <button
+          type="button"
+          class="rounded px-4 py-2 text-xs font-semibold transition"
+          [ngClass]="
+            filtro === 'PERIODO'
+              ? 'bg-primaria text-white shadow-sm'
+              : 'text-gray-600 hover:bg-gray-100'
+          "
+          (click)="filtro = 'PERIODO'"
+        >
+          Período
+        </button>
+
+        <button
+          type="button"
+          class="rounded px-4 py-2 text-xs font-semibold transition"
+          [ngClass]="
+            filtro === 'TODAS'
+              ? 'bg-primaria text-white shadow-sm'
+              : 'text-gray-600 hover:bg-gray-100'
+          "
+          (click)="filtro = 'TODAS'"
+        >
+          Todas
+        </button>
+
+      </div>
+
+
+      <!-- DATAS -->
+      @if (filtro === 'PERIODO') {
+
+        <div class="flex gap-3">
+
+          <div>
+            <label for="dataInicio">
+              Data inicial
+            </label>
+
+            <input
+              id="dataInicio"
+              type="date"
+              class="input-padrao w-auto"
+              [(ngModel)]="dataInicio"
+            />
+          </div>
+
+          <div>
+            <label for="dataFim">
+              Data final
+            </label>
+
+            <input
+              id="dataFim"
+              type="date"
+              class="input-padrao w-auto"
+              [(ngModel)]="dataFim"
+            />
+          </div>
+
+        </div>
+
+      }
+
+
+      <!-- BOTÕES -->
+      <div class="ml-auto flex gap-2">
+
+        <button
+          type="button"
+          class="btn-primario"
+          (click)="aplicarFiltro()"
+        >
+          Filtrar
+        </button>
+
+        <button
+          type="button"
+          class="btn-secundario"
+          (click)="limparFiltros()"
+        >
+          Limpar
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- LEGENDA -->
+  <div class="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+
+    <span class="text-xs font-semibold text-gray-500">
+      Estados:
+    </span>
+
+    <span class="flex items-center gap-1.5 text-xs text-gray-600">
+      <span class="h-2.5 w-2.5 rounded-full bg-estado-aberta"></span>
+      Aberta
+    </span>
+
+    <span class="flex items-center gap-1.5 text-xs text-gray-600">
+      <span class="h-2.5 w-2.5 rounded-full bg-estado-orcada"></span>
+      Orçada
+    </span>
+
+    <span class="flex items-center gap-1.5 text-xs text-gray-600">
+      <span class="h-2.5 w-2.5 rounded-full bg-estado-rejeitada"></span>
+      Rejeitada
+    </span>
+
+    <span class="flex items-center gap-1.5 text-xs text-gray-600">
+      <span class="h-2.5 w-2.5 rounded-full bg-estado-aprovada"></span>
+      Aprovada
+    </span>
+
+    <span class="flex items-center gap-1.5 text-xs text-gray-600">
+      <span class="h-2.5 w-2.5 rounded-full bg-estado-redirecionada"></span>
+      Redirecionada
+    </span>
+
+    <span class="flex items-center gap-1.5 text-xs text-gray-600">
+      <span class="h-2.5 w-2.5 rounded-full bg-estado-arrumada"></span>
+      Arrumada
+    </span>
+
+    <span class="flex items-center gap-1.5 text-xs text-gray-600">
+      <span class="h-2.5 w-2.5 rounded-full bg-estado-paga"></span>
+      Paga
+    </span>
+
+    <span class="flex items-center gap-1.5 text-xs text-gray-600">
+      <span class="h-2.5 w-2.5 rounded-full bg-estado-finalizada"></span>
+      Finalizada
+    </span>
+
+  </div>
+
+
+  <!-- TABELA -->
+  <div
+    class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
+  >
+
+    <div class="overflow-x-auto">
+
+      <table class="w-full min-w-[900px] text-left">
+
+        <!-- CABEÇALHO -->
+        <thead class="border-b border-gray-200 bg-gray-50">
+
+          <tr>
+
+            <th
+              scope="col"
+              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Solicitação
+            </th>
+
+            <th
+              scope="col"
+              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Solicitante
+            </th>
+
+            <th
+              scope="col"
+              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Data de abertura
+            </th>
+
+            <th
+              scope="col"
+              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Valor
+            </th>
+
+            <th
+              scope="col"
+              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Estado
+            </th>
+
+            <th
+              scope="col"
+              class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Ação
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <!-- CORPO -->
+        <tbody class="divide-y divide-gray-100">
+
+          @for (
+            solicitacao of solicitacoesFiltradas;
+            track solicitacao.id
+          ) {
+
+            <tr class="transition hover:bg-gray-50">
+
+              <!-- SOLICITAÇÃO -->
+              <td class="px-5 py-4">
+
+                <div class="flex items-center gap-3">
+
+                  <!-- Indicador de estado -->
+                  <span
+                    class="h-2.5 w-2.5 shrink-0 rounded-full"
+                    [ngClass]="getClasseBolinha(solicitacao.estado)"
+                  ></span>
+
+                  <div>
+
+                    <div class="font-semibold text-gray-900">
+                      #{{ solicitacao.id }}
+                    </div>
+
+                    <div class="mt-0.5 max-w-xs truncate text-sm text-gray-600">
+                      {{ solicitacao.titulo }}
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- SOLICITANTE -->
+              <td class="px-5 py-4 text-sm text-gray-700">
+                {{ solicitacao.solicitante }}
+              </td>
+
+
+              <!-- DATA -->
+              <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
+                {{ formatarData(solicitacao.dataAbertura) }}
+              </td>
+
+
+              <!-- VALOR -->
+              <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700">
+
+                @if (solicitacao.valor) {
+
+                  {{ solicitacao.valor | currency:'BRL' }}
+
+                } @else {
+
+                  <span class="text-gray-400">
+                    —
+                  </span>
+
+                }
+
+              </td>
+
+
+              <!-- ESTADO -->
+              <td class="px-5 py-4">
+
+                <span
+                  class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                  [ngClass]="getClasseEstado(solicitacao.estado)"
+                >
+                  {{ solicitacao.estado }}
+                </span>
+
+              </td>
+
+
+              <!-- AÇÃO -->
+              <td class="px-5 py-4 text-right">
+
+                @if (solicitacao.estado === 'ABERTA') {
+
+                  <button
+                    type="button"
+                    class="btn-primario whitespace-nowrap"
+                    (click)="efetuarOrcamento(solicitacao)"
+                  >
+                    Efetuar Orçamento
+                  </button>
+
+                }
+
+
+                @if (
+                  solicitacao.estado === 'APROVADA' ||
+                  solicitacao.estado === 'REDIRECIONADA'
+                ) {
+
+                  <button
+                    type="button"
+                    class="btn-primario whitespace-nowrap"
+                    (click)="efetuarManutencao(solicitacao)"
+                  >
+                    Efetuar Manutenção
+                  </button>
+
+                }
+
+
+                @if (solicitacao.estado === 'PAGA') {
+
+                  <button
+                    type="button"
+                    class="btn-primario whitespace-nowrap"
+                    (click)="finalizarSolicitacao(solicitacao)"
+                  >
+                    Finalizar Solicitação
+                  </button>
+
+                }
+
+                @if (
+                  solicitacao.estado !== 'ABERTA' &&
+                  solicitacao.estado !== 'APROVADA' &&
+                  solicitacao.estado !== 'REDIRECIONADA' &&
+                  solicitacao.estado !== 'PAGA'
+                ) {
+
+                  <span class="text-xs text-gray-400">
+                    —
+                  </span>
+
+                }
+
+              </td>
+
+            </tr>
+
+          }
+
+          <!-- SEM RESULTADOS -->
+          @if (solicitacoesFiltradas.length === 0) {
+
+            <tr>
+
+              <td
+                colspan="6"
+                class="px-5 py-12 text-center"
+              >
+
+                <h3>
+                  Nenhuma solicitação encontrada
+                </h3>
+
+                <p class="mt-1 text-sm text-gray-500">
+                  Não existem solicitações para o filtro selecionado.
+                </p>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

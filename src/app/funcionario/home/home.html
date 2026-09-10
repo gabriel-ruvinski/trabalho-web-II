@@ -2,14 +2,14 @@
   
   <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
 
-    <h1>Home Funcionário (Prévia muito porca foi mal)</h1>
+    <h1>Gerenciar</h1>
 
   </div>
 
   <div class="flex justify-end gap-4 mx-5 -mt-11">
 
     <span class="justify-center">Olá Gerente</span>
-    <p>FALTA BOTÃO SAIR</p>
+    <button type="button-sair" class="btn-primario" (click)="sair()">Sair</button>
 
 
   </div>
@@ -22,9 +22,11 @@
 
       <h2 class="text-xl font-bold mb-4 text-white text-center"> Menu </h2>
 
-      <a routerLink="/dashboard" routerLinkActive="ativo">Inicio</a>
+      <a routerLink="/funcionario/home" >Inicio</a>
 
-      <a routerLink="/solicitar-manutencao">Solicitar Manutenção</a>
+      <a routerLink="/lista-solicitacoes">Solicitações</a>
+
+      <a routerLink="/relatorios">Relatótios</a>
     </nav>
   </aside>
 
