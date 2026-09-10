@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { EstadoSolicitacao, ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
 import { SolicitacaoService } from '../../services/solicitacao.service';
@@ -10,7 +10,7 @@ import { formatarMoeda } from '../../shared/utils/formatacao';
 @Component({
   selector: 'app-lista-solicitacoes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './lista-solicitacoes.html',
 })
 export class ListaSolicitacoes {
