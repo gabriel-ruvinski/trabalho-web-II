@@ -68,4 +68,32 @@ export class AuthService {
     this._usuario = null;
     this.router.navigate(['/login']);
   }
+
+  private gerarSenha(): string {
+  return Math.floor(1000 + Math.random() * 9000).toString(); // 4 dígitos
+}
+
+ fazerRegistro(dados: {
+  nome: string;
+  email: string;
+  cpf: string;
+  telefone: string;
+  cep: string;
+}): void {
+  const senhaGerada = this.gerarSenha();
+
+  const novoUsuario: Usuario = {
+    ...dados,
+    senha: senhaGerada,
+    autenticado: false,
+    perfil: 'cliente',
+  };
+
+  this._usuariosMock.push(novoUsuario);
+
+  // Simulação de "envio por email" — sem backend real ainda
+  console.log(`Senha enviada para ${dados.email}: ${senhaGerada}`);
+  alert(`Cadastro realizado! Sua senha foi enviada para ${dados.email}. (Senha mock: ${senhaGerada})`);
+}
+
 }
