@@ -1,1 +1,58 @@
-<p>form works!</p>
+<div class="min-h-screen bg-terciaria p-6">
+  <div class="mx-auto max-w-2xl rounded-2xl bg-secundaria p-10 shadow-xl">
+
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold">
+        Nova Categoria
+      </h2>
+
+      <p class="mt-2 text-sm text-gray-500">
+        Cadastre uma nova categoria de equipamento.
+      </p>
+    </div>
+
+    <form class="space-y-6">
+
+      <div>
+        <label
+          for="nome"
+          class="mb-2 block text-sm font-semibold text-gray-500"
+        >
+          Nome da Categoria
+        </label>
+
+        <input
+          id="nome"
+          type="text"
+          placeholder="Ex.: Notebook"
+          maxlength="50"
+          class="input-padrao w-full"
+        />
+
+        <p class="mt-1 text-xs text-gray-400">
+          Informe o nome da categoria de equipamento.
+        </p>
+      </div>
+
+      <div class="flex gap-4 pt-4">
+
+        <button
+          type="button"
+          class="w-1/2 btn-secundario"
+        >
+          CANCELAR
+        </button>
+
+        <button
+          type="submit"
+          class="w-1/2 btn-primario"
+        >
+          SALVAR
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
