@@ -7,10 +7,10 @@ import { Home } from './funcionario/home/home';
 import { ListaSolicitacoes } from './funcionario/lista-solicitacoes/lista-solicitacoes';
 import { EfetuarManutencao } from './funcionario/efetuar-manutencao/efetuar-manutencao';
 import { EfetuarOrcamento } from './funcionario/efetuar-orcamento/efetuar-orcamento';
+import { MostrarOrcamento } from './cliente/mostrar-orcamento/mostrar-orcamento';
 import { FinalizarSolicitacao } from './funcionario/finalizar-solicitacao/finalizar-solicitacao';
 import { VisualizarSolicitacao } from './cliente/visualizar-solicitacao/visualizar-solicitacao';
-import{ MostrarOrcamento } from './cliente/mostrar-orcamento/mostrar-orcamento';
-import {RejeitarServico} from './cliente/rejeitar-servico/rejeitar-servico';
+import { RejeitarServico } from './cliente/rejeitar-servico/rejeitar-servico';
 import { PagarServico } from './cliente/pagar-servico/pagar-servico';
 export const routes: Routes = [
   { path: '', component: Login },
