@@ -6,12 +6,12 @@ import { SolicitacaoService } from '../../services/solicitacao.service';
 import { Solicitacao } from '../../models/solicitacao';
 
 @Component({
-  selector: 'app-mostrar-orcamento',
+  selector: 'app-pagar-servico',
   imports: [RouterLink, CurrencyPipe],
-  templateUrl: './mostrar-orcamento.html',
-  styleUrl: './mostrar-orcamento.css',
+  templateUrl: './pagar-servico.html',
+  styleUrl: './pagar-servico.css',
 })
-export class MostrarOrcamento implements OnInit {
+export class PagarServico implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -24,13 +24,12 @@ export class MostrarOrcamento implements OnInit {
     this.solicitacao = this.solicitacaoService.obterPorId(id);
   }
 
-  aprovarServico(): void {
+  pagarServico(): void {
     if (!this.solicitacao) {
       return;
     }
-    this.solicitacao = this.solicitacaoService.aprovar(this.solicitacao.id);
-    const valor = (this.solicitacao.valorOrcamento ?? 0).toFixed(2).replace('.', ',');
-    alert(`Serviço Aprovado no Valor R$ ${valor}`);
+    this.solicitacao = this.solicitacaoService.pagar(this.solicitacao.id);
+    alert('Pagamento confirmado com sucesso');
     this.router.navigate(['/dashboard']);
   }
 
