@@ -57,36 +57,46 @@
       </div>
 
       <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-gray-300">
+<table class="w-full">
+  <thead>
+    <tr class="border-b border-gray-300">
+      <th class="text-left py-3 px-4">Data/Hora</th>
+      <th class="text-left py-3 px-4">Equipamento</th>
+      <th class="text-left py-3 px-4">Estado</th>
+      <th class="text-left py-3 px-4">Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    @if (solicitacoes.length === 0) {
+      <tr>
+        <td colspan="4" class="text-center py-6 text-gray-500">Nenhuma solicitação registrada.</td>
+      </tr>
+    }
+    @for (solicitacao of solicitacoes; track solicitacao.id) {
+      <tr class="border-b border-gray-200 hover:bg-gray-50">
+        <td class="py-3 px-4">{{ formatarDataHora(solicitacao.dataHoraAbertura) }}</td>
+        <td class="py-3 px-4">{{ descricaoResumida(solicitacao.descricaoEquipamento) }}</td>
+        <td class="py-3 px-4">{{ rotuloEstado(solicitacao) }}</td>
+        <td class="py-3 px-4">
+          <div class="flex gap-2">
+            <!-- RF008: sempre presente -->
+            <button type="button" class="btn-secundario" [routerLink]="['/solicitacao', solicitacao.id]">
+              Visualizar
+            </button>
 
-            <th class="text-left py-3 px-4">Data/Hora</th>
-
-            <th class="text-left py-3 px-4">Equipamento</th>
-
-            <th class="text-left py-3 px-4">Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (solicitacoes.length === 0) {
-            <tr>
-              <td colspan="3" class="text-center py-6 text-gray-500">Nenhuma solicitação registrada.</td>
-            </tr>
-          }
-          @for (solicitacao of solicitacoes; track solicitacao.id) {
-            <tr class="border-b border-gray-200 hover:bg-gray-50">
-
-              <td class="py-3 px-4">{{ formatarDataHora(solicitacao.dataHoraAbertura) }}</td>
-
-              <td class="py-3 px-4">{{ descricaoResumida(solicitacao.descricaoEquipamento) }}</td>
-
-              <td class="py-3 px-4">{{ rotuloEstado(solicitacao) }}</td>
-            </tr>
-          }
-         </tbody>
-        </table>
-      </div>
+            <!-- Botão de ação conforme estado -->
+            @if (getAcaoBotao(solicitacao); as acao) {
+              <button type="button" class="btn-primario" [routerLink]="[acao.rota]">
+                {{ acao.label }}
+              </button>
+            }
+          </div>
+        </td>
+      </tr>
+    }
+   </tbody>
+  </table>
+</div>
     </section>
   </main>
 </div>

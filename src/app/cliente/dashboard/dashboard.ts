@@ -5,6 +5,11 @@ import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
 import { SolicitacaoService } from '../../services/solicitacao.service';
 
+interface AcaoBotao {
+  label: string;
+  rota: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   imports: [RouterLink],
@@ -35,6 +40,22 @@ export class Dashboard {
       dateStyle: 'short',
       timeStyle: 'short',
     }).format(data);
+  }
+
+  
+  getAcaoBotao(solicitacao: Solicitacao): AcaoBotao | null {
+    switch (solicitacao.estado) {
+      case 'ORCADA':
+        return { label: 'Aprovar/Rejeitar Serviço', rota: `/orcamento/${solicitacao.id}` };
+      case 'APROVADA':
+        return null; // sem botão de ação
+      case 'REJEITADA':
+        return { label: 'Resgatar Serviço', rota: `/resgatar-servico/${solicitacao.id}` };
+      case 'ARRUMADA':
+        return { label: 'Pagar Serviço', rota: `/pagar-servico/${solicitacao.id}` };
+      default:
+        return null; 
+    }
   }
 
   sair(): void {
