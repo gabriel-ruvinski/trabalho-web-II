@@ -1,0 +1,46 @@
+<div class="flex min-h-screen items-center justify-center bg-terciaria p-4">
+  <div class="w-full max-w-2xl rounded-2xl bg-secundaria shadow-2xl p-10">
+
+    <h2 class="text-2xl font-bold">Rejeitar Serviço</h2>
+    <p class="subtitulo mb-6">Explique o motivo da rejeição deste orçamento.</p>
+
+    @if (solicitacao) {
+      <div class="mb-6">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Equipamento</label>
+        <p>{{ solicitacao.descricaoEquipamento }}</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Motivo da rejeição</label>
+          <textarea
+            formControlName="motivo"
+            rows="4"
+            placeholder="Descreva por que está rejeitando este serviço..."
+            class="input-padrao"
+          ></textarea>
+
+          @if (form.get('motivo')?.invalid && form.get('motivo')?.touched) {
+            <p class="mt-1 text-xs text-red-500">
+              @if (form.get('motivo')?.errors?.['required']) {
+                Informe o motivo da rejeição.
+              } 
+            </p>
+          }
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" class="w-1/2 btn-secundario" (click)="cancelar()">
+            Cancelar
+          </button>
+          <button type="submit" class="w-1/2 btn-primario" (click)="onSubmit()" routerLink="/dashboard" [disabled]="form.invalid">
+            Confirmar Rejeição
+          </button>
+        </div>
+      </form>
+    } @else {
+      <p class="text-gray-500">Carregando dados da solicitação...</p>
+    }
+
+  </div>
+</div>
