@@ -368,4 +368,41 @@ export class SolicitacaoService {
 
     localStorage.setItem(this.storageKey, JSON.stringify(solicitacoes));
   }
+
+  aprovar(id: number): Solicitacao {
+    return this.atualizar(id, 'ORCADA', (item, agora) => {
+      item.estado = 'APROVADA';
+      item.historico.push({
+        dataHora: agora,
+        estado: 'APROVADA',
+        funcionarioNome: null,
+        observacao: 'Cliente aprovou o serviço',
+      });
+    });
+  }
+
+  rejeitar(id: number, motivo: string): Solicitacao {
+    return this.atualizar(id, 'ORCADA', (item, agora) => {
+      item.estado = 'REJEITADA';
+      item.historico.push({
+        dataHora: agora,
+        estado: 'REJEITADA',
+        funcionarioNome: null,
+        observacao: motivo,
+      });
+    });
+  }
+
+  pagar(id: number): Solicitacao {
+    return this.atualizar(id, 'ARRUMADA', (item, agora) => {
+      item.estado = 'PAGA';
+      item.historico.push({
+        dataHora: agora,
+        estado: 'PAGA',
+        funcionarioNome: null,
+        observacao: 'Pagamento confirmado pelo cliente',
+      });
+    });
+  }
 }
+
