@@ -8,7 +8,8 @@ import { ListaSolicitacoes } from './funcionario/lista-solicitacoes/lista-solici
 import { EfetuarManutencao } from './funcionario/efetuar-manutencao/efetuar-manutencao';
 import { EfetuarOrcamento } from './funcionario/efetuar-orcamento/efetuar-orcamento';
 import { FinalizarSolicitacao } from './funcionario/finalizar-solicitacao/finalizar-solicitacao';
-
+import { VisualizarSolicitacao } from './cliente/visualizar-solicitacao/visualizar-solicitacao';
+import{ MostrarOrcamento } from './cliente/mostrar-orcamento/mostrar-orcamento';
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'registro', component: Registro },
@@ -19,4 +20,6 @@ export const routes: Routes = [
   { path: 'funcionario/efetuar-orcamento/:id', component: EfetuarOrcamento },
   { path: 'funcionario/efetuar-manutencao/:id', component: EfetuarManutencao },
   { path: 'funcionario/finalizar-solicitacao/:id', component: FinalizarSolicitacao },
+  { path: 'solicitacao/:id', component: VisualizarSolicitacao },
+  { path: 'orcamento/:id', component: MostrarOrcamento },
 ];
