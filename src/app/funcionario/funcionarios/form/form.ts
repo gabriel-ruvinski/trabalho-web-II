@@ -1,17 +1,19 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
 import { FuncionarioService } from '../../../services/funcionario.service';
 
 @Component({
   selector: 'app-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './form.html',
   styleUrl: './form.css',
 })
 export class Form {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
   private readonly funcionarioService = inject(FuncionarioService);
 
   funcionarioId: number | null = null;
@@ -74,5 +76,10 @@ export class Form {
 
   cancelar(): void {
     this.router.navigate(['/funcionario/funcionarios']);
+  }
+
+  sair(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }
