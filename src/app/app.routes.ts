@@ -32,10 +32,8 @@ export const routes: Routes = [
   { path: 'orcamento/:id', component: MostrarOrcamento },
   { path: 'rejeitar-servico/:id', component: RejeitarServico },
   { path: 'pagar-servico/:id', component: PagarServico },
-
   { path: 'funcionario/categorias/lista', component: Lista },
   { path: 'funcionario/categorias/form', component: Form },
-
   { path: 'resgatar-servico/:id', component: ResgatarServico }
 
 ];
