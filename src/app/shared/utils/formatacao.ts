@@ -1,3 +1,9 @@
+export function formatarData(data: Date): string {
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+  }).format(data);
+}
+
 export function formatarDataHora(data: Date): string {
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'short',

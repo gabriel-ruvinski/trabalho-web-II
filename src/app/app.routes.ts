@@ -17,6 +17,9 @@ import { Lista } from './funcionario/categorias/lista/lista';
 import { ResgatarServico } from './cliente/resgatar-servico/resgatar-servico';
 import { Form as FuncionarioForm } from './funcionario/funcionarios/form/form';
 import { Lista as FuncionarioLista } from './funcionario/funcionarios/lista/lista';
+import { Relatorios } from './funcionario/relatorios/relatorios';
+import { Receitas } from './funcionario/relatorios/receitas/receitas';
+import { ReceitasCategoria } from './funcionario/relatorios/receitas-categoria/receitas-categoria';
 
 export const routes: Routes = [
   { path: '', component: Login },
@@ -36,5 +39,8 @@ export const routes: Routes = [
   { path: 'funcionario/categorias/form', component: Form },
   { path: 'resgatar-servico/:id', component: ResgatarServico },
   { path: 'funcionario/funcionarios/lista', component: FuncionarioLista },
-  { path: 'funcionario/funcionarios/form', component: FuncionarioForm }
+  { path: 'funcionario/funcionarios/form', component: FuncionarioForm },
+  { path: 'relatorios', component: Relatorios },
+  { path: 'funcionario/relatorios/receitas', component: Receitas },
+  { path: 'funcionario/relatorios/receitas-categoria', component: ReceitasCategoria },
 ];
