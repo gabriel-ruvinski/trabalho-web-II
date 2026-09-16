@@ -25,11 +25,15 @@ export class Lista {
     this.funcionarios = this.funcionarioService.listarAtivos();
   }
 
-  editar(funcionario: Funcionario): void {
-    this.router.navigate(['/funcionario/funcionarios', funcionario.id, 'editar']);
-  }
-
   remover(funcionario: Funcionario): void {
+    const confirmou = confirm(
+      `Tem certeza que deseja remover o funcionário "${funcionario.nome}"?`,
+    );
+
+    if (!confirmou) {
+      return;
+    }
+
     const emailLogado = this.authService.getUsuario()?.email ?? '';
     const sucesso = this.funcionarioService.remover(funcionario.id, emailLogado);
 

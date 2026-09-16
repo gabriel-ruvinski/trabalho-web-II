@@ -27,10 +27,13 @@ export class Form {
   });
 
   constructor() {
-    const idParam = this.route.snapshot.paramMap.get('id');
+    const idParam = this.route.snapshot.queryParamMap.get('id');
+
     if (idParam) {
       this.funcionarioId = Number(idParam);
+
       const funcionario = this.funcionarioService.obterPorId(this.funcionarioId);
+
       if (funcionario) {
         this.form.patchValue({
           email: funcionario.email,
@@ -53,7 +56,9 @@ export class Form {
     }
 
     this.erro = '';
+
     const valor = this.form.getRawValue();
+
     const dados = {
       nome: valor.nome ?? '',
       email: valor.email ?? '',
@@ -71,11 +76,11 @@ export class Form {
       return;
     }
 
-    this.router.navigate(['/funcionario/funcionarios']);
+    this.router.navigate(['/funcionario/funcionarios/lista']);
   }
 
   cancelar(): void {
-    this.router.navigate(['/funcionario/funcionarios']);
+    this.router.navigate(['/funcionario/funcionarios/lista']);
   }
 
   sair(): void {
