@@ -7,9 +7,14 @@ import { Home } from './funcionario/home/home';
 import { ListaSolicitacoes } from './funcionario/lista-solicitacoes/lista-solicitacoes';
 import { EfetuarManutencao } from './funcionario/efetuar-manutencao/efetuar-manutencao';
 import { EfetuarOrcamento } from './funcionario/efetuar-orcamento/efetuar-orcamento';
+import { MostrarOrcamento } from './cliente/mostrar-orcamento/mostrar-orcamento';
 import { FinalizarSolicitacao } from './funcionario/finalizar-solicitacao/finalizar-solicitacao';
 import { VisualizarSolicitacao } from './cliente/visualizar-solicitacao/visualizar-solicitacao';
-import{ MostrarOrcamento } from './cliente/mostrar-orcamento/mostrar-orcamento';
+import { RejeitarServico } from './cliente/rejeitar-servico/rejeitar-servico';
+import { PagarServico } from './cliente/pagar-servico/pagar-servico';
+import { Form } from './funcionario/categorias/form/form';
+import { Lista } from './funcionario/categorias/lista/lista';
+import { ResgatarServico  } from './cliente/resgatar-servico/resgatar-servico';
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'registro', component: Registro },
@@ -22,4 +27,10 @@ export const routes: Routes = [
   { path: 'funcionario/finalizar-solicitacao/:id', component: FinalizarSolicitacao },
   { path: 'solicitacao/:id', component: VisualizarSolicitacao },
   { path: 'orcamento/:id', component: MostrarOrcamento },
+  { path: 'rejeitar-servico/:id', component: RejeitarServico },
+  { path: 'pagar-servico/:id', component: PagarServico },
+  { path: 'funcionario/categorias/lista', component: Lista },
+  { path: 'funcionario/categorias/form', component: Form },
+  { path: 'resgatar-servico/:id', component: ResgatarServico }
+
 ];

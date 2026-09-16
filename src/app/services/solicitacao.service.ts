@@ -15,7 +15,10 @@ export interface NovaSolicitacao {
   clienteTelefone?: string;
   clienteEndereco?: string;
 }
-
+export interface AcaoBotao {
+  label: string;
+  rota: string;
+}
 interface SolicitacaoJson {
   id: number;
   descricaoEquipamento: string;
@@ -360,7 +363,20 @@ export class SolicitacaoService {
       },
     ];
   }
-
+  getAcaoBotao(solicitacao: Solicitacao): AcaoBotao | null {
+    switch (solicitacao.estado) {
+      case 'ORCADA':
+        return { label: 'Aprovar/Rejeitar Serviço', rota: `/orcamento/${solicitacao.id}` };
+      case 'APROVADA':
+        return null; // sem botão de ação
+      case 'REJEITADA':
+        return { label: 'Resgatar Serviço', rota: `/resgatar-servico/${solicitacao.id}` };
+      case 'ARRUMADA':
+        return { label: 'Pagar Serviço', rota: `/pagar-servico/${solicitacao.id}` };
+      default:
+        return null; 
+    }
+  }
   private salvar(solicitacoes: Solicitacao[]): void {
     if (!this.isBrowser) {
       return;
@@ -368,4 +384,54 @@ export class SolicitacaoService {
 
     localStorage.setItem(this.storageKey, JSON.stringify(solicitacoes));
   }
+
+  aprovar(id: number): Solicitacao {
+    return this.atualizar(id, 'ORCADA', (item, agora) => {
+      item.estado = 'APROVADA';
+      item.historico.push({
+        dataHora: agora,
+        estado: 'APROVADA',
+        funcionarioNome: null,
+        observacao: 'Cliente aprovou o serviço',
+      });
+    });
+  }
+
+  rejeitar(id: number, motivo: string): Solicitacao {
+    return this.atualizar(id, 'ORCADA', (item, agora) => {
+      item.estado = 'REJEITADA';
+      item.motivoRejeicao = motivo;
+      item.historico.push({
+        dataHora: agora,
+        estado: 'REJEITADA',
+        funcionarioNome: null,
+        observacao: motivo,
+      });
+    });
+  }
+
+  pagar(id: number): Solicitacao {
+    return this.atualizar(id, 'ARRUMADA', (item, agora) => {
+      item.estado = 'PAGA';
+      item.historico.push({
+        dataHora: agora,
+        estado: 'PAGA',
+        funcionarioNome: null,
+        observacao: 'Pagamento confirmado pelo cliente',
+      });
+    });
+  }
+
+  resgatar(id: number): Solicitacao {
+    return this.atualizar(id, 'REJEITADA', (item, agora) => {
+      item.estado = 'APROVADA';
+      item.historico.push({
+        dataHora: agora,
+        estado: 'APROVADA',
+        funcionarioNome: null,
+        observacao: 'Cliente resgatou o serviço, voltando de rejeitada para aprovada',
+      });
+    });
+  }
 }
+

@@ -6,12 +6,12 @@ import { SolicitacaoService } from '../../services/solicitacao.service';
 import { Solicitacao } from '../../models/solicitacao';
 
 @Component({
-  selector: 'app-mostrar-orcamento',
+  selector: 'app-resgatar-servico',
   imports: [RouterLink, CurrencyPipe],
-  templateUrl: './mostrar-orcamento.html',
-  styleUrl: './mostrar-orcamento.css',
+  templateUrl: './resgatar-servico.html',
+  styleUrl: './resgatar-servico.css',
 })
-export class MostrarOrcamento implements OnInit {
+export class ResgatarServico implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -24,13 +24,19 @@ export class MostrarOrcamento implements OnInit {
     this.solicitacao = this.solicitacaoService.obterPorId(id);
   }
 
-  aprovarServico(): void {
+  get motivoRejeicao(): string {
+    const passo = this.solicitacao?.historico
+      .filter((item) => item.estado === 'REJEITADA')
+      .pop();
+    return passo?.observacao ?? 'Motivo não informado';
+  }
+
+  resgatarServico(): void {
     if (!this.solicitacao) {
       return;
     }
-    this.solicitacao = this.solicitacaoService.aprovar(this.solicitacao.id);
-    const valor = (this.solicitacao.valorOrcamento ?? 0).toFixed(2).replace('.', ',');
-    alert(`Serviço Aprovado no Valor R$ ${valor}`);
+    this.solicitacao = this.solicitacaoService.resgatar(this.solicitacao.id);
+    alert('Serviço resgatado, voltando ao fluxo de aprovação');
     this.router.navigate(['/dashboard']);
   }
 

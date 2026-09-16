@@ -3,13 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
-import { SolicitacaoService } from '../../services/solicitacao.service';
-
-interface AcaoBotao {
-  label: string;
-  rota: string;
-}
-
+import { AcaoBotao, SolicitacaoService } from '../../services/solicitacao.service';
 @Component({
   selector: 'app-dashboard',
   imports: [RouterLink],
@@ -27,6 +21,10 @@ export class Dashboard {
     this.solicitacoes = this.solicitacaoService.listar();
   }
 
+  getAcaoBotao(solicitacao: Solicitacao): AcaoBotao | null {
+  return this.solicitacaoService.getAcaoBotao(solicitacao);
+}
+
   rotuloEstado(solicitacao: Solicitacao): string {
     return ROTULO_ESTADO[solicitacao.estado];
   }
@@ -40,22 +38,6 @@ export class Dashboard {
       dateStyle: 'short',
       timeStyle: 'short',
     }).format(data);
-  }
-
-  
-  getAcaoBotao(solicitacao: Solicitacao): AcaoBotao | null {
-    switch (solicitacao.estado) {
-      case 'ORCADA':
-        return { label: 'Aprovar/Rejeitar Serviço', rota: `/orcamento/${solicitacao.id}` };
-      case 'APROVADA':
-        return null; // sem botão de ação
-      case 'REJEITADA':
-        return { label: 'Resgatar Serviço', rota: `/resgatar-servico/${solicitacao.id}` };
-      case 'ARRUMADA':
-        return { label: 'Pagar Serviço', rota: `/pagar-servico/${solicitacao.id}` };
-      default:
-        return null; 
-    }
   }
 
   sair(): void {
