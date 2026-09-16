@@ -6,6 +6,7 @@ import { EstadoSolicitacao, ROTULO_ESTADO } from '../../models/estado-solicitaca
 import { Solicitacao } from '../../models/solicitacao';
 import { SolicitacaoService } from '../../services/solicitacao.service';
 import { formatarMoeda } from '../../shared/utils/formatacao';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-lista-solicitacoes',
@@ -16,6 +17,7 @@ import { formatarMoeda } from '../../shared/utils/formatacao';
 export class ListaSolicitacoes {
   private readonly router = inject(Router);
   private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly authService = inject(AuthService);
 
   filtro: 'HOJE' | 'PERIODO' | 'TODAS' = 'TODAS';
   dataInicio = '';
@@ -137,5 +139,9 @@ export class ListaSolicitacoes {
 
   finalizarSolicitacao(solicitacao: Solicitacao): void {
     this.router.navigate(['/funcionario/finalizar-solicitacao', solicitacao.id]);
+  }
+    sair(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }
