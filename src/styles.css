@@ -52,21 +52,23 @@
     }
 }
 
-/* Botões */
-.btn-primario {
-    @apply bg-primaria text-secundaria px-md py-sm rounded-md text-xs font-bold hover:bg-primaria/70 transition disabled:opacity-50 disabled:cursor-not-allowed;
-}
+@layer components {
 
-.btn-secundario {
-    @apply bg-secundaria text-primaria px-md py-sm rounded-md text-xs font-bold hover:brightness-80 transition disabled:opacity-50 disabled:cursor-not-allowed border;
-}
+    /* Botões */
+    .btn-primario {
+        @apply bg-primaria text-secundaria px-md py-sm rounded-md text-xs font-bold hover:bg-primaria/70 transition disabled:opacity-50 disabled:cursor-not-allowed;
+    }
 
-/* Inputs */
-.input-padrao {
-    @apply w-full rounded-md border border-gray-200 px-md py-sm text-sm outline-none focus:border-primaria transition disabled:opacity-50 disabled:cursor-not-allowed;
-}
+    .btn-secundario {
+        @apply bg-secundaria text-primaria px-md py-sm rounded-md text-xs font-bold hover:brightness-80 transition disabled:opacity-50 disabled:cursor-not-allowed border;
+    }
 
-/* a definir:
+    /* Inputs */
+    .input-padrao {
+        @apply w-full rounded-md border border-gray-200 px-md py-sm text-sm outline-none focus:border-primaria transition disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    /* a definir:
 .btn-sucesso {
     @apply bg-sucesso text-white px-md py-sm rounded-md font-medium hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed;
 }
@@ -79,3 +81,4 @@
     @apply border border-gray-300 text-gray-700 px-md py-sm rounded-md font-medium hover:bg-gray-100 transition;
 }
 */
+}
