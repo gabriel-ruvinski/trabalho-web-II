@@ -12,8 +12,12 @@ import { FinalizarSolicitacao } from './funcionario/finalizar-solicitacao/finali
 import { VisualizarSolicitacao } from './cliente/visualizar-solicitacao/visualizar-solicitacao';
 import { RejeitarServico } from './cliente/rejeitar-servico/rejeitar-servico';
 import { PagarServico } from './cliente/pagar-servico/pagar-servico';
+
 import { Form } from './funcionario/categorias/form/form';
 import { Lista } from './funcionario/categorias/lista/lista';
+=======
+import { ResgatarServico  } from './cliente/resgatar-servico/resgatar-servico';
+>>>>>>> bbe54f9273f9c677972d6f75b82ed81112df43b1
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'registro', component: Registro },
@@ -28,6 +32,10 @@ export const routes: Routes = [
   { path: 'orcamento/:id', component: MostrarOrcamento },
   { path: 'rejeitar-servico/:id', component: RejeitarServico },
   { path: 'pagar-servico/:id', component: PagarServico },
+
   { path: 'funcionario/categorias/lista', component: Lista },
   { path: 'funcionario/categorias/form', component: Form },
+
+  { path: 'resgatar-servico/:id', component: ResgatarServico }
+
 ];
