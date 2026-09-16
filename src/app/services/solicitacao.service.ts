@@ -382,17 +382,17 @@ export class SolicitacaoService {
   }
 
   rejeitar(id: number, motivo: string): Solicitacao {
-  return this.atualizar(id, 'ORCADA', (item, agora) => {
-    item.estado = 'REJEITADA';
-    item.motivoRejeicao = motivo;
-    item.historico.push({
-      dataHora: agora,
-      estado: 'REJEITADA',
-      funcionarioNome: null,
-      observacao: motivo,
+    return this.atualizar(id, 'ORCADA', (item, agora) => {
+      item.estado = 'REJEITADA';
+      item.motivoRejeicao = motivo;
+      item.historico.push({
+        dataHora: agora,
+        estado: 'REJEITADA',
+        funcionarioNome: null,
+        observacao: motivo,
+      });
     });
-  });
-}
+  }
 
   pagar(id: number): Solicitacao {
     return this.atualizar(id, 'ARRUMADA', (item, agora) => {
@@ -402,6 +402,18 @@ export class SolicitacaoService {
         estado: 'PAGA',
         funcionarioNome: null,
         observacao: 'Pagamento confirmado pelo cliente',
+      });
+    });
+  }
+
+  resgatar(id: number): Solicitacao {
+    return this.atualizar(id, 'REJEITADA', (item, agora) => {
+      item.estado = 'APROVADA';
+      item.historico.push({
+        dataHora: agora,
+        estado: 'APROVADA',
+        funcionarioNome: null,
+        observacao: 'Cliente resgatou o serviço, voltando de rejeitada para aprovada',
       });
     });
   }
