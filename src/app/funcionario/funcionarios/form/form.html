@@ -3,15 +3,15 @@
 
     <div class="mb-8">
       <h2 class="text-2xl font-semibold">
-        Novo Funcionário
+        {{ modoEdicao ? 'Editar Funcionário' : 'Novo Funcionário' }}
       </h2>
 
       <p class="mt-2 text-sm text-gray-500">
-        Cadastre um novo funcionário para acesso ao sistema.
+        {{ modoEdicao ? 'Atualize os dados do funcionário.' : 'Cadastre um novo funcionário para acesso ao sistema.' }}
       </p>
     </div>
 
-    <form class="space-y-6">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
 
       <div>
         <label
@@ -24,6 +24,7 @@
         <input
           id="email"
           type="email"
+          formControlName="email"
           placeholder="Ex.: funcionario@email.com"
           class="input-padrao w-full"
         />
@@ -31,6 +32,16 @@
         <p class="mt-1 text-xs text-gray-400">
           O e-mail será utilizado para acessar o sistema.
         </p>
+
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <p class="mt-1 text-xs text-red-500">
+            @if (form.get('email')?.errors?.['required']) {
+              Informe o e-mail.
+            } @else if (form.get('email')?.errors?.['email']) {
+              Informe um e-mail válido.
+            }
+          </p>
+        }
       </div>
 
       <div>
@@ -44,9 +55,14 @@
         <input
           id="nome"
           type="text"
+          formControlName="nome"
           placeholder="Ex.: João da Silva"
           class="input-padrao w-full"
         />
+
+        @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
+          <p class="mt-1 text-xs text-red-500">Informe o nome do funcionário.</p>
+        }
       </div>
 
       <div>
@@ -60,8 +76,13 @@
         <input
           id="dataNascimento"
           type="date"
+          formControlName="dataNascimento"
           class="input-padrao w-full"
         />
+
+        @if (form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched) {
+          <p class="mt-1 text-xs text-red-500">Informe a data de nascimento.</p>
+        }
       </div>
 
       <div>
@@ -75,16 +96,26 @@
         <input
           id="senha"
           type="password"
+          formControlName="senha"
           placeholder="Digite a senha"
           class="input-padrao w-full"
         />
+
+        @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
+          <p class="mt-1 text-xs text-red-500">A senha deve ter pelo menos 4 caracteres.</p>
+        }
       </div>
+
+      @if (erro) {
+        <p class="text-xs text-red-500">{{ erro }}</p>
+      }
 
       <div class="flex gap-4 pt-4">
 
         <button
           type="button"
           class="w-1/2 btn-secundario"
+          (click)="cancelar()"
         >
           CANCELAR
         </button>

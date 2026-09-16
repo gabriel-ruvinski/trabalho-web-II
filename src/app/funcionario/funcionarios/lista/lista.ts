@@ -1,9 +1,57 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
+import { Funcionario } from '../../../models/funcionario';
+import { FuncionarioService } from '../../../services/funcionario.service';
 
 @Component({
   selector: 'app-lista',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './lista.html',
   styleUrl: './lista.css',
 })
-export class Lista {}
+export class Lista {
+  private readonly funcionarioService = inject(FuncionarioService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  funcionarios: Funcionario[] = [];
+
+  constructor() {
+    this.carregar();
+  }
+
+  private carregar(): void {
+    this.funcionarios = this.funcionarioService.listarAtivos();
+  }
+
+  editar(funcionario: Funcionario): void {
+    this.router.navigate(['/funcionario/funcionarios', funcionario.id, 'editar']);
+  }
+
+  remover(funcionario: Funcionario): void {
+    const emailLogado = this.authService.getUsuario()?.email ?? '';
+    const sucesso = this.funcionarioService.remover(funcionario.id, emailLogado);
+
+    if (!sucesso) {
+      if (funcionario.email === emailLogado) {
+        alert('Você não pode remover seu próprio cadastro.');
+      } else {
+        alert('Não é possível remover o único funcionário do sistema.');
+      }
+      return;
+    }
+
+    this.carregar();
+  }
+
+  formatarData(data: string): string {
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  sair(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
+  }
+}

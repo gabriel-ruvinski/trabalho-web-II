@@ -10,6 +10,7 @@
     <button
       type="button"
       class="btn-primario"
+      (click)="sair()"
     >
       Sair
     </button>
@@ -57,7 +58,7 @@
           </p>
         </div>
 
-        <a class="btn-primario">
+        <a routerLink="/funcionario/funcionarios/novo" class="btn-primario">
           + NOVO FUNCIONÁRIO
         </a>
 
@@ -107,81 +108,55 @@
 
             <tbody class="divide-y divide-gray-100">
 
-              <tr class="transition hover:bg-gray-50">
+              @if (funcionarios.length === 0) {
+                <tr>
+                  <td colspan="4" class="px-5 py-6 text-center text-sm text-gray-500">
+                    Nenhum funcionário cadastrado.
+                  </td>
+                </tr>
+              }
 
-                <td class="px-5 py-4 font-semibold text-gray-900">
-                  Maria
-                </td>
+              @for (funcionario of funcionarios; track funcionario.id) {
+                <tr class="transition hover:bg-gray-50">
 
-                <td class="px-5 py-4 text-sm text-gray-700">
-                  maria@gmail.com
-                </td>
+                  <td class="px-5 py-4 font-semibold text-gray-900">
+                    {{ funcionario.nome }}
+                  </td>
 
-                <td class="px-5 py-4 text-sm text-gray-600">
-                  12/05/1990
-                </td>
+                  <td class="px-5 py-4 text-sm text-gray-700">
+                    {{ funcionario.email }}
+                  </td>
 
-                <td class="px-5 py-4 text-right">
+                  <td class="px-5 py-4 text-sm text-gray-600">
+                    {{ formatarData(funcionario.dataNascimento) }}
+                  </td>
 
-                  <div class="flex justify-end gap-2">
+                  <td class="px-5 py-4 text-right">
 
-                    <button
-                      type="button"
-                      class="btn-secundario"
-                    >
-                      Editar
-                    </button>
+                    <div class="flex justify-end gap-2">
 
-                    <button
-                      type="button"
-                      class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
-                    >
-                      Remover
-                    </button>
+                      <button
+                        type="button"
+                        class="btn-secundario"
+                        (click)="editar(funcionario)"
+                      >
+                        Editar
+                      </button>
 
-                  </div>
+                      <button
+                        type="button"
+                        class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
+                        (click)="remover(funcionario)"
+                      >
+                        Remover
+                      </button>
 
-                </td>
+                    </div>
 
-              </tr>
+                  </td>
 
-              <tr class="transition hover:bg-gray-50">
-
-                <td class="px-5 py-4 font-semibold text-gray-900">
-                  Mário
-                </td>
-
-                <td class="px-5 py-4 text-sm text-gray-700">
-                  mario@gmail.com
-                </td>
-
-                <td class="px-5 py-4 text-sm text-gray-600">
-                  03/11/1988
-                </td>
-
-                <td class="px-5 py-4 text-right">
-
-                  <div class="flex justify-end gap-2">
-
-                    <button
-                      type="button"
-                      class="btn-secundario"
-                    >
-                      Editar
-                    </button>
-
-                    <button
-                      type="button"
-                      class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
-                    >
-                      Remover
-                    </button>
-
-                  </div>
-
-                </td>
-
-              </tr>
+                </tr>
+              }
 
             </tbody>
 
