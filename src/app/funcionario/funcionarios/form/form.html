@@ -1,1 +1,104 @@
-<p>form works!</p>
+<div class="min-h-screen bg-terciaria p-6">
+  <div class="mx-auto max-w-2xl rounded-2xl bg-secundaria p-10 shadow-xl">
+
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold">
+        Novo Funcionário
+      </h2>
+
+      <p class="mt-2 text-sm text-gray-500">
+        Cadastre um novo funcionário para acesso ao sistema.
+      </p>
+    </div>
+
+    <form class="space-y-6">
+
+      <div>
+        <label
+          for="email"
+          class="mb-2 block text-sm font-semibold text-gray-500"
+        >
+          E-mail
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          placeholder="Ex.: funcionario@email.com"
+          class="input-padrao w-full"
+        />
+
+        <p class="mt-1 text-xs text-gray-400">
+          O e-mail será utilizado para acessar o sistema.
+        </p>
+      </div>
+
+      <div>
+        <label
+          for="nome"
+          class="mb-2 block text-sm font-semibold text-gray-500"
+        >
+          Nome
+        </label>
+
+        <input
+          id="nome"
+          type="text"
+          placeholder="Ex.: João da Silva"
+          class="input-padrao w-full"
+        />
+      </div>
+
+      <div>
+        <label
+          for="dataNascimento"
+          class="mb-2 block text-sm font-semibold text-gray-500"
+        >
+          Data de nascimento
+        </label>
+
+        <input
+          id="dataNascimento"
+          type="date"
+          class="input-padrao w-full"
+        />
+      </div>
+
+      <div>
+        <label
+          for="senha"
+          class="mb-2 block text-sm font-semibold text-gray-500"
+        >
+          Senha
+        </label>
+
+        <input
+          id="senha"
+          type="password"
+          placeholder="Digite a senha"
+          class="input-padrao w-full"
+        />
+      </div>
+
+      <div class="flex gap-4 pt-4">
+
+        <button
+          type="button"
+          class="w-1/2 btn-secundario"
+        >
+          CANCELAR
+        </button>
+
+        <button
+          type="submit"
+          class="w-1/2 btn-primario"
+        >
+          SALVAR
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>

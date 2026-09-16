@@ -1,1 +1,198 @@
-<p>lista works!</p>
+<header class="fixed h-16 top-0 left-0 right-0 z-50 bg-white shadow-md">
+
+  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
+    <h1>Gerenciar</h1>
+  </div>
+
+  <div class="flex justify-end gap-4 mx-5 -mt-11">
+    <span class="justify-center">Olá Gerente</span>
+
+    <button
+      type="button"
+      class="btn-primario"
+    >
+      Sair
+    </button>
+  </div>
+
+</header>
+
+<div class="flex min-h-screen">
+
+  <aside class="w-56 bg-primaria text-white p-5 pt-16">
+
+    <nav class="flex flex-col gap-5 py-4">
+
+      <h2 class="text-xl font-bold mb-4 text-white text-center">
+        Menu
+      </h2>
+
+      <a routerLink="/funcionario/home">
+        Inicio
+      </a>
+
+      <a routerLink="/lista-solicitacoes">
+        Solicitações
+      </a>
+
+      <a routerLink="/relatorios">
+        Relatórios
+      </a>
+
+    </nav>
+
+  </aside>
+
+  <main class="flex-1 bg-terciaria p-6 pt-16">
+
+    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+
+      <div class="flex items-center justify-between mb-6">
+
+        <div>
+          <h1>Funcionários</h1>
+
+          <p class="mt-1 text-sm text-gray-500">
+            Gerenciamento dos funcionários com acesso ao sistema.
+          </p>
+        </div>
+
+        <a class="btn-primario">
+          + NOVO FUNCIONÁRIO
+        </a>
+
+      </div>
+
+      <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+
+        <div class="overflow-x-auto">
+
+          <table class="w-full min-w-[800px] text-left">
+
+            <thead class="border-b border-gray-200 bg-gray-50">
+
+              <tr>
+
+                <th
+                  scope="col"
+                  class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+                >
+                  Nome
+                </th>
+
+                <th
+                  scope="col"
+                  class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+                >
+                  E-mail
+                </th>
+
+                <th
+                  scope="col"
+                  class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+                >
+                  Data de nascimento
+                </th>
+
+                <th
+                  scope="col"
+                  class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500"
+                >
+                  Ações
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody class="divide-y divide-gray-100">
+
+              <tr class="transition hover:bg-gray-50">
+
+                <td class="px-5 py-4 font-semibold text-gray-900">
+                  Maria
+                </td>
+
+                <td class="px-5 py-4 text-sm text-gray-700">
+                  maria@gmail.com
+                </td>
+
+                <td class="px-5 py-4 text-sm text-gray-600">
+                  12/05/1990
+                </td>
+
+                <td class="px-5 py-4 text-right">
+
+                  <div class="flex justify-end gap-2">
+
+                    <button
+                      type="button"
+                      class="btn-secundario"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
+                    >
+                      Remover
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+              <tr class="transition hover:bg-gray-50">
+
+                <td class="px-5 py-4 font-semibold text-gray-900">
+                  Mário
+                </td>
+
+                <td class="px-5 py-4 text-sm text-gray-700">
+                  mario@gmail.com
+                </td>
+
+                <td class="px-5 py-4 text-sm text-gray-600">
+                  03/11/1988
+                </td>
+
+                <td class="px-5 py-4 text-right">
+
+                  <div class="flex justify-end gap-2">
+
+                    <button
+                      type="button"
+                      class="btn-secundario"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
+                    >
+                      Remover
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
