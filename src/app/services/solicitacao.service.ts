@@ -15,7 +15,10 @@ export interface NovaSolicitacao {
   clienteTelefone?: string;
   clienteEndereco?: string;
 }
-
+export interface AcaoBotao {
+  label: string;
+  rota: string;
+}
 interface SolicitacaoJson {
   id: number;
   descricaoEquipamento: string;
@@ -360,7 +363,20 @@ export class SolicitacaoService {
       },
     ];
   }
-
+  getAcaoBotao(solicitacao: Solicitacao): AcaoBotao | null {
+    switch (solicitacao.estado) {
+      case 'ORCADA':
+        return { label: 'Aprovar/Rejeitar Serviço', rota: `/orcamento/${solicitacao.id}` };
+      case 'APROVADA':
+        return null; // sem botão de ação
+      case 'REJEITADA':
+        return { label: 'Resgatar Serviço', rota: `/resgatar-servico/${solicitacao.id}` };
+      case 'ARRUMADA':
+        return { label: 'Pagar Serviço', rota: `/pagar-servico/${solicitacao.id}` };
+      default:
+        return null; 
+    }
+  }
   private salvar(solicitacoes: Solicitacao[]): void {
     if (!this.isBrowser) {
       return;
