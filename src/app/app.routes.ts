@@ -15,6 +15,9 @@ import { PagarServico } from './cliente/pagar-servico/pagar-servico';
 import { Form } from './funcionario/categorias/form/form';
 import { Lista } from './funcionario/categorias/lista/lista';
 import { ResgatarServico  } from './cliente/resgatar-servico/resgatar-servico';
+import { Form as FuncionarioForm } from './funcionario/funcionarios/form/form';
+import { Lista as FuncionarioLista } from './funcionario/funcionarios/lista/lista';
+
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'registro', component: Registro },
@@ -31,6 +34,8 @@ export const routes: Routes = [
   { path: 'pagar-servico/:id', component: PagarServico },
   { path: 'funcionario/categorias/lista', component: Lista },
   { path: 'funcionario/categorias/form', component: Form },
-  { path: 'resgatar-servico/:id', component: ResgatarServico }
-
+  { path: 'resgatar-servico/:id', component: ResgatarServico },
+  { path: 'funcionario/funcionarios', component: FuncionarioLista },
+  { path: 'funcionario/funcionarios/novo', component: FuncionarioForm },
+  { path: 'funcionario/funcionarios/:id/editar', component: FuncionarioForm }
 ];
