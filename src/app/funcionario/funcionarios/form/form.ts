@@ -76,6 +76,7 @@ export class Form {
       return;
     }
 
+    this.authService.registrarFuncionario(dados);
     this.router.navigate(['/funcionario/funcionarios/lista']);
   }
 

@@ -87,6 +87,28 @@ export class AuthService {
     alert(`Cadastro realizado! Sua senha foi enviada para ${dados.email}. (Senha mock: ${senhaGerada})`);
   }
 
+  registrarFuncionario(dados: { nome: string; email: string; senha: string }): void {
+    const existente = this._usuariosMock.find((u) => u.email === dados.email);
+
+    if (existente) {
+      existente.nome = dados.nome;
+      existente.senha = dados.senha;
+    } else {
+      this._usuariosMock.push({
+        nome: dados.nome,
+        email: dados.email,
+        senha: dados.senha,
+        cpf: '',
+        telefone: '',
+        cep: '',
+        autenticado: false,
+        perfil: 'funcionario',
+      });
+    }
+
+    this.salvarUsuarios();
+  }
+
   private dadosIniciais(): Usuario[] {
     return [
       {
