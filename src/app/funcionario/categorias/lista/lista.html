@@ -1,170 +1,105 @@
-<header class="fixed h-16 top-0 left-0 right-0 z-50 bg-white shadow-md">
-  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
-    <h1>Gerenciar</h1>
-  </div>
+<div class="mx-auto max-w-4xl rounded-2xl bg-secundaria p-8 shadow-xl">
 
-  <div class="flex justify-end gap-4 mx-5 -mt-11">
-    <span>Olá Gerente</span>
-    <button type="button" class="btn-primario">Sair</button>
-  </div>
-</header>
+  <div class="mb-6 flex items-center justify-between">
 
-<div class="flex min-h-screen bg-terciaria pt-16">
-
-  <aside class="w-56 flex-shrink-0 bg-primaria text-white p-5">
-
-    <nav class="flex flex-col gap-5 py-4">
-
-      <h2 class="text-xl font-bold mb-4 text-white text-center">
-        Menu
+    <div>
+      <h2 class="text-2xl font-semibold">
+        Categorias de Equipamento
       </h2>
 
-      <a routerLink="/funcionario/home">
-        Inicio
-      </a>
+      <p class="mt-2 text-sm text-gray-500">
+        Gerencie as categorias usadas nas solicitações de manutenção.
+      </p>
+    </div>
 
-      <a routerLink="/lista-solicitacoes">
-        Solicitações
-      </a>
+    <button type="button" class="btn-primario" (click)="novaCategoria()">
+      + NOVA CATEGORIA
+    </button>
 
-      <a routerLink="/relatorios">
-        Relatórios
-      </a>
+  </div>
 
-      <a routerLink="/funcionario/categorias/lista">
-        Categorias
-      </a>
+  <table class="w-full text-left text-sm">
 
-    </nav>
+    <thead>
+      <tr class="border-b text-xs uppercase text-gray-400">
 
-  </aside>
+        <th class="py-3">
+          Nome
+        </th>
 
-  <main class="flex-1 p-6">
+        <th class="py-3">
+          Status
+        </th>
 
-    <div class="mx-auto max-w-4xl rounded-2xl bg-secundaria p-8 shadow-xl">
+        <th class="py-3 text-right">
+          Ações
+        </th>
 
-      <div class="mb-6 flex items-center justify-between">
+      </tr>
+    </thead>
 
-        <div>
-          <h2 class="text-2xl font-semibold">
-            Categorias de Equipamento
-          </h2>
+    <tbody>
 
-          <p class="mt-2 text-sm text-gray-500">
-            Gerencie as categorias usadas nas solicitações de manutenção.
-          </p>
-        </div>
+      @for (categoria of categorias; track categoria.id) {
 
-        <button
-          type="button"
-          class="btn-primario"
-          (click)="novaCategoria()"
-        >
-          + NOVA CATEGORIA
-        </button>
+      <tr class="border-b last:border-0">
 
-      </div>
+        <td class="py-4 font-medium text-gray-800">
+          {{ categoria.nome }}
+        </td>
 
-      <table class="w-full text-left text-sm">
+        <td class="py-4">
 
-        <thead>
-          <tr class="border-b text-xs uppercase text-gray-400">
+          @if (categoria.ativa) {
 
-            <th class="py-3">
-              Nome
-            </th>
+          <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+            Ativa
+          </span>
 
-            <th class="py-3">
-              Status
-            </th>
+          } @else {
 
-            <th class="py-3 text-right">
-              Ações
-            </th>
-
-          </tr>
-        </thead>
-
-        <tbody>
-
-          @for (categoria of categorias; track categoria.id) {
-
-            <tr class="border-b last:border-0">
-
-              <td class="py-4 font-medium text-gray-800">
-                {{ categoria.nome }}
-              </td>
-
-              <td class="py-4">
-
-                @if (categoria.ativa) {
-
-                  <span
-                    class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700"
-                  >
-                    Ativa
-                  </span>
-
-                } @else {
-
-                  <span
-                    class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500"
-                  >
-                    Inativa
-                  </span>
-
-                }
-
-              </td>
-
-              <td class="py-4 text-right">
-
-                <div class="flex justify-end gap-2">
-
-                  <button
-                    type="button"
-                    class="btn-secundario"
-                    (click)="editar(categoria.id)"
-                  >
-                    Editar
-                  </button>
-
-                  @if (categoria.ativa) {
-
-                    <button
-                      type="button"
-                      class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
-                      (click)="remover(categoria.id)"
-                    >
-                      Remover
-                    </button>
-
-                  } @else {
-
-                    <button
-                      type="button"
-                      class="btn-secundario"
-                      (click)="reativar(categoria.id)"
-                    >
-                      Reativar
-                    </button>
-
-                  }
-
-                </div>
-
-              </td>
-
-            </tr>
+          <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500">
+            Inativa
+          </span>
 
           }
 
-        </tbody>
+        </td>
 
-      </table>
+        <td class="py-4 text-right">
 
-    </div>
+          <div class="flex justify-end gap-2">
 
-  </main>
+            <button type="button" class="btn-secundario" (click)="editar(categoria.id)">
+              Editar
+            </button>
+
+            @if (categoria.ativa) {
+
+            <button type="button"
+              class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
+              (click)="remover(categoria.id)">
+              Remover
+            </button>
+
+            } @else {
+
+            <button type="button" class="btn-secundario" (click)="reativar(categoria.id)">
+              Reativar
+            </button>
+
+            }
+
+          </div>
+
+        </td>
+
+      </tr>
+
+      }
+
+    </tbody>
+
+  </table>
 
 </div>

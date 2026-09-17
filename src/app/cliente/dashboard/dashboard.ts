@@ -44,4 +44,6 @@ export class Dashboard {
     this.authService.logout();
     this.router.navigate(['/']);
   }
+
+  usuario = this.authService.getUsuario();
 }

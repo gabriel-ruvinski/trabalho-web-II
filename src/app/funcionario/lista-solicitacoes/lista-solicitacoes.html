@@ -1,36 +1,4 @@
-<header class="fixed h-16 top-0 left-0 right-0 z-50 bg-white shadow-md">
-  
-  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
-
-    <h1>Gerenciar</h1>
-
-  </div>
-
-  <div class="flex justify-end gap-4 mx-5 -mt-11">
-
-    <span class="justify-center">Olá Gerente</span>
-    <button type="button" class="btn-primario" (click)="sair()">Sair</button>
-
-
-  </div>
-</header>
-
-<div class="flex min-h-screen">
-  <aside class="w-56 bg-primaria text-white p-5 pt-16">
-
-    <nav class="flex flex-col gap-5 py-4">
-
-      <h2 class="text-xl font-bold mb-4 text-white text-center"> Menu </h2>
-
-      <a routerLink="/funcionario/home" >Inicio</a>
-
-      <a routerLink="/lista-solicitacoes">Solicitações</a>
-
-      <a routerLink="/relatorios">Relatótios</a>
-    </nav>
-  </aside>
-
-<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
   <!-- CABEÇALHO -->
   <div class="flex items-center justify-between mt-10">
@@ -49,55 +17,38 @@
     </span>
 
   </div>
-  
+
 
 
   <!-- FILTROS -->
-  <section
-    class="mb-5 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
-  >
+  <section class="mb-5 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
 
     <div class="flex flex-wrap items-end gap-3">
 
       <!-- FILTRO -->
       <div class="flex rounded-md border border-gray-200 bg-gray-50 p-1">
 
-        <button
-          type="button"
-          class="rounded px-4 py-2 text-xs font-semibold transition"
-          [ngClass]="
+        <button type="button" class="rounded px-4 py-2 text-xs font-semibold transition" [ngClass]="
             filtro === 'HOJE'
               ? 'bg-primaria text-white shadow-sm'
               : 'text-gray-600 hover:bg-gray-100'
-          "
-          (click)="filtro = 'HOJE'"
-        >
+          " (click)="filtro = 'HOJE'">
           Hoje
         </button>
 
-        <button
-          type="button"
-          class="rounded px-4 py-2 text-xs font-semibold transition"
-          [ngClass]="
+        <button type="button" class="rounded px-4 py-2 text-xs font-semibold transition" [ngClass]="
             filtro === 'PERIODO'
               ? 'bg-primaria text-white shadow-sm'
               : 'text-gray-600 hover:bg-gray-100'
-          "
-          (click)="filtro = 'PERIODO'"
-        >
+          " (click)="filtro = 'PERIODO'">
           Período
         </button>
 
-        <button
-          type="button"
-          class="rounded px-4 py-2 text-xs font-semibold transition"
-          [ngClass]="
+        <button type="button" class="rounded px-4 py-2 text-xs font-semibold transition" [ngClass]="
             filtro === 'TODAS'
               ? 'bg-primaria text-white shadow-sm'
               : 'text-gray-600 hover:bg-gray-100'
-          "
-          (click)="filtro = 'TODAS'"
-        >
+          " (click)="filtro = 'TODAS'">
           Todas
         </button>
 
@@ -107,35 +58,25 @@
       <!-- DATAS -->
       @if (filtro === 'PERIODO') {
 
-        <div class="flex gap-3">
+      <div class="flex gap-3">
 
-          <div>
-            <label for="dataInicio">
-              Data inicial
-            </label>
+        <div>
+          <label for="dataInicio">
+            Data inicial
+          </label>
 
-            <input
-              id="dataInicio"
-              type="date"
-              class="input-padrao w-auto"
-              [(ngModel)]="dataInicio"
-            />
-          </div>
-
-          <div>
-            <label for="dataFim">
-              Data final
-            </label>
-
-            <input
-              id="dataFim"
-              type="date"
-              class="input-padrao w-auto"
-              [(ngModel)]="dataFim"
-            />
-          </div>
-
+          <input id="dataInicio" type="date" class="input-padrao w-auto" [(ngModel)]="dataInicio" />
         </div>
+
+        <div>
+          <label for="dataFim">
+            Data final
+          </label>
+
+          <input id="dataFim" type="date" class="input-padrao w-auto" [(ngModel)]="dataFim" />
+        </div>
+
+      </div>
 
       }
 
@@ -143,19 +84,11 @@
       <!-- BOTÕES -->
       <div class="ml-auto flex gap-2">
 
-        <button
-          type="button"
-          class="btn-primario"
-          (click)="aplicarFiltro()"
-        >
+        <button type="button" class="btn-primario" (click)="aplicarFiltro()">
           Filtrar
         </button>
 
-        <button
-          type="button"
-          class="btn-secundario"
-          (click)="limparFiltros()"
-        >
+        <button type="button" class="btn-secundario" (click)="limparFiltros()">
           Limpar
         </button>
 
@@ -217,58 +150,38 @@
 
 
   <!-- TABELA -->
-  <div
-    class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
-  >
+  <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
 
     <div class="overflow-x-auto">
 
-      <table class="w-full min-w-[900px] text-left">
+      <table class="w-full min-w-225 text-left">
 
         <!-- CABEÇALHO -->
         <thead class="border-b border-gray-200 bg-gray-50">
 
           <tr>
 
-            <th
-              scope="col"
-              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
-            >
+            <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
               Solicitação
             </th>
 
-            <th
-              scope="col"
-              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
-            >
+            <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
               Solicitante
             </th>
 
-            <th
-              scope="col"
-              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
-            >
+            <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
               Data de abertura
             </th>
 
-            <th
-              scope="col"
-              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
-            >
+            <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
               Valor
             </th>
 
-            <th
-              scope="col"
-              class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
-            >
+            <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
               Estado
             </th>
 
-            <th
-              scope="col"
-              class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500"
-            >
+            <th scope="col" class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
               Ação
             </th>
 
@@ -281,167 +194,147 @@
         <tbody class="divide-y divide-gray-100">
 
           @for (
-            solicitacao of solicitacoesFiltradas;
-            track solicitacao.id
+          solicitacao of solicitacoesFiltradas;
+          track solicitacao.id
           ) {
 
-            <tr class="transition hover:bg-gray-50">
+          <tr class="transition hover:bg-gray-50">
 
-              <!-- SOLICITAÇÃO -->
-              <td class="px-5 py-4">
+            <!-- SOLICITAÇÃO -->
+            <td class="px-5 py-4">
 
-                <div class="flex items-center gap-3">
+              <div class="flex items-center gap-3">
 
-                  <!-- Indicador de estado -->
-                  <span
-                    class="h-2.5 w-2.5 shrink-0 rounded-full"
-                    [ngClass]="getClasseBolinha(solicitacao.estado)"
-                  ></span>
+                <!-- Indicador de estado -->
+                <span class="h-2.5 w-2.5 shrink-0 rounded-full" [ngClass]="getClasseBolinha(solicitacao.estado)"></span>
 
-                  <div>
+                <div>
 
-                    <div class="font-semibold text-gray-900">
-                      #{{ solicitacao.id }}
-                    </div>
+                  <div class="font-semibold text-gray-900">
+                    #{{ solicitacao.id }}
+                  </div>
 
-                    <div class="mt-0.5 max-w-xs truncate text-sm text-gray-600">
-                      {{ solicitacao.descricaoEquipamento }}
-                    </div>
-
+                  <div class="mt-0.5 max-w-xs truncate text-sm text-gray-600">
+                    {{ solicitacao.descricaoEquipamento }}
                   </div>
 
                 </div>
 
-              </td>
+              </div>
+
+            </td>
 
 
-              <!-- SOLICITANTE -->
-              <td class="px-5 py-4 text-sm text-gray-700">
-                {{ solicitacao.clienteNome }}
-              </td>
+            <!-- SOLICITANTE -->
+            <td class="px-5 py-4 text-sm text-gray-700">
+              {{ solicitacao.clienteNome }}
+            </td>
 
 
-              <!-- DATA -->
-              <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
-                {{ formatarData(solicitacao.dataHoraAbertura) }}
-              </td>
+            <!-- DATA -->
+            <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
+              {{ formatarData(solicitacao.dataHoraAbertura) }}
+            </td>
 
 
-              <!-- VALOR -->
-              <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700">
+            <!-- VALOR -->
+            <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700">
 
-                @if (solicitacao.valorOrcamento) {
+              @if (solicitacao.valorOrcamento) {
 
-                  {{ formatarMoeda(solicitacao.valorOrcamento) }}
+              {{ formatarMoeda(solicitacao.valorOrcamento) }}
 
-                } @else {
+              } @else {
 
-                  <span class="text-gray-400">
-                    —
-                  </span>
+              <span class="text-gray-400">
+                —
+              </span>
 
-                }
+              }
 
-              </td>
-
-
-              <!-- ESTADO -->
-              <td class="px-5 py-4">
-
-                <span
-                  class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
-                  [ngClass]="getClasseEstado(solicitacao.estado)"
-                >
-                  {{ rotuloEstado(solicitacao.estado) }}
-                </span>
-
-              </td>
+            </td>
 
 
-              <!-- AÇÃO -->
-              <td class="px-5 py-4 text-right">
+            <!-- ESTADO -->
+            <td class="px-5 py-4">
 
-                @if (solicitacao.estado === 'ABERTA') {
+              <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                [ngClass]="getClasseEstado(solicitacao.estado)">
+                {{ rotuloEstado(solicitacao.estado) }}
+              </span>
 
-                  <button
-                    type="button"
-                    class="btn-primario whitespace-nowrap"
-                    (click)="efetuarOrcamento(solicitacao)"
-                  >
-                    Efetuar Orçamento
-                  </button>
-
-                }
+            </td>
 
 
-                @if (
-                  solicitacao.estado === 'APROVADA' ||
-                  solicitacao.estado === 'REDIRECIONADA'
-                ) {
+            <!-- AÇÃO -->
+            <td class="px-5 py-4 text-right">
 
-                  <button
-                    type="button"
-                    class="btn-primario whitespace-nowrap"
-                    (click)="efetuarManutencao(solicitacao)"
-                  >
-                    Efetuar Manutenção
-                  </button>
+              @if (solicitacao.estado === 'ABERTA') {
 
-                }
+              <button type="button" class="btn-primario whitespace-nowrap" (click)="efetuarOrcamento(solicitacao)">
+                Efetuar Orçamento
+              </button>
+
+              }
 
 
-                @if (solicitacao.estado === 'PAGA') {
+              @if (
+              solicitacao.estado === 'APROVADA' ||
+              solicitacao.estado === 'REDIRECIONADA'
+              ) {
 
-                  <button
-                    type="button"
-                    class="btn-primario whitespace-nowrap"
-                    (click)="finalizarSolicitacao(solicitacao)"
-                  >
-                    Finalizar Solicitação
-                  </button>
+              <button type="button" class="btn-primario whitespace-nowrap" (click)="efetuarManutencao(solicitacao)">
+                Efetuar Manutenção
+              </button>
 
-                }
+              }
 
-                @if (
-                  solicitacao.estado !== 'ABERTA' &&
-                  solicitacao.estado !== 'APROVADA' &&
-                  solicitacao.estado !== 'REDIRECIONADA' &&
-                  solicitacao.estado !== 'PAGA'
-                ) {
 
-                  <span class="text-xs text-gray-400">
-                    —
-                  </span>
+              @if (solicitacao.estado === 'PAGA') {
 
-                }
+              <button type="button" class="btn-primario whitespace-nowrap" (click)="finalizarSolicitacao(solicitacao)">
+                Finalizar Solicitação
+              </button>
 
-              </td>
+              }
 
-            </tr>
+              @if (
+              solicitacao.estado !== 'ABERTA' &&
+              solicitacao.estado !== 'APROVADA' &&
+              solicitacao.estado !== 'REDIRECIONADA' &&
+              solicitacao.estado !== 'PAGA'
+              ) {
+
+              <span class="text-xs text-gray-400">
+                —
+              </span>
+
+              }
+
+            </td>
+
+          </tr>
 
           }
 
           <!-- SEM RESULTADOS -->
           @if (solicitacoesFiltradas.length === 0) {
 
-            <tr>
+          <tr>
 
-              <td
-                colspan="6"
-                class="px-5 py-12 text-center"
-              >
+            <td colspan="6" class="px-5 py-12 text-center">
 
-                <h3>
-                  Nenhuma solicitação encontrada
-                </h3>
+              <h3>
+                Nenhuma solicitação encontrada
+              </h3>
 
-                <p class="mt-1 text-sm text-gray-500">
-                  Não existem solicitações para o filtro selecionado.
-                </p>
+              <p class="mt-1 text-sm text-gray-500">
+                Não existem solicitações para o filtro selecionado.
+              </p>
 
-              </td>
+            </td>
 
-            </tr>
+          </tr>
 
           }
 
