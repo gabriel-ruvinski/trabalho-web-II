@@ -1,0 +1,24 @@
+<header class="fixed inset-x-0 top-0 z-50 h-16 bg-white shadow-md">
+  <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+    <h1 class="text-lg font-bold text-gray-900">Nome da Empresa</h1>
+    <div class="flex items-center gap-4">
+      <span class="text-sm text-gray-600">Olá, {{ usuario?.nome ?? 'Gerente' }}</span>
+      <button type="button" class="btn-primario" (click)="sair()">Sair</button>
+    </div>
+  </div>
+</header>
+
+<aside class="fixed inset-y-0 left-0 z-40 w-56 overflow-y-auto bg-primaria p-5 pt-20 text-white">
+  <nav class="flex flex-col gap-2">
+    <h2 class="mb-4 text-center text-xl font-bold">Menu</h2>
+    <a routerLink="/funcionario/home" routerLinkActive="bg-white/15 font-bold" class="block rounded-md px-3 py-2 transition hover:bg-white/10">Início</a>
+    <a routerLink="/lista-solicitacoes" routerLinkActive="bg-white/15 font-bold" class="block rounded-md px-3 py-2 transition hover:bg-white/10">Solicitações</a>
+    <a routerLink="/relatorios" routerLinkActive="bg-white/15 font-bold" class="block rounded-md px-3 py-2 transition hover:bg-white/10">Relatórios</a>
+    <a routerLink="/funcionario/categorias/lista" routerLinkActive="bg-white/15 font-bold" class="block rounded-md px-3 py-2 transition hover:bg-white/10">Categorias</a>
+    <a routerLink="/funcionario/funcionarios/lista" routerLinkActive="bg-white/15 font-bold" class="block rounded-md px-3 py-2 transition hover:bg-white/10">Funcionários</a>
+  </nav>
+</aside>
+
+<main class="ml-56 min-h-screen bg-terciaria p-6 pt-20">
+  <router-outlet></router-outlet>
+</main>
