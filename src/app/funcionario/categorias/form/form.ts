@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { CategoriaService } from '../../../services/categoria.service';
 import { Categoria } from '../../../models/categoria';
 
 @Component({
   selector: 'app-form',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './form.html',
   styleUrl: './form.css',
 })

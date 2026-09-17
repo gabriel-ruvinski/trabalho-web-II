@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ReceitaPorCategoria } from '../../../models/receita';
 import { RelatorioService } from '../../../services/relatorio.service';

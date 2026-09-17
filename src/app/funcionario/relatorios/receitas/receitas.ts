@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ReceitaPorDia } from '../../../models/receita';
 import { RelatorioService } from '../../../services/relatorio.service';
@@ -9,7 +9,7 @@ import { imprimirRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
 
 @Component({
   selector: 'app-receitas',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './receitas.html',
   styleUrl: './receitas.css',
 })
