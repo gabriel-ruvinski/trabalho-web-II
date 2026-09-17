@@ -79,7 +79,7 @@
             <div class="flex gap-3">
                 <div class="w-1/4">
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Número</label>
-                    <input class="input-padrao w-1/4" formControlName="numero" />
+                    <input class="input-padrao" formControlName="numero" />
                     @if (form.get('numero')?.invalid && form.get('numero')?.touched) {
                       <p class="mt-1 text-xs text-red-500">Obrigatório.</p>
                     }
