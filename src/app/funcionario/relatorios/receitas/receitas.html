@@ -1,79 +1,54 @@
-<header class="fixed h-16 top-0 left-0 right-0 z-50 bg-white shadow-md">
-  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
-    <h1>Gerenciar</h1>
+<section class="max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl m-7 p-10">
+  <h2 class="text-2xl font-bold">Receitas por período</h2>
+  <p class="mt-1 text-sm text-gray-500">
+    Receita das solicitações pagas, agrupada por dia. Datas vazias incluem todo o histórico.
+  </p>
+
+  <form class="mt-6 flex flex-wrap items-end gap-3" (ngSubmit)="aplicarFiltro()">
+    <div>
+      <label for="dataInicio">Data inicial</label>
+      <input id="dataInicio" type="date" class="input-padrao w-auto" [(ngModel)]="dataInicio" name="dataInicio" />
+    </div>
+    <div>
+      <label for="dataFim">Data final</label>
+      <input id="dataFim" type="date" class="input-padrao w-auto" [(ngModel)]="dataFim" name="dataFim" />
+    </div>
+    <button type="submit" class="btn-primario">Filtrar</button>
+    <button type="button" class="btn-secundario" (click)="limparFiltros()">Limpar</button>
+    <button type="button" class="btn-primario" (click)="gerarPdf()">Gerar PDF</button>
+  </form>
+
+  @if (erro) {
+  <p class="mt-4 text-sm text-erro">{{ erro }}</p>
+  }
+
+  <div class="mt-8 overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="border-b border-gray-300">
+          <th class="text-left py-3 px-4">Dia</th>
+          <th class="text-right py-3 px-4">Receita</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (linhas.length === 0 && !erro) {
+        <tr>
+          <td colspan="2" class="text-center py-6 text-gray-500">Nenhuma receita no período.</td>
+        </tr>
+        }
+        @for (linha of linhas; track linha.dataIso) {
+        <tr class="border-b border-gray-200">
+          <td class="py-3 px-4">{{ formatarData(linha.data) }}</td>
+          <td class="py-3 px-4 text-right">{{ formatarMoeda(linha.valor) }}</td>
+        </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <td class="py-3 px-4 font-bold">Total</td>
+          <td class="py-3 px-4 text-right font-bold">{{ formatarMoeda(total) }}</td>
+        </tr>
+      </tfoot>
+    </table>
   </div>
-  <div class="flex justify-end gap-4 mx-5 -mt-11">
-    <span class="justify-center">Olá Gerente</span>
-    <button type="button" class="btn-primario cursor-pointer" (click)="sair()">Sair</button>
-  </div>
-</header>
-
-<div class="flex min-h-screen">
-  <aside class="w-56 bg-primaria text-white p-5 pt-16">
-    <nav class="flex flex-col gap-5 py-4">
-      <h2 class="text-xl font-bold mb-4 text-white text-center">Menu</h2>
-      <a routerLink="/funcionario/home">Inicio</a>
-      <a routerLink="/lista-solicitacoes">Solicitações</a>
-      <a routerLink="/relatorios">Relatórios</a>
-      <a routerLink="/funcionario/categorias/lista">Categorias</a>
-      <a routerLink="/funcionario/funcionarios/lista">Funcionários</a>
-    </nav>
-  </aside>
-
-  <main class="flex-1 p-6 bg-terciaria pt-16">
-    <section class="max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl m-7 p-10">
-      <h2 class="text-2xl font-bold">Receitas por período</h2>
-      <p class="mt-1 text-sm text-gray-500">
-        Receita das solicitações pagas, agrupada por dia. Datas vazias incluem todo o histórico.
-      </p>
-
-      <form class="mt-6 flex flex-wrap items-end gap-3" (ngSubmit)="aplicarFiltro()">
-        <div>
-          <label for="dataInicio">Data inicial</label>
-          <input id="dataInicio" type="date" class="input-padrao w-auto" [(ngModel)]="dataInicio" name="dataInicio" />
-        </div>
-        <div>
-          <label for="dataFim">Data final</label>
-          <input id="dataFim" type="date" class="input-padrao w-auto" [(ngModel)]="dataFim" name="dataFim" />
-        </div>
-        <button type="submit" class="btn-primario">Filtrar</button>
-        <button type="button" class="btn-secundario" (click)="limparFiltros()">Limpar</button>
-        <button type="button" class="btn-primario" (click)="gerarPdf()">Gerar PDF</button>
-      </form>
-
-      @if (erro) {
-        <p class="mt-4 text-sm text-erro">{{ erro }}</p>
-      }
-
-      <div class="mt-8 overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="border-b border-gray-300">
-              <th class="text-left py-3 px-4">Dia</th>
-              <th class="text-right py-3 px-4">Receita</th>
-            </tr>
-          </thead>
-          <tbody>
-            @if (linhas.length === 0 && !erro) {
-              <tr>
-                <td colspan="2" class="text-center py-6 text-gray-500">Nenhuma receita no período.</td>
-              </tr>
-            }
-            @for (linha of linhas; track linha.dataIso) {
-              <tr class="border-b border-gray-200">
-                <td class="py-3 px-4">{{ formatarData(linha.data) }}</td>
-                <td class="py-3 px-4 text-right">{{ formatarMoeda(linha.valor) }}</td>
-              </tr>
-            }
-          </tbody>
-          <tfoot>
-            <tr>
-              <td class="py-3 px-4 font-bold">Total</td>
-              <td class="py-3 px-4 text-right font-bold">{{ formatarMoeda(total) }}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </section>
-  </main>
-</div>
+</section>

@@ -62,6 +62,10 @@ export class SolicitacaoService {
     return this.listar().filter((item) => item.estado === 'ABERTA');
   }
 
+  listarPorCliente(email: string): Solicitacao[] {
+    return this.listar().filter((item) => item.clienteEmail === email);
+  }
+
   obterPorId(id: number): Solicitacao | undefined {
     return this.carregar().find((item) => item.id === id);
   }
@@ -451,7 +455,7 @@ export class SolicitacaoService {
       case 'ARRUMADA':
         return { label: 'Pagar Serviço', rota: `/pagar-servico/${solicitacao.id}` };
       default:
-        return null; 
+        return null;
     }
   }
   private salvar(solicitacoes: Solicitacao[]): void {

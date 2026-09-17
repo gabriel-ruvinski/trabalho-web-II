@@ -18,12 +18,15 @@ export class Dashboard {
   solicitacoes: Solicitacao[] = [];
 
   constructor() {
-    this.solicitacoes = this.solicitacaoService.listar();
+    const usuario = this.authService.getUsuario();
+    this.solicitacoes = usuario
+      ? this.solicitacaoService.listarPorCliente(usuario.email)
+      : [];
   }
 
   getAcaoBotao(solicitacao: Solicitacao): AcaoBotao | null {
-  return this.solicitacaoService.getAcaoBotao(solicitacao);
-}
+    return this.solicitacaoService.getAcaoBotao(solicitacao);
+  }
 
   rotuloEstado(solicitacao: Solicitacao): string {
     return ROTULO_ESTADO[solicitacao.estado];
@@ -44,4 +47,6 @@ export class Dashboard {
     this.authService.logout();
     this.router.navigate(['/']);
   }
+
+  usuario = this.authService.getUsuario();
 }

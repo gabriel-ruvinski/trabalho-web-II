@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { CategoriaService } from '../../../services/categoria.service';
 import { Categoria } from '../../../models/categoria';
 
 @Component({
   selector: 'app-lista',
-  imports: [RouterLink],
   templateUrl: './lista.html',
   styleUrl: './lista.css',
 })

@@ -1,187 +1,104 @@
-<header class="fixed h-16 top-0 left-0 right-0 z-50 bg-white shadow-md">
+<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
 
-  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
-    <h1>Gerenciar</h1>
+  <div class="flex items-center justify-between mb-6">
+
+    <div>
+      <h1>Funcionários</h1>
+
+      <p class="mt-1 text-sm text-gray-500">
+        Gerenciamento dos funcionários com acesso ao sistema.
+      </p>
+    </div>
+
+    <a routerLink="/funcionario/funcionarios/form" class="btn-primario">
+      + NOVO FUNCIONÁRIO
+    </a>
+
   </div>
 
-  <div class="flex justify-end gap-4 mx-5 -mt-11">
-    <span class="justify-center">Olá Gerente</span>
+  <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
 
-    <button
-      type="button"
-      class="btn-primario cursor-pointer"
-      (click)="sair()"
-    >
-      Sair
-    </button>
-  </div>
+    <div class="overflow-x-auto">
 
-</header>
+      <table class="w-full min-w-200 text-left">
 
-<div class="flex min-h-screen">
+        <thead class="border-b border-gray-200 bg-gray-50">
 
-  <aside class="w-56 bg-primaria text-white p-5 pt-16">
+          <tr>
 
-    <nav class="flex flex-col gap-5 py-4">
+            <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Nome
+            </th>
 
-      <h2 class="text-xl font-bold mb-4 text-white text-center">
-        Menu
-      </h2>
+            <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              E-mail
+            </th>
 
-      <a routerLink="/funcionario/home">
-        Inicio
-      </a>
+            <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Data de nascimento
+            </th>
 
-      <a routerLink="/lista-solicitacoes">
-        Solicitações
-      </a>
+            <th scope="col" class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Ações
+            </th>
 
-      <a routerLink="/relatorios">
-        Relatórios
-      </a>
+          </tr>
 
-      <a routerLink="/funcionario/categorias/lista">
-        Categorias
-      </a>
+        </thead>
 
-      <a routerLink="/funcionario/funcionarios/lista">
-        Funcionários
-      </a>
+        <tbody class="divide-y divide-gray-100">
 
-    </nav>
+          @if (funcionarios.length === 0) {
+          <tr>
+            <td colspan="4" class="px-5 py-6 text-center text-sm text-gray-500">
+              Nenhum funcionário cadastrado.
+            </td>
+          </tr>
+          }
 
-  </aside>
+          @for (funcionario of funcionarios; track funcionario.id) {
+          <tr class="transition hover:bg-gray-50">
 
-  <main class="flex-1 bg-terciaria p-6 pt-16">
+            <td class="px-5 py-4 font-semibold text-gray-900">
+              {{ funcionario.nome }}
+            </td>
 
-    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+            <td class="px-5 py-4 text-sm text-gray-700">
+              {{ funcionario.email }}
+            </td>
 
-      <div class="flex items-center justify-between mb-6">
+            <td class="px-5 py-4 text-sm text-gray-600">
+              {{ formatarData(funcionario.dataNascimento) }}
+            </td>
 
-        <div>
-          <h1>Funcionários</h1>
+            <td class="px-5 py-4 text-right">
 
-          <p class="mt-1 text-sm text-gray-500">
-            Gerenciamento dos funcionários com acesso ao sistema.
-          </p>
-        </div>
+              <div class="flex justify-end gap-2">
 
-        <a
-          routerLink="/funcionario/funcionarios/form"
-          class="btn-primario"
-        >
-          + NOVO FUNCIONÁRIO
-        </a>
+                <a class="btn-secundario" [routerLink]="['/funcionario/funcionarios/form']"
+                  [queryParams]="{ id: funcionario.id }">
+                  Editar
+                </a>
 
-      </div>
+                <button type="button"
+                  class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
+                  (click)="remover(funcionario)">
+                  Remover
+                </button>
 
-      <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+              </div>
 
-        <div class="overflow-x-auto">
+            </td>
 
-          <table class="w-full min-w-[800px] text-left">
+          </tr>
+          }
 
-            <thead class="border-b border-gray-200 bg-gray-50">
+        </tbody>
 
-              <tr>
-
-                <th
-                  scope="col"
-                  class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
-                >
-                  Nome
-                </th>
-
-                <th
-                  scope="col"
-                  class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
-                >
-                  E-mail
-                </th>
-
-                <th
-                  scope="col"
-                  class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
-                >
-                  Data de nascimento
-                </th>
-
-                <th
-                  scope="col"
-                  class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500"
-                >
-                  Ações
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody class="divide-y divide-gray-100">
-
-              @if (funcionarios.length === 0) {
-                <tr>
-                  <td
-                    colspan="4"
-                    class="px-5 py-6 text-center text-sm text-gray-500"
-                  >
-                    Nenhum funcionário cadastrado.
-                  </td>
-                </tr>
-              }
-
-              @for (funcionario of funcionarios; track funcionario.id) {
-                <tr class="transition hover:bg-gray-50">
-
-                  <td class="px-5 py-4 font-semibold text-gray-900">
-                    {{ funcionario.nome }}
-                  </td>
-
-                  <td class="px-5 py-4 text-sm text-gray-700">
-                    {{ funcionario.email }}
-                  </td>
-
-                  <td class="px-5 py-4 text-sm text-gray-600">
-                    {{ formatarData(funcionario.dataNascimento) }}
-                  </td>
-
-                  <td class="px-5 py-4 text-right">
-
-                    <div class="flex justify-end gap-2">
-
-                      <a
-                        class="btn-secundario"
-                        [routerLink]="['/funcionario/funcionarios/form']"
-                        [queryParams]="{ id: funcionario.id }"
-                      >
-                        Editar
-                      </a>
-
-                      <button
-                        type="button"
-                        class="rounded-md bg-erro px-md py-sm text-xs font-bold text-white transition hover:brightness-90"
-                        (click)="remover(funcionario)"
-                      >
-                        Remover
-                      </button>
-
-                    </div>
-
-                  </td>
-
-                </tr>
-              }
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      </div>
+      </table>
 
     </div>
 
-  </main>
+  </div>
 
 </div>
