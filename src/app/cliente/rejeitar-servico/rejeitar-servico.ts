@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Solicitacao } from '../../models/solicitacao';
 import { SolicitacaoService } from '../../services/solicitacao.service';
 
 @Component({
   selector: 'app-rejeitar-servico',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './rejeitar-servico.html',
   styleUrl: './rejeitar-servico.css',
 })
