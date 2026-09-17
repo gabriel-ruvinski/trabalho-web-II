@@ -22,6 +22,8 @@ import { Lista as FuncionarioLista } from './funcionario/funcionarios/lista/list
 import { Relatorios } from './funcionario/relatorios/relatorios';
 import { Receitas } from './funcionario/relatorios/receitas/receitas';
 import { ReceitasCategoria } from './funcionario/relatorios/receitas-categoria/receitas-categoria';
+import { clienteGuard } from './core/guards/cliente-guard';
+import { funcionarioGuard } from './core/guards/funcionario-guard';
 
 export const routes: Routes = [
   { path: '', component: Login },
@@ -29,19 +31,21 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutCliente,
+    canActivate: [clienteGuard],
     children: [
       { path: 'dashboard', component: Dashboard },
       { path: 'solicitar-manutencao', component: SolicitarManutencao },
-      { path: 'solicitacao/:id', component: VisualizarSolicitacao },
-      { path: 'orcamento/:id', component: MostrarOrcamento },
-      { path: 'rejeitar-servico/:id', component: RejeitarServico },
-      { path: 'pagar-servico/:id', component: PagarServico },
-      { path: 'resgatar-servico/:id', component: ResgatarServico },
+      { path: 'solicitacao/:id', component: VisualizarSolicitacao, canActivate: [clienteGuard] },
+      { path: 'orcamento/:id', component: MostrarOrcamento, canActivate: [clienteGuard] },
+      { path: 'rejeitar-servico/:id', component: RejeitarServico, canActivate: [clienteGuard] },
+      { path: 'pagar-servico/:id', component: PagarServico, canActivate: [clienteGuard] },
+      { path: 'resgatar-servico/:id', component: ResgatarServico, canActivate: [clienteGuard] },
     ],
   },
   {
     path: '',
     component: LayoutFuncionario,
+    canActivate: [funcionarioGuard],
     children: [
       { path: 'funcionario/home', component: Home },
       { path: 'lista-solicitacoes', component: ListaSolicitacoes },
