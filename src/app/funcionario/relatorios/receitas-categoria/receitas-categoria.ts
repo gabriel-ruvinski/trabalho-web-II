@@ -8,7 +8,6 @@ import { imprimirRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
 
 @Component({
   selector: 'app-receitas-categoria',
-  imports: [RouterLink],
   templateUrl: './receitas-categoria.html',
   styleUrl: './receitas-categoria.css',
 })

@@ -4,6 +4,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
+html {
+    scrollbar-gutter: stable;
+}
+
 @theme {
     --color-primaria: #08262d;
     --color-secundaria: #ffffff;
