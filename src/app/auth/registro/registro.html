@@ -1,7 +1,7 @@
 <!-- CONTAINER PRINCIPAL-->
 <div class="flex min-h-screen items-center justify-center bg-terciaria p-4">
     <!-- CARTÃO PRINCIPAL -->
-    <div class="grid w-[40%] max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl p-10">
+    <main class="grid w-[40%] max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl p-10">
         <!-- TÍTULO -->
         <div class="mb-6 flex flex-col items-center">
             <div class="flex items-center gap-2 text-xl font-bold text-gray-800">
@@ -51,8 +51,8 @@
                 <div class="flex gap-3">
                     <input type="text" id="cep" name="cep" placeholder="00000-000" maxlength="9"
                         class="input-padrao" formControlName="cep" />
-                    <button type="button" class="w-1/3 btn-primario">
-                        BUSCAR
+                    <button type="button" class="w-1/3 btn-primario" (click)="buscarCEP()" [disabled]="buscandoCEP">
+                        {{ buscandoCEP ? 'BUSCANDO...' : 'BUSCAR' }}
                     </button>
                 </div>
                 @if (form.get('cep')?.invalid && form.get('cep')?.touched) {
@@ -63,6 +63,9 @@
                       Formato inválido. Use 00000-000.
                     }
                   </p>
+                }
+                @if (erroCEP) {
+                  <p class="mt-1 text-xs text-red-500">{{ erroCEP }}</p>
                 }
             </div>
 
@@ -130,5 +133,5 @@
                 </a>
             </div>
         </form>
-    </div>
+      </main>
 </div>

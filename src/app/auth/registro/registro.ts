@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { Usuario } from '../../models/usuario';
+import { ViaCEPService } from '../../services/viacep.service';
+
 @Component({
   selector: 'app-registro',
   imports: [ReactiveFormsModule, RouterLink],
@@ -10,37 +11,70 @@ import { Usuario } from '../../models/usuario';
   styleUrl: './registro.css',
 })
 export class Registro {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly viaCEPService = inject(ViaCEPService);
+
+  buscandoCEP = false;
+  erroCEP = '';
+
   form = new FormGroup({
     nome: new FormControl('', [Validators.required]),
     sobrenome: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
     cep: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\d{5}-\d{3}$/)
+      Validators.pattern(/^\d{5}-\d{3}$/), /** XXXXX-XXX */
     ]),
     endereco: new FormControl('', [Validators.required]),
-    numero: new FormControl('' , [Validators.required]),
+    numero: new FormControl('', [Validators.required]),
     complemento: new FormControl(''),
     telefone: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)
+      Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/), /** (XX) XXXXX-XXXX */
     ]),
     cpf: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)
-    ])
+      Validators.pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/), /** XXX.XXX.XXX-XX */
+    ]),
   });
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  buscarCEP(): void {
+    const CEPControl = this.form.get('cep');
+    this.erroCEP = '';
 
-  onSubmit() {
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
+    if (CEPControl?.invalid) {
+      CEPControl.markAsTouched();
+      return;
+    }
+
+    this.buscandoCEP = true;
+
+    this.viaCEPService.buscar(CEPControl?.value ?? '').subscribe({
+      next: (endereco) => {
+        this.buscandoCEP = false;
+
+        if (!endereco) {
+          this.erroCEP = 'CEP não encontrado.';
+          return;
+        }
+
+        this.form.patchValue({
+          endereco: `${endereco.logradouro}, ${endereco.bairro}, ${endereco.localidade} - ${endereco.uf}`,
+        });
+      },
+      error: () => {
+        this.buscandoCEP = false;
+        this.erroCEP = 'Não foi possível buscar o CEP agora.';
+      },
+    });
   }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const nomeCompleto = `${this.form.value.nome} ${this.form.value.sobrenome}`;
 
@@ -49,9 +83,9 @@ export class Registro {
       email: this.form.value.email!,
       cpf: this.form.value.cpf!,
       telefone: this.form.value.telefone!,
-      cep: this.form.value.cep!
+      cep: this.form.value.cep!,
     });
 
-    this.router.navigate(['/']); // volta pro login após cadastro
+    this.router.navigate(['/']);
   }
 }
