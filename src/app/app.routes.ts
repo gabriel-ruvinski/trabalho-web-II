@@ -24,7 +24,7 @@ import { Receitas } from './funcionario/relatorios/receitas/receitas';
 import { ReceitasCategoria } from './funcionario/relatorios/receitas-categoria/receitas-categoria';
 import { clienteGuard } from './core/guards/cliente-guard';
 import { funcionarioGuard } from './core/guards/funcionario-guard';
-
+import { RedirecionarManutencao } from './funcionario/redirecionar-manutencao/redirecionar-manutencao';
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'registro', component: Registro },
@@ -59,6 +59,7 @@ export const routes: Routes = [
       { path: 'relatorios', component: Relatorios },
       { path: 'funcionario/relatorios/receitas', component: Receitas },
       { path: 'funcionario/relatorios/receitas-categoria', component: ReceitasCategoria },
+      { path: 'funcionario/redirecionar-manutencao/:id', component: RedirecionarManutencao },
     ],
   },
 ];

@@ -20,4 +20,5 @@ export interface Solicitacao {
   orientacoesCliente: string | null;
   funcionarioDestinoId: number | null;
   motivoRejeicao?: string | null;
+  funcionariosEnvolvidosIds?: number[];
 }

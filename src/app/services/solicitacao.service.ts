@@ -4,6 +4,7 @@ import { CategoriaService } from './categoria.service';
 import { HistoricoSolicitacao } from '../models/historico-solicitacao';
 import { Solicitacao } from '../models/solicitacao';
 import { EstadoSolicitacao } from '../models/estado-solicitacao';
+import { Funcionario } from '../models/funcionario';
 
 export interface NovaSolicitacao {
   descricaoEquipamento: string;
@@ -42,6 +43,8 @@ interface SolicitacaoJson {
   descricaoManutencao?: string | null;
   orientacoesCliente?: string | null;
   funcionarioDestinoId?: number | null;
+  motivoRejeicao?: string | null;
+  funcionariosEnvolvidosIds?: number[];
 }
 
 @Injectable({
@@ -147,7 +150,28 @@ export class SolicitacaoService {
       });
     });
   }
+  redirecionar(
+  id: number,
+  funcionarioDestino: Funcionario,
+  funcionarioOrigemId: number,
+  funcionarioOrigemNome: string,
+): Solicitacao {
+  return this.atualizar(id, ['APROVADA', 'REDIRECIONADA'], (item, agora) => {
+    const envolvidos = new Set(item.funcionariosEnvolvidosIds ?? []);
+    envolvidos.add(funcionarioOrigemId);
+    envolvidos.add(funcionarioDestino.id);
+    item.funcionariosEnvolvidosIds = Array.from(envolvidos);
 
+    item.estado = 'REDIRECIONADA';
+    item.funcionarioDestinoId = funcionarioDestino.id;
+    item.historico.push({
+      dataHora: agora,
+      estado: 'REDIRECIONADA',
+      funcionarioNome: funcionarioOrigemNome,
+      observacao: `Redirecionado para ${funcionarioDestino.nome}.`,
+    });
+  });
+}
   finalizar(id: number, funcionarioNome: string): Solicitacao {
     return this.atualizar(id, 'PAGA', (item, agora) => {
       item.estado = 'FINALIZADA';
@@ -214,29 +238,31 @@ export class SolicitacaoService {
   }
 
   private hidratar(item: SolicitacaoJson): Solicitacao {
-    return {
-      id: item.id,
-      descricaoEquipamento: item.descricaoEquipamento,
-      categoriaId: item.categoriaId,
-      categoriaNome: item.categoriaNome,
-      descricaoDefeito: item.descricaoDefeito,
-      dataHoraAbertura: new Date(item.dataHoraAbertura),
-      estado: item.estado,
-      historico: (item.historico ?? []).map((passo) => ({
-        ...passo,
-        dataHora: new Date(passo.dataHora),
-      })),
-      clienteNome: item.clienteNome ?? 'Cliente',
-      clienteCpf: item.clienteCpf ?? '',
-      clienteEmail: item.clienteEmail ?? '',
-      clienteTelefone: item.clienteTelefone ?? '',
-      clienteEndereco: item.clienteEndereco ?? '',
-      valorOrcamento: item.valorOrcamento ?? null,
-      descricaoManutencao: item.descricaoManutencao ?? null,
-      orientacoesCliente: item.orientacoesCliente ?? null,
-      funcionarioDestinoId: item.funcionarioDestinoId ?? null,
-    };
-  }
+  return {
+    id: item.id,
+    descricaoEquipamento: item.descricaoEquipamento,
+    categoriaId: item.categoriaId,
+    categoriaNome: item.categoriaNome,
+    descricaoDefeito: item.descricaoDefeito,
+    dataHoraAbertura: new Date(item.dataHoraAbertura),
+    estado: item.estado,
+    historico: (item.historico ?? []).map((passo) => ({
+      ...passo,
+      dataHora: new Date(passo.dataHora),
+    })),
+    clienteNome: item.clienteNome ?? 'Cliente',
+    clienteCpf: item.clienteCpf ?? '',
+    clienteEmail: item.clienteEmail ?? '',
+    clienteTelefone: item.clienteTelefone ?? '',
+    clienteEndereco: item.clienteEndereco ?? '',
+    valorOrcamento: item.valorOrcamento ?? null,
+    descricaoManutencao: item.descricaoManutencao ?? null,
+    orientacoesCliente: item.orientacoesCliente ?? null,
+    funcionarioDestinoId: item.funcionarioDestinoId ?? null,
+    motivoRejeicao: item.motivoRejeicao ?? null,
+    funcionariosEnvolvidosIds: item.funcionariosEnvolvidosIds ?? [],
+  };
+}
 
   private dadosIniciais(): Solicitacao[] {
     const passo = (

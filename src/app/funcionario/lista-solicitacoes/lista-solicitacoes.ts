@@ -7,7 +7,7 @@ import { Solicitacao } from '../../models/solicitacao';
 import { SolicitacaoService } from '../../services/solicitacao.service';
 import { formatarMoeda } from '../../shared/utils/formatacao';
 import { AuthService } from '../../auth/services/auth.service';
-
+import { FuncionarioService } from '../../services/funcionario.service';
 @Component({
   selector: 'app-lista-solicitacoes',
   standalone: true,
@@ -18,26 +18,34 @@ export class ListaSolicitacoes {
   private readonly router = inject(Router);
   private readonly solicitacaoService = inject(SolicitacaoService);
   private readonly authService = inject(AuthService);
+  private readonly funcionarioService = inject(FuncionarioService);
 
   filtro: 'HOJE' | 'PERIODO' | 'TODAS' = 'TODAS';
   dataInicio = '';
   dataFim = '';
-  funcionarioLogadoId = 1;
+  funcionarioLogadoId: number | null = null;
+
+  constructor() {
+    const email = this.authService.getUsuario()?.email ?? '';
+    const funcionario = this.funcionarioService.listarAtivos().find(f => f.email === email);
+    this.funcionarioLogadoId = funcionario?.id ?? null;
+  }
 
   get solicitacoes(): Solicitacao[] {
     return this.solicitacaoService.listar();
   }
 
   get solicitacoesFiltradas(): Solicitacao[] {
-    let resultado = [...this.solicitacoes];
+  let resultado = [...this.solicitacoes];
 
-    resultado = resultado.filter((solicitacao) => {
-      if (solicitacao.estado === 'REDIRECIONADA') {
-        return solicitacao.funcionarioDestinoId === this.funcionarioLogadoId;
-      }
-      return true;
-    });
-
+  resultado = resultado.filter((solicitacao) => {
+    if (solicitacao.estado === 'REDIRECIONADA') {
+      const envolvidos = solicitacao.funcionariosEnvolvidosIds ?? [];
+      return envolvidos.includes(this.funcionarioLogadoId ?? -1);
+    }
+    return true;
+  });
+  
     if (this.filtro === 'HOJE') {
       const hoje = new Date();
       resultado = resultado.filter((solicitacao) => {
@@ -49,6 +57,7 @@ export class ListaSolicitacoes {
         );
       });
     }
+
 
     if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
       const inicio = new Date(`${this.dataInicio}T00:00:00`);
@@ -118,6 +127,13 @@ export class ListaSolicitacoes {
       FINALIZADA: 'bg-estado-finalizada',
     };
     return classes[estado];
+  }
+  
+  souDonoAtual(solicitacao: Solicitacao): boolean {
+    if (solicitacao.estado !== 'REDIRECIONADA') {
+      return true;
+    }
+    return solicitacao.funcionarioDestinoId === this.funcionarioLogadoId;
   }
 
   formatarMoeda = formatarMoeda;
