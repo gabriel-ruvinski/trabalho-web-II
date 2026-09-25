@@ -2,122 +2,159 @@
 
 Trabalho de Desenvolvimento Web II: sistema de **Controle de Manutenção de Equipamentos**.
 
-O fluxo é baseado em solicitações de serviço, com histórico de mudança de estado. Há dois perfis (Cliente e Funcionário). Login é obrigatório em quase tudo, com exceção do autocadastro e da própria tela de login.
+O fluxo é baseado em solicitações de serviço. Cada mudança de estado (ABERTA, ORÇADA, APROVADA, REJEITADA, REDIRECIONADA, ARRUMADA, PAGA, FINALIZADA) fica no histórico da solicitação, com data e hora.
+
+Existem dois perfis: **Cliente** e **Funcionário**. Login é obrigatório em quase tudo, com exceção do autocadastro e da própria tela de login. Não existe perfil “gerente”: a home do funcionário é `/funcionario/home`.
 
 ## Participantes
 
-- Gabriel
+- Gabriel Henrique Ruvinski
 - Emanuel
 - André
 - Vinicius
 - Davi
 
-## Stack prevista
+## Stack
 
 | Camada | Tecnologia |
 |--------|------------|
-| Front | Angular 22, componentes **standalone** |
-| UI | CSS próprio + Tailwind configurado |
-| API | Spring Boot + REST (ainda não iniciado) |
+| Front | Angular 22, componentes standalone |
+| UI | Tailwind CSS |
+| PDF | jsPDF + jspdf-autotable (relatórios RF019 e RF020) |
+| API | Spring Boot + REST (ainda não iniciado neste repositório) |
 | Banco | PostgreSQL ou MySQL (ainda não iniciado) |
 
-Hoje o repositório contém **somente o frontend**. Dados de solicitação ficam no `localStorage` do navegador até existir a API.
+Hoje o repositório contém **o frontend**. Solicitações, usuários de teste e sessão ficam no `localStorage` do navegador até existir a API.
 
 ## Como rodar
 
 ```bash
 npm install
-ng serve
+npm start
 ```
 
-Abra o endereço indicado pelo CLI (em geral `http://localhost:4200`).
+Abra `http://localhost:4200` no **Firefox** (versão mais recente), que é o navegador da avaliação.
 
-O Angular CLI deste projeto exige Node.js **v22.22.3+** (ou v24.15+ / v26+). Com Node **22.14** o `ng serve` e o `ng test` **não iniciam**.
+O Angular CLI deste projeto exige Node.js **v22.22.3+** (ou v24.15+ / v26+). Com Node 22.14 o `ng serve` não inicia.
 
-Login mock atual (ainda não é o fluxo do enunciado):
+### Logins de teste
 
-- e-mail: `teste@gmail.com`
-- senha: `1234`
+| Perfil | E-mail | Senha |
+|--------|--------|-------|
+| Cliente | `cliente@gmail.com` | `1234` |
+| Funcionário | `funcionario@gmail.com` | `5678` |
 
-## Rotas
+No autocadastro a senha é gerada com 4 dígitos e mostrada no alerta (mock de e-mail).
+
+Se listas ou relatórios parecerem vazios ou desatualizados, apague no Firefox (F12 → Storage) as chaves `solicitacoes` e, se preciso, `usuarios` / `sessao`, e recarregue a página.
+
+## Rotas principais
+
+### Públicas
 
 | Rota | Tela |
 |------|------|
 | `/` | Login |
-| `/registro` | Registro / autocadastro (incompleto) |
-| `/dashboard` | Página inicial do cliente (lista de solicitações) |
-| `/solicitar-manutencao` | RF004 — nova solicitação de manutenção |
+| `/registro` | Autocadastro de cliente |
 
-Ainda **não** há rotas de funcionário, orçamento, pagamento, CRUDs nem relatórios.
+### Cliente (guard de perfil)
 
-## O que já está no front
+| Rota | Tela |
+|------|------|
+| `/dashboard` | Lista das solicitações do cliente |
+| `/solicitar-manutencao` | RF004 — nova solicitação |
+| `/solicitacao/:id` | Visualizar solicitação e histórico |
+| `/orcamento/:id` | Mostrar orçamento (aprovar/rejeitar) |
+| `/rejeitar-servico/:id` | Motivo da rejeição |
+| `/resgatar-servico/:id` | Resgatar serviço rejeitado |
+| `/pagar-servico/:id` | Confirmar pagamento |
 
-### Login e registro
+### Funcionário (guard de perfil)
 
-- Telas visuais de login e registro.
-- Login usa um `AuthService` em memória (credencial fixa). O HTML do login ainda não está ligado de forma confiável ao formulário reativo.
-- Registro pede nome, sobrenome, e-mail e senha. **Falta** CPF, telefone, endereço, ViaCEP, senha aleatória de 4 dígitos e envio por e-mail (RF001).
-- Não há identificação de perfil (cliente vs funcionário) nem guards de rota (RF002).
+| Rota | Tela |
+|------|------|
+| `/funcionario/home` | Solicitações ABERTAS (orçamento) |
+| `/lista-solicitacoes` | Listagem com filtros e cores por estado |
+| `/funcionario/efetuar-orcamento/:id` | RF012 — registrar orçamento |
+| `/funcionario/efetuar-manutencao/:id` | RF014 — registrar manutenção |
+| `/funcionario/redirecionar-manutencao/:id` | RF015 — redirecionar |
+| `/funcionario/finalizar-solicitacao/:id` | RF016 — finalizar após pagamento |
+| `/funcionario/categorias/lista` | CRUD de categorias |
+| `/funcionario/funcionarios/lista` | CRUD de funcionários |
+| `/relatorios` | Menu dos relatórios |
+| `/funcionario/relatorios/receitas` | RF019 — receitas por dia |
+| `/funcionario/relatorios/receitas-categoria` | RF020 — receitas por categoria |
 
-### Dashboard do cliente
+## O que o front já cobre
 
-- Layout com menu lateral e tabela de solicitações.
-- A lista deixa de ser HTML fixo: mostra o que foi gravado pelo RF004.
-- Colunas: data/hora, descrição do equipamento (até 30 caracteres) e estado.
-- Ações por estado (aprovar, rejeitar, resgatar, pagar, visualizar) **ainda não existem** (RF003 / RF005–RF010).
+- Autocadastro e login com identificação de perfil
+- Solicitação de manutenção (ABERTA), orçamento, aprovação, rejeição, resgate, manutenção, redirecionamento, pagamento e finalização
+- CRUD de categorias e de funcionários
+- Relatórios de receita em PDF
+- ViaCEP no cadastro de endereço
+- Layouts separados para cliente e funcionário
 
-### RF004 — Solicitação de manutenção
+Ainda falta o backend Spring, o banco relacional, hash SHA-256 + SALT no servidor e a massa completa de 20+ solicitações no banco.
 
-O cliente registra uma solicitação com:
+## RF004 — Solicitação de manutenção
 
-1. Descrição do equipamento
-2. Categoria do equipamento
-3. Descrição do defeito
+O cliente informa descrição do equipamento, categoria e descrição do defeito. A OS é gravada com data/hora e estado **ABERTA**.
 
-A solicitação é armazenada com **data/hora** e estado **ABERTA** (pronta para a empresa orçar).
+Arquivos: `src/app/cliente/solicitar-manutencao/` e `SolicitacaoService.criar`.
 
-Como usar:
+## RF012 — Efetuar orçamento
 
-1. Ir ao dashboard
-2. Clicar em **Solicitar Manutenção** ou **Novo Chamado**
-3. Preencher o formulário e registrar
+O funcionário vê os dados da solicitação e do cliente, informa o valor (formato BR) e a OS passa para **ORÇADA**, com funcionário e data/hora no histórico.
 
-Detalhes de implementação:
+Rota: `/funcionario/efetuar-orcamento/:id`. Também acessível pela home (só ABERTAS).
 
-- Rota: `/solicitar-manutencao`
-- Validação no front (campos obrigatórios)
-- Categorias iniciais: Notebook, Desktop, Impressora, Mouse, Teclado
-- Persistência temporária em `localStorage` (`solicitacoes`)
-- Histórico inicial com o passo ABERTA
-- Após gravar, redireciona para o dashboard
+## RF016 — Finalizar solicitação
 
-Essa entrega **não foi testada no Firefox** nesta máquina por causa da versão do Node.
+Só vale para OS **PAGA**. Ao confirmar, o estado vira **FINALIZADA** e o histórico registra funcionário e data/hora.
+
+Rota: `/funcionario/finalizar-solicitacao/:id`.
+
+A tela de efetuar manutenção (APROVADA / REDIRECIONADA → ARRUMADA) fica em `/funcionario/efetuar-manutencao/:id`.
+
+## RF019 e RF020 — Relatórios em PDF
+
+Entrada: menu **Relatórios**.
+
+- **RF019:** filtro de data inicial e final (podem ser vazias). Receita agrupada **por dia**, usando a data do pagamento (passo PAGA no histórico). Só entram OS PAGA ou FINALIZADA com valor.
+- **RF020:** receita **desde sempre**, agrupada **por categoria** de equipamento.
+
+O PDF é gerado com **jsPDF** e **jspdf-autotable**. O botão **Gerar PDF** baixa o arquivo (não usa popup). A fonte DejaVu em `public/fonts/` serve para acentos e `R$`.
+
+Serviço: `src/app/services/relatorio.service.ts`.  
+Utilitário: `src/app/shared/utils/pdf-relatorio.ts`.
+
+## Persistência temporária
+
+| Chave no localStorage | Conteúdo |
+|-----------------------|----------|
+| `solicitacoes` | Solicitações, histórico e valores |
+| `usuarios` | Clientes e funcionários mock |
+| `sessao` | E-mail logado |
+
+Quando o Spring existir, esses services devem passar a chamar a API REST.
 
 ## Estrutura relevante
 
 ```
 src/app/
-  auth/login/                 Login
-  auth/registro/              Registro
-  auth/dashboard/             Home do cliente
-  auth/services/auth.service.ts
-  cliente/solicitar-manutencao/   RF004
-  models/                     Solicitação, categoria, estados
-  services/                   CategoriaService, SolicitacaoService
+  auth/                 Login, registro, AuthService
+  cliente/              Dashboard, RF004, orçamento, pagar, etc.
+  funcionario/          Home, lista, orçamento, manutenção, CRUDs, relatórios
+  core/guards/          Guards de cliente e funcionário
+  models/               Solicitacao, estados, receita, usuario
+  services/             Solicitacao, categoria, funcionario, relatorio, viacep
+  shared/utils/         Datas/moeda BR e geração de PDF
+public/fonts/           DejaVu Sans para o jsPDF
 ```
 
-## O que ainda falta (visão geral)
+## Observações para a entrega
 
-**Cliente:** orçamento (aprovar/rejeitar), visualizar com histórico, resgatar, pagar.
-
-**Funcionário:** home com ABERTAS, efetuar orçamento, listagem com filtros e cores, manutenção, redirecionamento, finalizar, CRUD de categorias e de funcionários, relatórios em PDF.
-
-**Não-funcionais ainda sem:** Spring + REST integrado, banco 3FN, ViaCEP, SHA-256 + SALT, máscaras (CPF, CEP, telefone, moeda), datas/valores no formato BR com calendário, exclusão lógica com confirmação, seed (Maria, Mário, 4 clientes, 5 categorias, 20+ solicitações).
-
-**Mínimo para defesa ainda incompleto:** RF001, RF002, RF003, RF004 (front local, sem API), RF005, RF006, RF011, RF012, RF017, RF018.
-
-## Observações
-
-- Qualquer suposição fora do enunciado deve ir para o `.doc`/`.odt` da entrega, não para este README.
-- A tela será avaliada no **Firefox** (versão mais recente).
-- Quando o backend existir, o `SolicitacaoService` deve passar a chamar a API REST em vez do `localStorage`.
+- O sistema será testado no Firefox.
+- Suposições fora do enunciado devem ir em arquivo `.doc`/`.odt`, não só neste README.
+- Datas e valores monetários na interface usam formato brasileiro.
+- Remoções de cadastro devem ser confirmação + desativação (soft delete), não exclusão física.
