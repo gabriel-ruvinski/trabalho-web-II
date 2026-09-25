@@ -15,8 +15,7 @@ export class Form implements OnInit {
 
   categoria: Categoria = {
     id: 0,
-    nome: '',
-    ativa: true,
+    nome: ''
   };
 
   constructor(

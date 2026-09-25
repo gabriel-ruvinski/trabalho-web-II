@@ -40,12 +40,19 @@ export class Lista implements OnInit {
   }
 
   remover(id: number): void {
-    this.categoriaService.remover(id);
-    this.carregarCategorias();
-  }
+    const categoria = this.categoriaService.obterPorId(id);
 
-  reativar(id: number): void {
-    this.categoriaService.reativar(id);
-    this.carregarCategorias();
+    if (!categoria) {
+      return;
+    }
+
+    const confirmar = confirm(
+      `Tem certeza que deseja excluir a categoria "${categoria.nome}"?`
+    );
+
+    if (confirmar) {
+      this.categoriaService.remover(id);
+      this.carregarCategorias();
+    }
   }
 }

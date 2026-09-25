@@ -74,10 +74,14 @@ export class SolicitacaoService {
   }
 
   criar(dados: NovaSolicitacao): Solicitacao {
-    const categoria = this.categoriaService.obterPorId(dados.categoriaId);
-    if (!categoria || !categoria.ativa) {
-      throw new Error('Categoria inválida.');
-    }
+
+  const categoria = this.categoriaService.obterPorId(dados.categoriaId);
+
+  if (!categoria) {
+
+    throw new Error('Categoria inválida.');
+  }
+ 
 
     const agora = new Date();
     const solicitacoes = this.carregar();

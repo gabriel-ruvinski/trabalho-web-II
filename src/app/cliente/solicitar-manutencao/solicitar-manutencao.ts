@@ -18,7 +18,7 @@ export class SolicitarManutencao {
   private readonly categoriaService = inject(CategoriaService);
   private readonly solicitacaoService = inject(SolicitacaoService);
 
-  readonly categorias: Categoria[] = this.categoriaService.listarAtivas();
+  readonly categorias: Categoria[] = this.categoriaService.listar();
 
   form = new FormGroup({
     descricaoEquipamento: new FormControl('', [

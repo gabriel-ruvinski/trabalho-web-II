@@ -15,10 +15,6 @@ export class CategoriaService {
     return this.categorias;
   }
 
-  listarAtivas(): Categoria[] {
-    return this.categorias.filter((categoria) => categoria.ativa);
-  }
-
   obterPorId(id: number): Categoria | undefined {
     return this.categorias.find((categoria) => categoria.id === id);
   }
@@ -32,8 +28,8 @@ export class CategoriaService {
     this.categorias.push({
       id: novoId,
       nome: nome,
-      ativa: true,
     });
+
     this.salvar();
   }
 
@@ -47,30 +43,23 @@ export class CategoriaService {
   }
 
   remover(id: number): void {
-    const categoria = this.obterPorId(id);
+    const indice = this.categorias.findIndex(
+      (categoria) => categoria.id === id
+    );
 
-    if (categoria) {
-      categoria.ativa = false;
-      this.salvar();
-    }
-  }
-
-  reativar(id: number): void {
-    const categoria = this.obterPorId(id);
-
-    if (categoria) {
-      categoria.ativa = true;
+    if (indice !== -1) {
+      this.categorias.splice(indice, 1);
       this.salvar();
     }
   }
 
   private dadosIniciais(): Categoria[] {
     return [
-      { id: 1, nome: 'Notebook', ativa: true },
-      { id: 2, nome: 'Desktop', ativa: true },
-      { id: 3, nome: 'Impressora', ativa: true },
-      { id: 4, nome: 'Mouse', ativa: true },
-      { id: 5, nome: 'Teclado', ativa: true },
+      { id: 1, nome: 'Notebook' },
+      { id: 2, nome: 'Desktop' },
+      { id: 3, nome: 'Impressora' },
+      { id: 4, nome: 'Mouse' },
+      { id: 5, nome: 'Teclado' },
     ];
   }
 
@@ -80,6 +69,7 @@ export class CategoriaService {
     }
 
     const bruto = localStorage.getItem(this.storageKey);
+
     if (!bruto) {
       const iniciais = this.dadosIniciais();
       localStorage.setItem(this.storageKey, JSON.stringify(iniciais));
@@ -98,6 +88,9 @@ export class CategoriaService {
       return;
     }
 
-    localStorage.setItem(this.storageKey, JSON.stringify(this.categorias));
+    localStorage.setItem(
+      this.storageKey,
+      JSON.stringify(this.categorias)
+    );
   }
 }
