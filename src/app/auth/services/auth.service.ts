@@ -3,6 +3,20 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Usuario } from '../../models/usuario';
 
+export interface DadosRegistro {
+  nome: string;
+  email: string;
+  cpf: string;
+  telefone: string;
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -63,13 +77,15 @@ export class AuthService {
     return Math.floor(1000 + Math.random() * 9000).toString(); // 4 dígitos
   }
 
-  fazerRegistro(dados: {
-    nome: string;
-    email: string;
-    cpf: string;
-    telefone: string;
-    cep: string;
-  }): void {
+  fazerRegistro(dados: DadosRegistro): boolean {
+    const duplicado = this._usuariosMock.some(
+      (u) => u.email === dados.email || (u.cpf !== '' && u.cpf === dados.cpf),
+    );
+
+    if (duplicado) {
+      return false;
+    }
+
     const senhaGerada = this.gerarSenha();
 
     const novoUsuario: Usuario = {
@@ -82,9 +98,11 @@ export class AuthService {
     this._usuariosMock.push(novoUsuario);
     this.salvarUsuarios();
 
-    // Simulação de "envio por email" — sem backend real ainda
+    // Simulação de envio por email, pois ainda não tem backend
     console.log(`Senha enviada para ${dados.email}: ${senhaGerada}`);
     alert(`Cadastro realizado! Sua senha foi enviada para ${dados.email}. (Senha mock: ${senhaGerada})`);
+
+    return true;
   }
 
   registrarFuncionario(dados: { nome: string; email: string; senha: string }): void {
