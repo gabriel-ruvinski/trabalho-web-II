@@ -21,8 +21,15 @@
         Nome da Categoria
       </label>
 
-      <input id="nome" name="nome" type="text" [(ngModel)]="categoria.nome" placeholder="Ex.: Notebook" maxlength="50"
+      <input id="nome" name="nome" type="text" [(ngModel)]="categoria.nome" #nome="ngModel" appApenasLetras placeholder="Ex.: Notebook" maxlength="50"
         class="input-padrao w-full" />
+
+      @if (nome.errors?.['apenasLetras']) {
+          <p class="mt-1 text-xs text-red-500">
+            Informe somente letras.
+          </p>
+        }
+
 
       <p class="mt-1 text-xs text-gray-400">
         Informe o nome da categoria de equipamento.

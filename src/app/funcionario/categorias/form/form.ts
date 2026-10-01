@@ -3,11 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { CategoriaService } from '../../../services/categoria.service';
+import { ApenasLetrasDirective } from '../../../shared/apenas-letras';    
 import { Categoria } from '../../../models/categoria';
 
 @Component({
   selector: 'app-form',
-  imports: [FormsModule],
+  imports: [FormsModule, ApenasLetrasDirective],
   templateUrl: './form.html',
   styleUrl: './form.css',
 })
@@ -38,22 +39,28 @@ export class Form implements OnInit {
     }
   }
 
-  salvar(): void {
-    if (this.categoria.nome.trim() === '') {
-      return;
-    }
+salvar(): void {
+  const nome = this.categoria.nome.trim();
 
-    if (this.categoria.id === 0) {
-      this.categoriaService.adicionar(this.categoria.nome);
-    } else {
-      this.categoriaService.atualizar(
-        this.categoria.id,
-        this.categoria.nome
-      );
-    }
-
-    this.router.navigate(['/funcionario/categorias/lista']);
+  if (
+    nome === '' ||
+    !/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)
+  ) {
+    return;
   }
+
+  if (this.categoria.id === 0) {
+    this.categoriaService.adicionar(nome);
+  } else {
+    this.categoriaService.atualizar(
+      this.categoria.id,
+      nome
+    );
+  }
+
+  this.router.navigate(['/funcionario/categorias/lista']);
+}
+
 
   cancelar(): void {
     this.router.navigate(['/funcionario/categorias/lista']);
