@@ -25,9 +25,11 @@ import { ReceitasCategoria } from './funcionario/relatorios/receitas-categoria/r
 import { clienteGuard } from './core/guards/cliente-guard';
 import { funcionarioGuard } from './core/guards/funcionario-guard';
 import { RedirecionarManutencao } from './funcionario/redirecionar-manutencao/redirecionar-manutencao';
+import { RecuperarSenha } from './auth/recuperar-senha/recuperar-senha';
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'registro', component: Registro },
+  { path: 'recuperar-senha', component: RecuperarSenha },
   {
     path: '',
     component: LayoutCliente,
