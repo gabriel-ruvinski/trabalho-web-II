@@ -5,7 +5,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { ReceitaPorDia } from '../../../models/receita';
 import { RelatorioService } from '../../../services/relatorio.service';
 import { formatarData, formatarMoeda } from '../../../shared/utils/formatacao';
-import { imprimirRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
+import { baixarRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
 
 @Component({
   selector: 'app-receitas',
@@ -50,7 +50,7 @@ export class Receitas {
     this.aplicarFiltro();
   }
 
-  gerarPdf(): void {
+  async gerarPdf(): Promise<void> {
     if (this.erro) {
       return;
     }
@@ -60,24 +60,19 @@ export class Receitas {
         ? 'Período: todas as datas'
         : `Período: ${this.dataInicio ? formatarData(new Date(`${this.dataInicio}T00:00:00`)) : 'início'} até ${this.dataFim ? formatarData(new Date(`${this.dataFim}T00:00:00`)) : 'hoje'}`;
 
-    const linhasHtml = this.linhas
-      .map(
-        (linha) =>
-          `<tr><td>${formatarData(linha.data)}</td><td class="num">${formatarMoeda(linha.valor)}</td></tr>`,
-      )
-      .join('');
+    const linhasTabela =
+      this.linhas.length > 0
+        ? this.linhas.map((linha) => [formatarData(linha.data), formatarMoeda(linha.valor)])
+        : [['Nenhuma receita no período.', '']];
 
-    const corpo = `
-      <h1>Relatório de receitas</h1>
-      <p>${periodo}</p>
-      <table>
-        <thead><tr><th>Dia</th><th class="num">Receita</th></tr></thead>
-        <tbody>${linhasHtml || '<tr><td colspan="2">Nenhuma receita no período.</td></tr>'}</tbody>
-        <tfoot><tr><td>Total</td><td class="num">${formatarMoeda(this.total)}</td></tr></tfoot>
-      </table>
-    `;
-
-    imprimirRelatorioPdf('Relatório de receitas', corpo);
+    await baixarRelatorioPdf({
+      titulo: 'Relatório de receitas',
+      subtitulo: periodo,
+      nomeArquivo: 'relatorio-receitas.pdf',
+      colunas: ['Dia', 'Receita'],
+      linhas: linhasTabela,
+      rodape: ['Total', formatarMoeda(this.total)],
+    });
   }
 
   sair(): void {

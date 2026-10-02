@@ -1,55 +1,80 @@
-export function imprimirRelatorioPdf(titulo: string, corpoHtml: string): void {
-  const iframe = document.createElement('iframe');
-  iframe.setAttribute('aria-hidden', 'true');
-  iframe.style.position = 'fixed';
-  iframe.style.right = '0';
-  iframe.style.bottom = '0';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  iframe.style.border = '0';
-  document.body.appendChild(iframe);
+import type { jsPDF } from 'jspdf';
 
-  const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
-  if (!doc) {
-    iframe.remove();
-    window.print();
-    return;
+export interface RelatorioPdf {
+  titulo: string;
+  subtitulo: string;
+  nomeArquivo: string;
+  colunas: string[];
+  linhas: string[][];
+  rodape?: string[];
+}
+
+function arrayBufferParaBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binario = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binario += String.fromCharCode(...bytes.subarray(i, i + chunk));
   }
+  return btoa(binario);
+}
 
-  doc.open();
-  doc.write(`<!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <title>${titulo}</title>
-    <style>
-      body { font-family: Arial, Helvetica, sans-serif; color: #111; padding: 24px; }
-      h1 { font-size: 20px; margin-bottom: 4px; }
-      p { color: #444; margin-top: 0; }
-      table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-      th, td { border: 1px solid #333; padding: 8px 10px; text-align: left; font-size: 13px; }
-      th { background: #eee; }
-      td.num, th.num { text-align: right; }
-      tfoot td { font-weight: bold; }
-    </style>
-  </head>
-  <body>
-    ${corpoHtml}
-  </body>
-</html>`);
-  doc.close();
-
-  const janela = iframe.contentWindow;
-  const limpar = () => iframe.remove();
-
-  if (!janela) {
-    limpar();
-    return;
+async function carregarFonte(
+  doc: jsPDF,
+  caminho: string,
+  nomeArquivo: string,
+  estilo: 'normal' | 'bold',
+): Promise<boolean> {
+  try {
+    const resposta = await fetch(caminho);
+    if (!resposta.ok) {
+      return false;
+    }
+    const base64 = arrayBufferParaBase64(await resposta.arrayBuffer());
+    doc.addFileToVFS(nomeArquivo, base64);
+    doc.addFont(nomeArquivo, 'RelatorioSans', estilo);
+    return true;
+  } catch {
+    return false;
   }
+}
 
-  janela.addEventListener('afterprint', limpar);
-  setTimeout(() => {
-    janela.focus();
-    janela.print();
-  }, 50);
+export async function baixarRelatorioPdf(relatorio: RelatorioPdf): Promise<void> {
+  const { jsPDF } = await import('jspdf');
+  const autoTable = (await import('jspdf-autotable')).default;
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const regular = await carregarFonte(doc, '/fonts/DejaVuSans.ttf', 'DejaVuSans.ttf', 'normal');
+  const negrito = await carregarFonte(doc, '/fonts/DejaVuSans-Bold.ttf', 'DejaVuSans-Bold.ttf', 'bold');
+  const fonte = regular ? 'RelatorioSans' : 'helvetica';
+  const estiloTitulo = negrito ? 'bold' : 'normal';
+
+  doc.setFont(fonte, estiloTitulo);
+  doc.setFontSize(16);
+  doc.text(relatorio.titulo, 14, 18);
+
+  doc.setFont(fonte, 'normal');
+  doc.setFontSize(10);
+  doc.text(relatorio.subtitulo, 14, 26);
+
+  autoTable(doc, {
+    startY: 32,
+    head: [relatorio.colunas],
+    body: relatorio.linhas,
+    foot: relatorio.rodape ? [relatorio.rodape] : undefined,
+    theme: 'grid',
+    styles: { font: fonte, fontSize: 10, cellPadding: 3 },
+    headStyles: { fillColor: [8, 38, 45], textColor: 255, fontStyle: estiloTitulo, font: fonte },
+    footStyles: {
+      fillColor: [230, 230, 230],
+      textColor: 20,
+      fontStyle: estiloTitulo,
+      font: fonte,
+    },
+    columnStyles: { 1: { halign: 'right' } },
+    margin: { left: 14, right: 14 },
+  });
+
+  doc.save(relatorio.nomeArquivo);
 }

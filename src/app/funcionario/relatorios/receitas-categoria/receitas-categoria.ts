@@ -4,7 +4,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { ReceitaPorCategoria } from '../../../models/receita';
 import { RelatorioService } from '../../../services/relatorio.service';
 import { formatarMoeda } from '../../../shared/utils/formatacao';
-import { imprimirRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
+import { baixarRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
 
 @Component({
   selector: 'app-receitas-categoria',
@@ -27,25 +27,15 @@ export class ReceitasCategoria {
     return this.relatorioService.total(this.linhas);
   }
 
-  gerarPdf(): void {
-    const linhasHtml = this.linhas
-      .map(
-        (linha) =>
-          `<tr><td>${linha.categoriaNome}</td><td class="num">${formatarMoeda(linha.valor)}</td></tr>`,
-      )
-      .join('');
-
-    const corpo = `
-      <h1>Relatório de receitas por categoria</h1>
-      <p>Receita desde sempre, agrupada por categoria de equipamento.</p>
-      <table>
-        <thead><tr><th>Categoria</th><th class="num">Receita</th></tr></thead>
-        <tbody>${linhasHtml}</tbody>
-        <tfoot><tr><td>Total</td><td class="num">${formatarMoeda(this.total)}</td></tr></tfoot>
-      </table>
-    `;
-
-    imprimirRelatorioPdf('Relatório de receitas por categoria', corpo);
+  async gerarPdf(): Promise<void> {
+    await baixarRelatorioPdf({
+      titulo: 'Relatório de receitas por categoria',
+      subtitulo: 'Receita desde sempre, agrupada por categoria de equipamento.',
+      nomeArquivo: 'relatorio-receitas-categoria.pdf',
+      colunas: ['Categoria', 'Receita'],
+      linhas: this.linhas.map((linha) => [linha.categoriaNome, formatarMoeda(linha.valor)]),
+      rodape: ['Total', formatarMoeda(this.total)],
+    });
   }
 
   sair(): void {
