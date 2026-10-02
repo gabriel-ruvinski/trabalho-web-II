@@ -23,7 +23,7 @@ export class Form {
     email: new FormControl('', [Validators.required, Validators.email]),
     nome: new FormControl('', [Validators.required, Validators.maxLength(80)]),
     dataNascimento: new FormControl('', [Validators.required]),
-    senha: new FormControl('', [Validators.required, Validators.minLength(4)]),
+    senha: new FormControl('', [Validators.required, Validators.pattern(/^\d{4}$/)]),
   });
 
   constructor() {
