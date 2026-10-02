@@ -75,10 +75,14 @@
           class="input-padrao w-full" />
 
         @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
-        <p class="mt-1 text-xs text-red-500">
-          A senha deve ter pelo menos 4 caracteres.
-        </p>
-        }
+              <p class="mt-1 text-xs text-red-500">
+                @if (form.get('senha')?.errors?.['required']) {
+                  Informe a senha.
+                } @else if (form.get('senha')?.errors?.['pattern']) {
+                  A senha deve ter exatamente 4 dígitos numéricos.
+                }
+              </p>
+            }
       </div>
 
       @if (erro) {
