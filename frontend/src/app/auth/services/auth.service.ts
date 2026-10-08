@@ -104,7 +104,20 @@ export class AuthService {
 
     return true;
   }
+  recuperarSenha(email: string): boolean {
+  const usuario = this._usuariosMock.find(u => u.email === email);
+  if (!usuario) {
+    alert('E-mail não encontrado. Por favor, verifique e tente novamente.');
+    return false;
+  }
 
+  const novaSenha = this.gerarSenha();
+  usuario.senha = novaSenha;
+  console.log(`Nova senha enviada para ${email}: ${novaSenha}`);
+  alert(`Uma nova senha foi enviada para ${email}. (Senha mock: ${novaSenha})`);
+  this.salvarUsuarios();
+  return true;
+}
   registrarFuncionario(dados: { nome: string; email: string; senha: string }): void {
     const existente = this._usuariosMock.find((u) => u.email === dados.email);
 
