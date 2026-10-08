@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
@@ -12,7 +12,7 @@ import { formatarDataHora, formatarMoeda } from '../../shared/utils/formatacao';
   templateUrl: './finalizar-solicitacao.html',
   styleUrl: './finalizar-solicitacao.css',
 })
-export class FinalizarSolicitacao {
+export class FinalizarSolicitacao implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -21,7 +21,7 @@ export class FinalizarSolicitacao {
   solicitacao: Solicitacao | undefined;
   erro = '';
 
-  constructor() {
+  ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.solicitacao = this.solicitacaoService.obterPorId(id);
     if (!this.solicitacao) {

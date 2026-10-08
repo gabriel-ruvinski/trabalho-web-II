@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
@@ -10,14 +10,14 @@ import { AcaoBotao, SolicitacaoService } from '../../services/solicitacao.servic
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly solicitacaoService = inject(SolicitacaoService);
 
   solicitacoes: Solicitacao[] = [];
 
-  constructor() {
+  ngOnInit(): void {
     const usuario = this.authService.getUsuario();
     this.solicitacoes = usuario
       ? this.solicitacaoService.listarPorCliente(usuario.email)

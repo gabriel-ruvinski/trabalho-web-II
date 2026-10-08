@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
@@ -12,13 +12,17 @@ import { SolicitacaoService } from '../../services/solicitacao.service';
   templateUrl: './solicitar-manutencao.html',
   styleUrl: './solicitar-manutencao.css',
 })
-export class SolicitarManutencao {
+export class SolicitarManutencao implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly categoriaService = inject(CategoriaService);
   private readonly solicitacaoService = inject(SolicitacaoService);
 
-  readonly categorias: Categoria[] = this.categoriaService.listar();
+  categorias: Categoria[] = [];
+
+  ngOnInit(): void {
+    this.categorias = this.categoriaService.listar();
+  }
 
   form = new FormGroup({
     descricaoEquipamento: new FormControl('', [

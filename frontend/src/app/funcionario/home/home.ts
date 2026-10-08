@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
@@ -11,14 +11,14 @@ import { SolicitacaoService } from '../../services/solicitacao.service';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {
+export class Home implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly solicitacaoService = inject(SolicitacaoService);
 
   solicitacoes: Solicitacao[] = [];
 
-  constructor() {
+  ngOnInit(): void {
     this.solicitacoes = this.solicitacaoService.listarAbertas();
   }
 

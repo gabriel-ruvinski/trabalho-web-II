@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { Solicitacao } from '../../models/solicitacao';
@@ -11,14 +11,14 @@ import { SolicitacaoService, AcaoBotao } from '../../services/solicitacao.servic
   templateUrl: './visualizar-solicitacao.html',
   styleUrl: './visualizar-solicitacao.css',
 })
-export class VisualizarSolicitacao {
+export class VisualizarSolicitacao implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly solicitacaoService = inject(SolicitacaoService);
 
   solicitacao: Solicitacao | null = null;
 
-  constructor() {
+  ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.solicitacao = this.solicitacaoService.obterPorId(Number(idParam)) ?? null;

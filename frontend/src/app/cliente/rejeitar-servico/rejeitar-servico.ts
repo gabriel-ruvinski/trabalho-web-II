@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Solicitacao } from '../../models/solicitacao';
@@ -10,7 +10,7 @@ import { SolicitacaoService } from '../../services/solicitacao.service';
   templateUrl: './rejeitar-servico.html',
   styleUrl: './rejeitar-servico.css',
 })
-export class RejeitarServico {
+export class RejeitarServico implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly solicitacaoService = inject(SolicitacaoService);
@@ -22,7 +22,7 @@ export class RejeitarServico {
     motivo: new FormControl('', [Validators.required, Validators.minLength(10)]),
   });
 
-  constructor() {
+  ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.id = Number(idParam);
