@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -10,7 +10,7 @@ import { FuncionarioService } from '../../../services/funcionario.service';
   templateUrl: './form.html',
   styleUrl: './form.css',
 })
-export class Form {
+export class Form implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -26,7 +26,7 @@ export class Form {
     senha: new FormControl('', [Validators.required, Validators.pattern(/^\d{4}$/)]),
   });
 
-  constructor() {
+  ngOnInit(): void {
     const idParam = this.route.snapshot.queryParamMap.get('id');
 
     if (idParam) {

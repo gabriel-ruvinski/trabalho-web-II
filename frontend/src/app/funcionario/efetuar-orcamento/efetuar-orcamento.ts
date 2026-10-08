@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
@@ -13,7 +13,7 @@ import { formatarDataHora, formatarMoeda, parseMoedaBr } from '../../shared/util
   templateUrl: './efetuar-orcamento.html',
   styleUrl: './efetuar-orcamento.css',
 })
-export class EfetuarOrcamento {
+export class EfetuarOrcamento implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -26,7 +26,7 @@ export class EfetuarOrcamento {
     valor: new FormControl('', [Validators.required]),
   });
 
-  constructor() {
+  ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.solicitacao = this.solicitacaoService.obterPorId(id);
     if (!this.solicitacao) {

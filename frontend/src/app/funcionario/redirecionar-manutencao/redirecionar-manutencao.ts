@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
@@ -15,7 +15,7 @@ import { formatarDataHora } from '../../shared/utils/formatacao';
   templateUrl: './redirecionar-manutencao.html',
   styleUrl: './redirecionar-manutencao.css',
 })
-export class RedirecionarManutencao {
+export class RedirecionarManutencao implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -30,7 +30,7 @@ export class RedirecionarManutencao {
     funcionarioDestinoId: new FormControl<number | null>(null, [Validators.required]),
   });
 
-  constructor() {
+  ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.solicitacao = this.solicitacaoService.obterPorId(id);
 

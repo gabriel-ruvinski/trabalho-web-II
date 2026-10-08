@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ import { FuncionarioService } from '../../services/funcionario.service';
   imports: [CommonModule, FormsModule],
   templateUrl: './lista-solicitacoes.html',
 })
-export class ListaSolicitacoes {
+export class ListaSolicitacoes implements OnInit {
   private readonly router = inject(Router);
   private readonly solicitacaoService = inject(SolicitacaoService);
   private readonly authService = inject(AuthService);
@@ -25,7 +25,7 @@ export class ListaSolicitacoes {
   dataFim = '';
   funcionarioLogadoId: number | null = null;
 
-  constructor() {
+  ngOnInit(): void {
     const email = this.authService.getUsuario()?.email ?? '';
     const funcionario = this.funcionarioService.listarAtivos().find(f => f.email === email);
     this.funcionarioLogadoId = funcionario?.id ?? null;

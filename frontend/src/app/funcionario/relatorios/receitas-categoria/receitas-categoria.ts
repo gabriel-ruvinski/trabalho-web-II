@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ReceitaPorCategoria } from '../../../models/receita';
@@ -11,7 +11,7 @@ import { baixarRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
   templateUrl: './receitas-categoria.html',
   styleUrl: './receitas-categoria.css',
 })
-export class ReceitasCategoria {
+export class ReceitasCategoria implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly relatorioService = inject(RelatorioService);
@@ -19,7 +19,7 @@ export class ReceitasCategoria {
   linhas: ReceitaPorCategoria[] = [];
   formatarMoeda = formatarMoeda;
 
-  constructor() {
+  ngOnInit(): void {
     this.linhas = this.relatorioService.receitaPorCategoria();
   }
 

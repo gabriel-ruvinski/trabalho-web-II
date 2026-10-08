@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
@@ -13,7 +13,7 @@ import { formatarDataHora, formatarMoeda } from '../../shared/utils/formatacao';
   templateUrl: './efetuar-manutencao.html',
   styleUrl: './efetuar-manutencao.css',
 })
-export class EfetuarManutencao {
+export class EfetuarManutencao implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -27,7 +27,7 @@ export class EfetuarManutencao {
     orientacoesCliente: new FormControl('', [Validators.required, Validators.minLength(5)]),
   });
 
-  constructor() {
+  ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.solicitacao = this.solicitacaoService.obterPorId(id);
     if (!this.solicitacao) {

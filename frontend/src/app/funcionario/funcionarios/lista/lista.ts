@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Funcionario } from '../../../models/funcionario';
@@ -10,14 +10,14 @@ import { FuncionarioService } from '../../../services/funcionario.service';
   templateUrl: './lista.html',
   styleUrl: './lista.css',
 })
-export class Lista {
+export class Lista implements OnInit {
   private readonly funcionarioService = inject(FuncionarioService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   funcionarios: Funcionario[] = [];
 
-  constructor() {
+  ngOnInit(): void {
     this.carregar();
   }
 

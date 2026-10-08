@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -13,7 +13,7 @@ import { baixarRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
   templateUrl: './receitas.html',
   styleUrl: './receitas.css',
 })
-export class Receitas {
+export class Receitas implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly relatorioService = inject(RelatorioService);
@@ -23,7 +23,7 @@ export class Receitas {
   erro = '';
   linhas: ReceitaPorDia[] = [];
 
-  constructor() {
+  ngOnInit(): void {
     this.aplicarFiltro();
   }
 
