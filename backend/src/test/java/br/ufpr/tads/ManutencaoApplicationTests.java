@@ -1,4 +1,4 @@
-package br.ufpr.tads.manutencao;
+package br.ufpr.tads;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
