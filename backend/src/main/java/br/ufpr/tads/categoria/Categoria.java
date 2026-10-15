@@ -3,7 +3,7 @@ package br.ufpr.tads.categoria;
 import jakarta.persistence.*;
 
 @Entity
-@Table (name = "categoria-equipamento")
+@Table (name = "categoria_equipamento")
 public class Categoria {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
