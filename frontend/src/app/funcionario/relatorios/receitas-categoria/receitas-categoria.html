@@ -4,8 +4,16 @@
       <h2 class="text-2xl font-bold">Receitas por categoria</h2>
 
     </div>
-    <button type="button" class="btn-primario" (click)="gerarPdf()">Gerar PDF</button>
+    <button type="button" class="btn-primario" (click)="pedirPdf()">Gerar PDF</button>
   </div>
+
+  <app-confirm-dialog
+    [aberto]="confirmandoPdf"
+    titulo="Gerar relatório"
+    mensagem="Deseja gerar o PDF de receitas por categoria?"
+    (confirmado)="confirmarPdf()"
+    (cancelado)="cancelarPdf()"
+  />
 
   <div class="mt-8 overflow-x-auto">
     <table class="w-full">

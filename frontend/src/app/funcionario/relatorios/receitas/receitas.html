@@ -15,8 +15,16 @@
     </div>
     <button type="submit" class="btn-primario">Filtrar</button>
     <button type="button" class="btn-secundario" (click)="limparFiltros()">Limpar</button>
-    <button type="button" class="btn-primario" (click)="gerarPdf()">Gerar PDF</button>
+    <button type="button" class="btn-primario" (click)="pedirPdf()">Gerar PDF</button>
   </form>
+
+  <app-confirm-dialog
+    [aberto]="confirmandoPdf"
+    titulo="Gerar relatório"
+    mensagem="Deseja gerar o PDF de receitas por período?"
+    (confirmado)="confirmarPdf()"
+    (cancelado)="cancelarPdf()"
+  />
 
   @if (erro) {
   <p class="mt-4 text-sm text-erro">{{ erro }}</p>

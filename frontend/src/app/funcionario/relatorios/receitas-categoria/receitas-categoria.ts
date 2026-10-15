@@ -3,11 +3,13 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ReceitaPorCategoria } from '../../../models/receita';
 import { RelatorioService } from '../../../services/relatorio.service';
+import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 import { formatarMoeda } from '../../../shared/utils/formatacao';
 import { baixarRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
 
 @Component({
   selector: 'app-receitas-categoria',
+  imports: [ConfirmDialog],
   templateUrl: './receitas-categoria.html',
   styleUrl: './receitas-categoria.css',
 })
@@ -18,6 +20,7 @@ export class ReceitasCategoria implements OnInit {
 
   linhas: ReceitaPorCategoria[] = [];
   formatarMoeda = formatarMoeda;
+  confirmandoPdf = false;
 
   ngOnInit(): void {
     this.linhas = this.relatorioService.receitaPorCategoria();
@@ -25,6 +28,19 @@ export class ReceitasCategoria implements OnInit {
 
   get total(): number {
     return this.relatorioService.total(this.linhas);
+  }
+
+  pedirPdf(): void {
+    this.confirmandoPdf = true;
+  }
+
+  cancelarPdf(): void {
+    this.confirmandoPdf = false;
+  }
+
+  async confirmarPdf(): Promise<void> {
+    this.confirmandoPdf = false;
+    await this.gerarPdf();
   }
 
   async gerarPdf(): Promise<void> {

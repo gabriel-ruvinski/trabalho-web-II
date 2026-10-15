@@ -4,12 +4,13 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ReceitaPorDia } from '../../../models/receita';
 import { RelatorioService } from '../../../services/relatorio.service';
+import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 import { formatarData, formatarMoeda } from '../../../shared/utils/formatacao';
 import { baixarRelatorioPdf } from '../../../shared/utils/pdf-relatorio';
 
 @Component({
   selector: 'app-receitas',
-  imports: [FormsModule],
+  imports: [FormsModule, ConfirmDialog],
   templateUrl: './receitas.html',
   styleUrl: './receitas.css',
 })
@@ -22,6 +23,7 @@ export class Receitas implements OnInit {
   dataFim = '';
   erro = '';
   linhas: ReceitaPorDia[] = [];
+  confirmandoPdf = false;
 
   ngOnInit(): void {
     this.aplicarFiltro();
@@ -48,6 +50,22 @@ export class Receitas implements OnInit {
     this.dataInicio = '';
     this.dataFim = '';
     this.aplicarFiltro();
+  }
+
+  pedirPdf(): void {
+    if (this.erro) {
+      return;
+    }
+    this.confirmandoPdf = true;
+  }
+
+  cancelarPdf(): void {
+    this.confirmandoPdf = false;
+  }
+
+  async confirmarPdf(): Promise<void> {
+    this.confirmandoPdf = false;
+    await this.gerarPdf();
   }
 
   async gerarPdf(): Promise<void> {
