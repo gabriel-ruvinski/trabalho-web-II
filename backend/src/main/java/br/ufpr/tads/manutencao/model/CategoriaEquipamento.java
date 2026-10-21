@@ -1,7 +1,11 @@
 
 package br.ufpr.tads.manutencao.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "categoria_equipamento")
@@ -23,7 +27,7 @@ public class CategoriaEquipamento{
         this.nome = nome;
         this.ativo = ativo;
     }
-}
+
 
 public Integer getId() {
     return id;
@@ -37,14 +41,15 @@ public String getNome(){
     return this.nome;
 }
 
-public String setNome(String nome){
+public void setNome(String nome){
     this.nome = nome;
 }
 
-public Bollean getAtivo(){
-    return this.Ativo;
+public Boolean getAtivo(){
+    return this.ativo;
 }
 
-public void setBoolean(Boolean ativo){
+public void setAtivo(Boolean ativo){
     this.ativo = ativo;
+}
 }
