@@ -1,4 +1,4 @@
-package br.ufpr.tads.solicitacao.dto;
+package br.ufpr.tads.dto;
 
 import java.math.BigDecimal;
 
