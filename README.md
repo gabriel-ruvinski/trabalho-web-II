@@ -123,13 +123,13 @@ O container `manutencao-db` deve aparecer com status Up. Credenciais definidas e
 
 ### 2. Configurar o envio de e-mail
 
-No cadastro de cliente, o backend gera uma senha temporária e a envia por e-mail. Por isso as variáveis abaixo precisam existir no terminal antes de iniciar a aplicação:
+No cadastro de cliente, o backend gera uma senha temporária e a envia por e-mail. As variáveis MAIL_HOST, MAIL_USERNAME e MAIL_PASSWORD são obrigatórias: sem elas o backend não inicia (erro "Could not resolve placeholder"). MAIL_PORT é opcional e o padrão é 587. Defina as variáveis no terminal antes de iniciar a aplicação:
 
 ```bash
 export MAIL_HOST=smtp.gmail.com
-export MAIL_PORT=587
 export MAIL_USERNAME=seu_email@gmail.com
 export MAIL_PASSWORD=senha_de_app_do_gmail
+export MAIL_PORT=587   # opcional
 ```
 
 O Gmail exige uma senha de app de 16 caracteres, gerada em Conta Google, Segurança, Verificação em duas etapas, Senhas de app. A senha normal da conta é recusada. Nunca coloque essa senha em arquivos versionados.
