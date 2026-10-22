@@ -1,14 +1,18 @@
 
 package br.ufpr.tads.solicitacao;
 
-import br.ufpr.tads.solicitacao.dto.RegistrarOrcamentoDTO;
-import br.ufpr.tads.solicitacao.dto.RejeitarOrcamentoDTO;
-import br.ufpr.tads.solicitacao.dto.RegistrarManutencaoDTO;
-import br.ufpr.tads.solicitacao.dto.RedirecionarSolicitacaoDTO;
-import br.ufpr.tads.solicitacao.dto.RegistrarPagamentoDTO;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.ufpr.tads.dto.RedirecionarSolicitacaoDTO;
+import br.ufpr.tads.dto.RegistrarManutencaoDTO;
+import br.ufpr.tads.dto.RegistrarOrcamentoDTO;
+import br.ufpr.tads.dto.RegistrarPagamentoDTO;
+import br.ufpr.tads.dto.RejeitarOrcamentoDTO;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
