@@ -1,6 +1,8 @@
 
 package br.ufpr.tads.solicitacao;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +30,7 @@ public class FluxoSolicitacaoController {
     @PostMapping("/{id}/orcamento")
     public ResponseEntity<Void> registrarOrcamento(
             @PathVariable Long id,
-            @RequestBody RegistrarOrcamentoDTO dto) {
+            @Valid @RequestBody RegistrarOrcamentoDTO dto) {
 
         fluxoService.registrarOrcamento(
                 id, dto.getValor(), dto.getFuncionarioId());
@@ -39,7 +41,7 @@ public class FluxoSolicitacaoController {
     @PostMapping("/{id}/aprovar-orcamento")
     public ResponseEntity<Void> aprovarOrcamento(
             @PathVariable Long id,
-            @RequestBody RegistrarPagamentoDTO dto) {
+            @Valid @RequestBody RegistrarPagamentoDTO dto) {
 
         fluxoService.aprovarOrcamento(id, dto.getUsuarioId());
 
@@ -49,7 +51,7 @@ public class FluxoSolicitacaoController {
     @PostMapping("/{id}/rejeitar-orcamento")
     public ResponseEntity<Void> rejeitarOrcamento(
             @PathVariable Long id,
-            @RequestBody RejeitarOrcamentoDTO dto) {
+            @Valid @RequestBody RejeitarOrcamentoDTO dto) {
 
         fluxoService.rejeitarOrcamento(
                 id, dto.getUsuarioId(), dto.getMotivo());
@@ -60,7 +62,7 @@ public class FluxoSolicitacaoController {
     @PostMapping("/{id}/resgatar")
     public ResponseEntity<Void> resgatar(
             @PathVariable Long id,
-            @RequestBody RegistrarPagamentoDTO dto) {
+            @Valid @RequestBody RegistrarPagamentoDTO dto) {
 
         fluxoService.resgatarSolicitacao(id, dto.getUsuarioId());
 
@@ -70,7 +72,7 @@ public class FluxoSolicitacaoController {
     @PostMapping("/{id}/manutencao")
     public ResponseEntity<Void> registrarManutencao(
             @PathVariable Long id,
-            @RequestBody RegistrarManutencaoDTO dto) {
+            @Valid @RequestBody RegistrarManutencaoDTO dto) {
 
         fluxoService.registrarManutencao(
                 id,
@@ -84,7 +86,7 @@ public class FluxoSolicitacaoController {
     @PostMapping("/{id}/redirecionar")
     public ResponseEntity<Void> redirecionar(
             @PathVariable Long id,
-            @RequestBody RedirecionarSolicitacaoDTO dto) {
+            @Valid @RequestBody RedirecionarSolicitacaoDTO dto) {
 
         fluxoService.redirecionarFuncionario(
                 id,
@@ -97,7 +99,7 @@ public class FluxoSolicitacaoController {
     @PostMapping("/{id}/pagamento")
     public ResponseEntity<Void> registrarPagamento(
             @PathVariable Long id,
-            @RequestBody RegistrarPagamentoDTO dto) {
+            @Valid @RequestBody RegistrarPagamentoDTO dto) {
 
         fluxoService.registrarPagamento(id, dto.getUsuarioId());
 
@@ -107,7 +109,7 @@ public class FluxoSolicitacaoController {
     @PostMapping("/{id}/finalizar")
     public ResponseEntity<Void> finalizar(
             @PathVariable Long id,
-            @RequestBody RegistrarPagamentoDTO dto) {
+            @Valid @RequestBody RegistrarPagamentoDTO dto) {
 
         fluxoService.finalizarSolicitacao(id, dto.getUsuarioId());
 
