@@ -197,7 +197,91 @@ Todas as rotas abaixo são POST e usam o `id` da solicitação.
 | `/api/solicitacoes/{id}/pagamento` | Registrar pagamento |
 | `/api/solicitacoes/{id}/finalizar` | Finalizar solicitação (RF016) |
 
-O restante do domínio (criação e listagem de solicitações, orçamento e pagamento completos) ainda está no front via `localStorage` até os controllers correspondentes existirem.
+Todas essas rotas passam o corpo por Bean Validation (`@Valid` em `FluxoSolicitacaoController`). Campo ausente, nulo ou fora da regra devolve **400** no formato `ApiError`, com a lista `campos`. Sem `@Valid`, o Spring aceitaria JSON incompleto e o erro só apareceria mais tarde no serviço.
+
+O restante do domínio (criação e listagem de solicitações) ainda pode estar no front via `localStorage` até os controllers correspondentes existirem.
+
+### Corpo JSON esperado no fluxo
+
+Os DTOs ficam em `backend/src/main/java/br/ufpr/tads/dto/`. Tipos numéricos são JSON number, não string.
+
+**Registrar orçamento** (`RegistrarOrcamentoDTO`): `valor` obrigatório e positivo; `funcionarioId` obrigatório.
+
+```json
+{
+  "valor": 150.00,
+  "funcionarioId": 1
+}
+```
+
+**Aprovar orçamento, resgatar, pagar e finalizar** (`RegistrarPagamentoDTO`): só `usuarioId` obrigatório. O mesmo DTO é reutilizado nesses quatro POSTs.
+
+```json
+{
+  "usuarioId": 2
+}
+```
+
+**Rejeitar orçamento** (`RejeitarOrcamentoDTO`): `usuarioId` obrigatório; `motivo` obrigatório, até 500 caracteres.
+
+```json
+{
+  "usuarioId": 2,
+  "motivo": "Preço acima do esperado"
+}
+```
+
+**Registrar manutenção** (`RegistrarManutencaoDTO`): `funcionarioId` obrigatório; `descricao` obrigatória, até 500 caracteres; `orientacoes` opcional, até 500 caracteres.
+
+```json
+{
+  "funcionarioId": 1,
+  "descricao": "Troca da placa-mãe",
+  "orientacoes": "Evitar impacto"
+}
+```
+
+**Redirecionar** (`RedirecionarSolicitacaoDTO`): `funcionarioAtualId` e `funcionarioDestinoId` obrigatórios.
+
+```json
+{
+  "funcionarioAtualId": 1,
+  "funcionarioDestinoId": 3
+}
+```
+
+### Como testar a validação do fluxo
+
+Com a API em `http://localhost:8080` (Postgres no ar e `MAIL_*` definidas), no Postman ou no curl:
+
+1. `POST /api/solicitacoes/1/orcamento` com `{}` — deve responder 400. Em `campos` aparecem `valor` e `funcionarioId`.
+2. O mesmo POST com `"valor": -10` — 400 em `valor` (precisa ser positivo).
+3. `POST /api/solicitacoes/1/rejeitar-orcamento` sem `motivo` — 400.
+4. `POST /api/solicitacoes/1/manutencao` só com `funcionarioId` — 400 em `descricao`.
+5. `POST /api/solicitacoes/1/redirecionar` só com um dos ids — 400 no campo que faltou.
+6. `POST /api/solicitacoes/1/pagamento` com `{}` — 400 em `usuarioId`.
+
+Exemplo de falha (orçamento vazio):
+
+```json
+{
+  "timestamp": "2026-10-22T23:50:00.000Z",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Dados inválidos.",
+  "path": "/api/solicitacoes/1/orcamento",
+  "campos": [
+    { "campo": "valor", "mensagem": "Valor é obrigatório" },
+    { "campo": "funcionarioId", "mensagem": "funcionarioId é obrigatório" }
+  ]
+}
+```
+
+Um 400 de validação **não** muda o estado da OS. 204 (`No Content`) só ocorre quando o DTO passa e a transição no `FluxoSolicitacaoService` também é aceita (id existente, estado atual permitido, funcionário válido). Se o id não existir ou o estado for incompatível, o status deixa de ser 400 e passa a ser o que o serviço lançar (`ResponseStatusException`, em geral 4xx).
+
+Anotações usadas: `@NotNull`, `@NotBlank`, `@Positive`, `@Size(max = 500)`. O controller correspondente é `backend/src/main/java/br/ufpr/tads/solicitacao/FluxoSolicitacaoController.java`.
+
+No Swagger (`/swagger-ui.html`), os mesmos POSTs aparecem sob `/api/solicitacoes`. Dá para mandar o JSON de exemplo e ver o 400 sem montar o front.
 
 ## Padrão de erros da API
 
