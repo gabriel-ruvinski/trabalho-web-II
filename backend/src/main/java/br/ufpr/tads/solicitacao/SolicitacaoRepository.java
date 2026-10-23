@@ -2,6 +2,7 @@ package br.ufpr.tads.solicitacao;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -45,4 +46,36 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
         order by s.dataHoraAbertura asc
         """)
     List<Solicitacao> listarPorFuncionarioDestino(@Param("funcionarioId") Integer funcionarioId);
+
+    @Query("""
+        select distinct s from Solicitacao s
+        join fetch s.categoria
+        left join fetch s.historico
+        where s.id = :id
+        """)
+    Optional<Solicitacao> buscarPorIdComHistorico(@Param("id") Long id);
+
+    @Query("""
+        select distinct s from Solicitacao s
+        join fetch s.categoria
+        left join fetch s.historico
+        where s.estadoId <> (select e.id from EstadoSolicitacao e where e.codigo = 'REDIRECIONADA')
+           or s.funcionarioDestinoId = :funcionarioId
+        order by s.dataHoraAbertura asc
+        """)
+    List<Solicitacao> listarVisiveisParaFuncionario(@Param("funcionarioId") Integer funcionarioId);
+
+    @Query("""
+        select distinct s from Solicitacao s
+        join fetch s.categoria
+        left join fetch s.historico
+        where s.dataHoraAbertura >= :inicio and s.dataHoraAbertura < :fim
+          and (s.estadoId <> (select e.id from EstadoSolicitacao e where e.codigo = 'REDIRECIONADA')
+               or s.funcionarioDestinoId = :funcionarioId)
+        order by s.dataHoraAbertura asc
+        """)
+    List<Solicitacao> listarVisiveisPorPeriodo(
+        @Param("inicio") LocalDateTime inicio,
+        @Param("fim") LocalDateTime fim,
+        @Param("funcionarioId") Integer funcionarioId);
 }
