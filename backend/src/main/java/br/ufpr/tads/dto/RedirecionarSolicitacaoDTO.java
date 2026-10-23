@@ -1,8 +1,13 @@
 package br.ufpr.tads.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 public class RedirecionarSolicitacaoDTO {
 
+    @NotNull(message = "funcionarioAtualId é obrigatório")
     private Integer funcionarioAtualId;
+
+    @NotNull(message = "funcionarioDestinoId é obrigatório")
     private Integer funcionarioDestinoId;
 
     public Integer getFuncionarioAtualId() {
