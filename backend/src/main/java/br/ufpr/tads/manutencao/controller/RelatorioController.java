@@ -13,6 +13,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import br.ufpr.tads.manutencao.dto.ReceitaCategoriaDTO;
+import br.ufpr.tads.manutencao.dto.ReceitaDiariaDTO;
+import br.ufpr.tads.manutencao.service.RelatorioService;
+
 @RestController
 @RequestMapping("/api/relatorios")
 @Tag(name = "Relatórios", description = "Relatórios de receita das solicitações pagas")

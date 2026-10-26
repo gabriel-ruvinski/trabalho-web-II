@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import br.ufpr.tads.manutencao.dto.ReceitaCategoriaDTO;
+import br.ufpr.tads.manutencao.dto.ReceitaDiariaDTO;
+import br.ufpr.tads.manutencao.repository.RelatorioRepository;
+
 @Service
 @Transactional(readOnly = true)
 public class RelatorioService {
