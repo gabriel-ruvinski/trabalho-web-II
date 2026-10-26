@@ -8,11 +8,13 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import br.ufpr.tads.solicitacao.Solicitacao;
+import br.ufpr.tads.manutencao.dto.ReceitaCategoriaDTO;
+import br.ufpr.tads.manutencao.dto.ReceitaDiariaDTO;
 
 public interface RelatorioRepository extends Repository<Solicitacao, Long> {
 
     @Query("""
-        select new br.ufpr.tads.manutencao.repository.ReceitaDiariaDTO(
+        select new br.ufpr.tads.manutencao.dto.ReceitaDiariaDTO(
             cast(s.dataHoraPagamento as LocalDate),
             sum(s.valorOrcado),
             count(s))
@@ -29,7 +31,7 @@ public interface RelatorioRepository extends Repository<Solicitacao, Long> {
             @Param("fimExclusivo") LocalDateTime fimExclusivo);
 
     @Query("""
-        select new br.ufpr.tads.manutencao.repository.ReceitaCategoriaDTO(
+        select new br.ufpr.tads.manutencao.dto.ReceitaCategoriaDTO(
             c.id,
             c.nome,
             sum(s.valorOrcado),
