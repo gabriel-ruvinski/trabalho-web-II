@@ -124,6 +124,8 @@ export class Registro {
     });
   }
 
+  enviando = false;
+
   onSubmit(): void {
     this.erroCadastro = '';
 
@@ -133,26 +135,38 @@ export class Registro {
     }
 
     const v = this.form.value;
+    this.enviando = true;
 
-    const ok = this.authService.fazerRegistro({
-      nome: `${v.nome} ${v.sobrenome}`,
-      email: v.email!,
-      cpf: v.cpf!,
-      telefone: v.telefone!,
-      cep: v.cep!,
-      logradouro: v.logradouro!,
-      numero: v.numero!,
-      complemento: v.complemento ?? '',
-      bairro: v.bairro!,
-      cidade: v.cidade!,
-      uf: v.uf!.toUpperCase(),
-    });
-
-    if (!ok) {
-      this.erroCadastro = 'E-mail ou CPF já cadastrado.';
-      return;
-    }
-
-    this.router.navigate(['/']);
+    this.authService
+      .fazerRegistro({
+        nome: `${v.nome} ${v.sobrenome}`,
+        email: v.email!,
+        cpf: v.cpf!,
+        telefone: v.telefone!,
+        cep: v.cep!,
+        logradouro: v.logradouro!,
+        numero: v.numero!,
+        complemento: v.complemento ?? '',
+        bairro: v.bairro!,
+        cidade: v.cidade!,
+        uf: v.uf!.toUpperCase(),
+      })
+      .subscribe({
+        next: () => {
+          this.enviando = false;
+          alert(`Cadastro realizado! A senha foi enviada para ${v.email}.`);
+          this.router.navigate(['/']);
+        },
+        error: (erro) => {
+          this.enviando = false;
+          if (erro.status === 409) {
+            this.erroCadastro = erro.error?.message ?? 'E-mail ou CPF já cadastrado.';
+          } else if (erro.status === 400) {
+            this.erroCadastro = 'Dados inválidos. Confira os campos.';
+          } else {
+            this.erroCadastro = 'Não foi possível concluir o cadastro. Tente novamente.';
+          }
+        },
+      });
   }
 }

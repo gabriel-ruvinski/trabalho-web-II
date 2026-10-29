@@ -1,3 +1,5 @@
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
@@ -22,7 +24,9 @@ export interface DadosRegistro {
 })
 export class AuthService {
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly apiUrl = 'http://localhost:8080/api/auth';
 
   private readonly usuariosStorageKey = 'usuarios';
   private readonly sessaoStorageKey = 'sessao';
@@ -77,33 +81,10 @@ export class AuthService {
     return Math.floor(1000 + Math.random() * 9000).toString(); // 4 dígitos
   }
 
-  fazerRegistro(dados: DadosRegistro): boolean {
-    const duplicado = this._usuariosMock.some(
-      (u) => u.email === dados.email || (u.cpf !== '' && u.cpf === dados.cpf),
-    );
-
-    if (duplicado) {
-      return false;
-    }
-
-    const senhaGerada = this.gerarSenha();
-
-    const novoUsuario: Usuario = {
-      ...dados,
-      senha: senhaGerada,
-      autenticado: false,
-      perfil: 'cliente',
-    };
-
-    this._usuariosMock.push(novoUsuario);
-    this.salvarUsuarios();
-
-    // Simulação de envio por email, pois ainda não tem backend
-    console.log(`Senha enviada para ${dados.email}: ${senhaGerada}`);
-    alert(`Cadastro realizado! Sua senha foi enviada para ${dados.email}. (Senha mock: ${senhaGerada})`);
-
-    return true;
+  fazerRegistro(dados: DadosRegistro): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/cadastro`, dados);
   }
+  
   recuperarSenha(email: string): boolean {
   const usuario = this._usuariosMock.find(u => u.email === email);
   if (!usuario) {
