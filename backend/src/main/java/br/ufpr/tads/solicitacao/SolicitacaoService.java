@@ -2,13 +2,19 @@ package br.ufpr.tads.solicitacao;
 
 import br.ufpr.tads.categoria.Categoria;
 import br.ufpr.tads.categoria.CategoriaRepository;
+import br.ufpr.tads.usuario.Usuario;
+import br.ufpr.tads.usuario.UsuarioRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class SolicitacaoService {
@@ -32,10 +38,14 @@ public class SolicitacaoService {
 
     private final SolicitacaoRepository repository;
     private final CategoriaRepository categoriaRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public SolicitacaoService(SolicitacaoRepository repository, CategoriaRepository categoriaRepository) {
+    public SolicitacaoService(SolicitacaoRepository repository,
+                              CategoriaRepository categoriaRepository,
+                              UsuarioRepository usuarioRepository) {
         this.repository = repository;
         this.categoriaRepository = categoriaRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Transactional
@@ -150,6 +160,109 @@ public class SolicitacaoService {
         solicitacao.setDataHoraFinalizacao(agora);
         registrar(solicitacao, FINALIZADA, funcionarioId, null, "Solicitação finalizada", agora);
         return repository.save(solicitacao);
+    }
+
+    @Transactional
+    public Solicitacao abrir(Integer solicitanteId, Integer categoriaId,
+                             String descricaoEquipamento, String descricaoDefeito) {
+        Usuario cliente = exigirUsuario(solicitanteId);
+        if (!isCliente(cliente)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas clientes podem abrir solicitações");
+        }
+        return criar(cliente.getId(), categoriaId, descricaoEquipamento, descricaoDefeito);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Solicitacao> listarDoCliente(Integer clienteId, Integer solicitanteId) {
+        Usuario solicitante = exigirUsuario(solicitanteId);
+        if (!isCliente(solicitante) || !solicitante.getId().equals(clienteId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "O cliente só pode consultar as próprias solicitações");
+        }
+        return repository.listarPorCliente(clienteId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Solicitacao> listarAbertas(Integer solicitanteId) {
+        exigirFuncionario(solicitanteId);
+        return repository.listarPorEstado(ABERTA);
+    }
+
+    @Transactional(readOnly = true)
+    public Solicitacao consultar(Long id, Integer solicitanteId) {
+        Usuario solicitante = exigirUsuario(solicitanteId);
+        Solicitacao solicitacao = repository.buscarPorIdComHistorico(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Solicitação não encontrada"));
+        if (isCliente(solicitante)) {
+            if (!solicitante.getId().equals(solicitacao.getClienteId())) {
+                throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "O cliente só pode consultar as próprias solicitações");
+            }
+            return solicitacao;
+        }
+        confirmarFuncionario(solicitante);
+        if (REDIRECIONADA == solicitacao.getEstadoId()
+                && !solicitante.getId().equals(solicitacao.getFuncionarioDestinoId())) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "Solicitação redirecionada a outro funcionário");
+        }
+        return solicitacao;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Solicitacao> listarParaFuncionario(String filtro, LocalDate inicio,
+                                                   LocalDate fim, Integer solicitanteId) {
+        Integer funcionarioId = exigirFuncionario(solicitanteId).getId();
+        String tipo = (filtro == null || filtro.isBlank())
+            ? "TODAS" : filtro.trim().toUpperCase(Locale.ROOT);
+        return switch (tipo) {
+            case "TODAS" -> repository.listarVisiveisParaFuncionario(funcionarioId);
+            case "HOJE" -> {
+                LocalDate hoje = LocalDate.now();
+                yield repository.listarVisiveisPorPeriodo(
+                    hoje.atStartOfDay(), hoje.plusDays(1).atStartOfDay(), funcionarioId);
+            }
+            case "PERIODO" -> {
+                if (inicio == null || fim == null) {
+                    throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Informe início e fim para o filtro PERIODO");
+                }
+                if (fim.isBefore(inicio)) {
+                    throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "A data final não pode ser anterior à inicial");
+                }
+                yield repository.listarVisiveisPorPeriodo(
+                    inicio.atStartOfDay(), fim.plusDays(1).atStartOfDay(), funcionarioId);
+            }
+            default -> throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Filtro inválido. Use HOJE, PERIODO ou TODAS.");
+        };
+    }
+
+    private Usuario exigirUsuario(Integer usuarioId) {
+        if (usuarioId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não identificado");
+        }
+        return usuarioRepository.findById(usuarioId)
+            .filter(Usuario::isAtivo)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED, "Usuário inválido ou inativo"));
+    }
+
+    private Usuario exigirFuncionario(Integer usuarioId) {
+        return confirmarFuncionario(exigirUsuario(usuarioId));
+    }
+
+    private Usuario confirmarFuncionario(Usuario usuario) {
+        if (!"FUNCIONARIO".equals(usuario.getPerfil().getCodigo())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso restrito a funcionários");
+        }
+        return usuario;
+    }
+
+    private boolean isCliente(Usuario usuario) {
+        return "CLIENTE".equals(usuario.getPerfil().getCodigo());
     }
 
     private Solicitacao buscar(Long id) {
