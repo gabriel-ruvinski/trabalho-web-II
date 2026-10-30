@@ -14,37 +14,71 @@
     </p>
   </div>
 
-  <form class="space-y-6" (ngSubmit)="salvar()">
+   @if (carregando) {
+    <p class="text-sm text-gray-500">
+      Carregando categoria...
+    </p>
+  } @else {
+    @if (erro) {
+      <p class="mb-4 text-sm text-red-500">
+        {{ erro }}
+      </p>
+    }
 
-    <div>
-      <label for="nome" class="mb-2 block text-sm font-semibold text-gray-500">
-        Nome da Categoria
-      </label>
+    <form class="space-y-6" (ngSubmit)="salvar()">
 
-      <input id="nome" name="nome" type="text" [(ngModel)]="categoria.nome" #nome="ngModel" appApenasLetras placeholder="Ex.: Notebook" maxlength="50"
-        class="input-padrao w-full" />
+      <div>
+        <label for="nome" class="mb-2 block text-sm font-semibold text-gray-500">
+          Nome da Categoria
+        </label>
 
-      @if (nome.errors?.['apenasLetras']) {
+        <input
+          id="nome"
+          name="nome"
+          type="text"
+          [(ngModel)]="categoria.nome"
+          #nome="ngModel"
+          appApenasLetras
+          placeholder="Ex.: Notebook"
+          maxlength="50"
+          class="input-padrao w-full"
+          [disabled]="salvando"
+        />
+
+        @if (nome.errors?.['apenasLetras']) {
           <p class="mt-1 text-xs text-red-500">
             Informe somente letras.
           </p>
         }
 
+        <p class="mt-1 text-xs text-gray-400">
+          Informe o nome da categoria de equipamento.
+        </p>
+      </div>
 
-      <p class="mt-1 text-xs text-gray-400">
-        Informe o nome da categoria de equipamento.
-      </p>
-    </div>
+      <div class="flex gap-4 pt-4">
+        <button
+          type="button"
+          class="w-1/2 btn-secundario"
+          (click)="cancelar()"
+          [disabled]="salvando"
+        >
+          CANCELAR
+        </button>
 
-    <div class="flex gap-4 pt-4">
-      <button type="button" class="w-1/2 btn-secundario" (click)="cancelar()">
-        CANCELAR
-      </button>
+        <button
+          type="submit"
+          class="w-1/2 btn-primario"
+          [disabled]="salvando"
+        >
+          @if (salvando) {
+            SALVANDO...
+          } @else {
+            {{ categoria.id === 0 ? 'SALVAR' : 'ATUALIZAR' }}
+          }
+        </button>
+      </div>
 
-      <button type="submit" class="w-1/2 btn-primario">
-        {{ categoria.id === 0 ? 'SALVAR' : 'ATUALIZAR' }}
-      </button>
-    </div>
-
-  </form>
+    </form>
+  }
 </div>
