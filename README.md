@@ -86,18 +86,52 @@ O Angular CLI deste projeto exige Node.js **v22.22.3+** (ou v24.15+ / v26+). Com
 
 Depois da reorganização das pastas, `npm start` na raiz do repositório **não** encontra mais o `package.json` do Angular. Use sempre `frontend/`.
 
-### Logins de teste
+### Logins de teste (API)
 
-Valem apenas para o front com `localStorage`.
+A tela de Entrar chama `POST http://localhost:8080/api/auth/login`. Sem o Spring na porta **8080**, o Firefox mostra o alerta *Não foi possível conectar à API*. Isso não é falha do formulário: a API não está no ar.
 
-| Perfil | E-mail | Senha |
-|--------|--------|-------|
-| Cliente | `cliente@gmail.com` | `1234` |
-| Funcionário | `funcionario@gmail.com` | `5678` |
+Os usuários da migration `V2` usam senha **1234** (SHA-256 + SALT no Postgres). Perfis no JSON da API vêm como `CLIENTE` ou `FUNCIONARIO`; o front grava `cliente` / `funcionario` para os guards.
 
-No autocadastro do front a senha é gerada com 4 dígitos e mostrada no alerta (mock de e-mail). A tela `/recuperar-senha` reenvia uma senha nova no mesmo estilo.
+| Perfil | E-mail | Senha | Destino após login |
+|--------|--------|-------|--------------------|
+| Cliente | `ana.souza@demo.local` | `1234` | `/dashboard` |
+| Cliente | `bruno.lima@demo.local` | `1234` | `/dashboard` |
+| Funcionário | `marcos.oliveira@demo.local` | `1234` | `/funcionario/home` |
+| Funcionário | `patricia.lopes@demo.local` | `1234` | `/funcionario/home` |
 
-Se listas ou relatórios parecerem vazios ou desatualizados, apague no Firefox (F12, aba Storage) as chaves `solicitacoes` e, se preciso, `usuarios` e `sessao`, e recarregue a página.
+Outros clientes da massa: `carla.mendes@demo.local`, `diego.rocha@demo.local`, `eduarda.alves@demo.local`. Outro funcionário: `rafael.costa@demo.local`. Senha de todos: `1234`.
+
+`cliente@gmail.com` / `1234` e `funcionario@gmail.com` / `5678` **não** autenticam mais nesta tela. Continuam só no mock de recuperar senha / CRUD de funcionário no navegador.
+
+A sessão fica na chave `sessao` do `localStorage` (JSON com nome, e-mail e perfil). Se essa chave for um e-mail solto da versão antiga, o front ignora e pede login de novo. Para forçar relogin: F12 → Storage → apague `sessao`.
+
+Cadastro (RF001) continua em `POST /api/auth/cadastro`; a senha de 4 dígitos vai por e-mail (Mailpit ou SMTP). A tela `/recuperar-senha` ainda é mock no front.
+
+Solicitações, relatórios PDF e lista de funcionários no Angular ainda podem usar `localStorage`. Login já não.
+
+### Como testar o login no Firefox
+
+1. Docker Desktop aberto. Na raiz: `docker compose up -d` (container `manutencao-db` Up).
+2. JDK **21+** (`java -version`). Com Java 17 o Maven falha: `release version 21 not supported`.
+3. Mailpit (ou Gmail) e variáveis `MAIL_*` no **mesmo** terminal do `spring-boot:run`.
+4. `cd backend` e `.\mvnw.cmd spring-boot:run` até a API escutar em `http://localhost:8080`.
+5. Front: `cd frontend` e `npm start` → `http://localhost:4200`.
+6. Entre com `ana.souza@demo.local` / `1234` (dashboard) e com `marcos.oliveira@demo.local` / `1234` (home do funcionário).
+7. Senha errada deve mostrar a mensagem da API (401). Sem backend: alerta de conexão recusada.
+
+No Windows, Mailpit + variáveis no PowerShell:
+
+```powershell
+docker run -d --name mailpit -p 1025:1025 -p 8025:8025 axllent/mailpit
+$env:MAIL_HOST="localhost"
+$env:MAIL_PORT="1025"
+$env:MAIL_USERNAME=""
+$env:MAIL_PASSWORD=""
+cd backend
+.\mvnw.cmd spring-boot:run
+```
+
+E-mails capturados: `http://localhost:8025`.
 
 ## Como rodar o banco e o backend
 
@@ -172,6 +206,28 @@ Base: `http://localhost:8080`. A documentação interativa fica em `http://local
 |--------|---------|--------|
 | POST | `/api/auth/cadastro` | Cadastra cliente e envia senha temporária por e-mail (retorna 201 sem corpo) |
 | POST | `/api/auth/login` | Autentica com `email` e `senha` (retorna id, nome, email e perfil) |
+
+O front de login (`frontend/src/app/auth/login/` e `AuthService.fazerLogin`) envia:
+
+```json
+{
+  "email": "ana.souza@demo.local",
+  "senha": "1234"
+}
+```
+
+Resposta 200:
+
+```json
+{
+  "id": 1,
+  "nome": "Ana Souza",
+  "email": "ana.souza@demo.local",
+  "perfil": "CLIENTE"
+}
+```
+
+401 com senha errada ou usuário inativo. 400 se e-mail/senha vazios. Sem servidor na 8080 o navegador não recebe HTTP e o Angular trata como falha de conexão.
 
 Campos do cadastro: `nome`, `email`, `cpf` (11 dígitos), `telefone` (10 ou 11 dígitos), `cep` (8 dígitos), `logradouro`, `numero`, `complemento` (opcional), `bairro`, `cidade` e `uf` (2 letras). CPF, telefone e CEP vão apenas com dígitos.
 
@@ -327,6 +383,9 @@ Os testes sobem a aplicação inteira, então o PostgreSQL precisa estar rodando
 
 | Sintoma | Causa e solução |
 |---------|-----------------|
+| Alerta *Não foi possível conectar à API* no login | O Angular está na 4200, mas o Spring não está na 8080. Suba o backend (JDK 21 + Docker + `MAIL_*`). |
+| `release version 21 not supported` | O `JAVA_HOME` aponta para Java 17. Instale JDK 21 e use esse `java` no terminal do Maven. |
+| Docker: `open //./pipe/dockerDesktopLinuxEngine` | O Docker Desktop não está aberto no Windows. |
 | `Connection to localhost:5432 refused` | O banco não está rodando. Execute `docker compose up -d`. |
 | `Could not resolve placeholder 'MAIL_HOST'` | As variáveis de e-mail não foram definidas no terminal atual. |
 | `Authentication failed` no cadastro (HTTP 500) | O Gmail recusou o login. Use senha de app ou o Mailpit. |
