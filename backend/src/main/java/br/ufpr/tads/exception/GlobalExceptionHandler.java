@@ -13,9 +13,10 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -59,6 +60,11 @@ public class GlobalExceptionHandler {
         return montar(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor.", req, List.of());
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> parametroInvalido(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+        List<ApiError.CampoErro> campos = List.of(new ApiError.CampoErro(ex.getName(), "Valor inválido."));
+        return montar(HttpStatus.BAD_REQUEST, "Parâmetro '" + ex.getName() + "' com valor inválido.", req, campos);
+    }
     private ResponseEntity<ApiError> montar(HttpStatus status, String mensagem,
                                             HttpServletRequest req, List<ApiError.CampoErro> campos) {
         ApiError corpo = new ApiError(Instant.now(), status.value(), status.getReasonPhrase(),
