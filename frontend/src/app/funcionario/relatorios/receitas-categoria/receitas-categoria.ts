@@ -23,7 +23,14 @@ export class ReceitasCategoria implements OnInit {
   confirmandoPdf = false;
 
   ngOnInit(): void {
-    this.linhas = this.relatorioService.receitaPorCategoria();
+    this.relatorioService.receitaPorCategoria().subscribe({
+      next: (linhas) => {
+        this.linhas = linhas;
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar receitas por categoria:', erro);
+      },
+    });
   }
 
   get total(): number {
@@ -49,7 +56,10 @@ export class ReceitasCategoria implements OnInit {
       subtitulo: 'Receita desde sempre, agrupada por categoria de equipamento.',
       nomeArquivo: 'relatorio-receitas-categoria.pdf',
       colunas: ['Categoria', 'Receita'],
-      linhas: this.linhas.map((linha) => [linha.categoriaNome, formatarMoeda(linha.valor)]),
+      linhas: this.linhas.map((linha) => [
+        linha.categoriaNome,
+        formatarMoeda(linha.valor),
+      ]),
       rodape: ['Total', formatarMoeda(this.total)],
     });
   }

@@ -19,10 +19,7 @@ export class SolicitarManutencao implements OnInit {
   private readonly solicitacaoService = inject(SolicitacaoService);
 
   categorias: Categoria[] = [];
-
-  ngOnInit(): void {
-    this.categorias = this.categoriaService.listar();
-  }
+  erroCategorias = '';
 
   form = new FormGroup({
     descricaoEquipamento: new FormControl('', [
@@ -38,6 +35,18 @@ export class SolicitarManutencao implements OnInit {
     ]),
   });
 
+  ngOnInit(): void {
+    this.categoriaService.listar().subscribe({
+      next: (categorias) => {
+        this.categorias = categorias;
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar categorias:', erro);
+        this.erroCategorias = 'Não foi possível carregar as categorias.';
+      },
+    });
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -45,10 +54,21 @@ export class SolicitarManutencao implements OnInit {
     }
 
     const valor = this.form.getRawValue();
+    const categoria = this.categorias.find(
+      (item) => item.id === Number(valor.categoriaId)
+    );
+
+    if (!categoria) {
+      alert('Selecione uma categoria válida.');
+      return;
+    }
+
     const usuario = this.authService.getUsuario();
+
     this.solicitacaoService.criar({
       descricaoEquipamento: valor.descricaoEquipamento ?? '',
-      categoriaId: Number(valor.categoriaId),
+      categoriaId: categoria.id,
+      categoriaNome: categoria.nome,
       descricaoDefeito: valor.descricaoDefeito ?? '',
       clienteNome: usuario?.nome,
       clienteCpf: usuario?.cpf,
