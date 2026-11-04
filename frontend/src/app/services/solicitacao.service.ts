@@ -1,6 +1,5 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { CategoriaService } from './categoria.service';
 import { HistoricoSolicitacao } from '../models/historico-solicitacao';
 import { Solicitacao } from '../models/solicitacao';
 import { EstadoSolicitacao } from '../models/estado-solicitacao';
@@ -9,6 +8,7 @@ import { Funcionario } from '../models/funcionario';
 export interface NovaSolicitacao {
   descricaoEquipamento: string;
   categoriaId: number;
+  categoriaNome:string;
   descricaoDefeito: string;
   clienteNome?: string;
   clienteCpf?: string;
@@ -53,7 +53,6 @@ interface SolicitacaoJson {
 export class SolicitacaoService {
   private readonly storageKey = 'solicitacoes';
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private readonly categoriaService = inject(CategoriaService);
 
   listar(): Solicitacao[] {
     return this.carregar().sort(
@@ -73,51 +72,47 @@ export class SolicitacaoService {
     return this.carregar().find((item) => item.id === id);
   }
 
-  criar(dados: NovaSolicitacao): Solicitacao {
-
-  const categoria = this.categoriaService.obterPorId(dados.categoriaId);
-
-  if (!categoria) {
-
+criar(dados: NovaSolicitacao): Solicitacao {
+  if (!dados.categoriaNome) {
     throw new Error('Categoria inválida.');
   }
- 
 
-    const agora = new Date();
-    const solicitacoes = this.carregar();
-    const proximoId = solicitacoes.reduce((maior, item) => Math.max(maior, item.id), 0) + 1;
+  const agora = new Date();
+  const solicitacoes = this.carregar();
+  const proximoId =
+    solicitacoes.reduce((maior, item) => Math.max(maior, item.id), 0) + 1;
 
-    const nova: Solicitacao = {
-      id: proximoId,
-      descricaoEquipamento: dados.descricaoEquipamento.trim(),
-      categoriaId: categoria.id,
-      categoriaNome: categoria.nome,
-      descricaoDefeito: dados.descricaoDefeito.trim(),
-      dataHoraAbertura: agora,
-      estado: 'ABERTA',
-      historico: [
-        {
-          dataHora: agora,
-          estado: 'ABERTA',
-          funcionarioNome: null,
-          observacao: 'Solicitação registrada pelo cliente',
-        },
-      ],
-      clienteNome: dados.clienteNome?.trim() || 'Cliente',
-      clienteCpf: dados.clienteCpf?.trim() || '',
-      clienteEmail: dados.clienteEmail?.trim() || '',
-      clienteTelefone: dados.clienteTelefone?.trim() || '',
-      clienteEndereco: dados.clienteEndereco?.trim() || '',
-      valorOrcamento: null,
-      descricaoManutencao: null,
-      orientacoesCliente: null,
-      funcionarioDestinoId: null,
-    };
+  const nova: Solicitacao = {
+    id: proximoId,
+    descricaoEquipamento: dados.descricaoEquipamento.trim(),
+    categoriaId: dados.categoriaId,
+    categoriaNome: dados.categoriaNome,
+    descricaoDefeito: dados.descricaoDefeito.trim(),
+    dataHoraAbertura: agora,
+    estado: 'ABERTA',
+    historico: [
+      {
+        dataHora: agora,
+        estado: 'ABERTA',
+        funcionarioNome: null,
+        observacao: 'Solicitação registrada pelo cliente',
+      },
+    ],
+    clienteNome: dados.clienteNome?.trim() || 'Cliente',
+    clienteCpf: dados.clienteCpf?.trim() || '',
+    clienteEmail: dados.clienteEmail?.trim() || '',
+    clienteTelefone: dados.clienteTelefone?.trim() || '',
+    clienteEndereco: dados.clienteEndereco?.trim() || '',
+    valorOrcamento: null,
+    descricaoManutencao: null,
+    orientacoesCliente: null,
+    funcionarioDestinoId: null,
+  };
 
-    solicitacoes.push(nova);
-    this.salvar(solicitacoes);
-    return nova;
-  }
+  solicitacoes.push(nova);
+  this.salvar(solicitacoes);
+  return nova;
+}
 
   efetuarOrcamento(id: number, valor: number, funcionarioNome: string): Solicitacao {
     if (!(valor > 0)) {

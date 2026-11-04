@@ -12,6 +12,8 @@ import { Categoria } from '../../../models/categoria';
 export class Lista implements OnInit {
 
   categorias: Categoria[] = [];
+  carregando = false;
+  erro = '';
 
   constructor(
     private categoriaService: CategoriaService,
@@ -23,7 +25,20 @@ export class Lista implements OnInit {
   }
 
   carregarCategorias(): void {
-    this.categorias = this.categoriaService.listar();
+    this.carregando = true;
+    this.erro = '';
+
+    this.categoriaService.listar().subscribe({
+      next: (categorias) => {
+        this.categorias = categorias;
+        this.carregando = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar categorias:', erro);
+        this.erro = 'Não foi possível carregar as categorias.';
+        this.carregando = false;
+      }
+    });
   }
 
   novaCategoria(): void {
@@ -40,7 +55,9 @@ export class Lista implements OnInit {
   }
 
   remover(id: number): void {
-    const categoria = this.categoriaService.obterPorId(id);
+    const categoria = this.categorias.find(
+      (categoria) => categoria.id === id
+    );
 
     if (!categoria) {
       return;
@@ -51,8 +68,15 @@ export class Lista implements OnInit {
     );
 
     if (confirmar) {
-      this.categoriaService.remover(id);
-      this.carregarCategorias();
+      this.categoriaService.remover(id).subscribe({
+        next: () => {
+          this.carregarCategorias();
+        },
+        error: (erro) => {
+          console.error('Erro ao remover categoria:', erro);
+          this.erro = 'Não foi possível excluir a categoria.';
+        }
+      });
     }
   }
 }
