@@ -8,9 +8,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Entity
 @Table(name = "cliente")
+@JsonPropertyOrder({"id", "nome", "email", "cpf", "telefone", "cep",
+        "logradouro", "numero", "complemento", "bairro", "cidade", "uf"})
 public class Cliente {
 
     @Id
@@ -75,12 +79,22 @@ public class Cliente {
         this.uf = uf;
     }
 
+    @JsonProperty("id")
     public Integer getUsuarioId() {
         return usuarioId;
     }
 
+    @JsonIgnore
     public Usuario getUsuario() {
         return usuario;
+    }
+
+    public String getNome() {
+        return usuario.getNome();
+    }
+
+    public String getEmail() {
+        return usuario.getEmail();
     }
 
     public String getCpf() {
@@ -117,5 +131,25 @@ public class Cliente {
 
     public String getUf() {
         return uf;
+    }
+    public void atualizarDados(
+            String cpf,
+            String telefone,
+            String cep,
+            String logradouro,
+            String numero,
+            String complemento,
+            String bairro,
+            String cidade,
+            String uf) {
+        this.cpf = cpf;
+        this.telefone = telefone;
+        this.cep = cep;
+        this.logradouro = logradouro;
+        this.numero = numero;
+        this.complemento = complemento;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.uf = uf;
     }
 }
