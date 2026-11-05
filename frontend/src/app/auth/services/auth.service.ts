@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
@@ -17,6 +17,13 @@ export interface DadosRegistro {
   bairro: string;
   cidade: string;
   uf: string;
+}
+
+interface LoginResponse {
+  id: number;
+  nome: string;
+  email: string;
+  perfil: 'CLIENTE' | 'FUNCIONARIO';
 }
 
 @Injectable({
@@ -45,21 +52,29 @@ export class AuthService {
     return this._autenticado;
   }
 
-  fazerLogin(email: string, senha: string): boolean {
-    const encontrado = this._usuariosMock.find(
-      (u) => u.email === email && u.senha === senha,
-    );
+  fazerLogin(email: string, senha: string): Observable<Usuario> {
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/login`, { email, senha })
+      .pipe(
+        map((resp) => {
+          const usuario: Usuario = {
+            id: resp.id,
+            nome: resp.nome,
+            email: resp.email,
+            senha: '',
+            cpf: '',
+            telefone: '',
+            cep: '',
+            autenticado: true,
+            perfil: resp.perfil === 'FUNCIONARIO' ? 'funcionario' : 'cliente',
+          };
 
-    if (encontrado) {
-      this._autenticado = true;
-      this._usuario = { ...encontrado, autenticado: true };
-      this.salvarSessao(email);
-      return true;
-    }
-
-    this._autenticado = false;
-    this._usuario = null;
-    return false;
+          this._autenticado = true;
+          this._usuario = usuario;
+          this.salvarSessao(usuario);
+          return usuario;
+        }),
+      );
   }
 
   getUsuario(): Usuario | null {
@@ -173,12 +188,12 @@ export class AuthService {
     localStorage.setItem(this.usuariosStorageKey, JSON.stringify(this._usuariosMock));
   }
 
-  private salvarSessao(email: string): void {
+  private salvarSessao(usuario: Usuario): void {
     if (!this.isBrowser) {
       return;
     }
 
-    localStorage.setItem(this.sessaoStorageKey, email);
+    localStorage.setItem(this.sessaoStorageKey, JSON.stringify(usuario));
   }
 
   private limparSessao(): void {
@@ -194,15 +209,21 @@ export class AuthService {
       return;
     }
 
-    const email = localStorage.getItem(this.sessaoStorageKey);
-    if (!email) {
+    const bruto = localStorage.getItem(this.sessaoStorageKey);
+    if (!bruto) {
       return;
     }
 
-    const encontrado = this._usuariosMock.find((u) => u.email === email);
-    if (encontrado) {
+    try {
+      const usuario = JSON.parse(bruto) as Usuario;
+      if (!usuario?.email || !usuario.perfil) {
+        throw new Error('Sessão inválida');
+      }
       this._autenticado = true;
-      this._usuario = { ...encontrado, autenticado: true };
+      this._usuario = { ...usuario, autenticado: true };
+    } catch {
+      // sessão antiga (só o e-mail) ou corrompida
+      localStorage.removeItem(this.sessaoStorageKey);
     }
   }
 }
