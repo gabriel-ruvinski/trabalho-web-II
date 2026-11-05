@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
@@ -65,11 +65,11 @@ public class Usuario {
     public String getEmail() {
         return email;
     }
-
+    @JsonIgnore
     public String getSenhaHash() {
         return senhaHash;
     }
-
+    @JsonIgnore
     public String getSalt() {
         return salt;
     }
@@ -80,5 +80,18 @@ public class Usuario {
 
     public boolean isAtivo() {
         return ativo;
+    }
+
+    public void inativar() {
+        this.ativo = false;
+    }
+
+    public void ativar() {
+        this.ativo = true;
+    }
+
+    public void atualizarDados(String nome, String email) {
+    this.nome = nome;
+    this.email = email;
     }
 }
