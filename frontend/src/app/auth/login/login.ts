@@ -27,33 +27,42 @@ export class Login {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   // Getters para email e senha
   get email(): string {
     return this.form.get('email')?.value || '';
   }
   get senha(): string {
-    return this.form.get('senha')?.value || ''; 
+    return this.form.get('senha')?.value || '';
   }
+
+  enviando = false;
+
   // Envia o form para AuthService
   onSubmit() {
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
-  }
-
-  const sucesso = this.authService.fazerLogin(this.email, this.senha);
-
-  if (sucesso) {
-    const usuario = this.authService.getUsuario();
-    if (usuario?.perfil === 'funcionario') {
-      this.router.navigate(['/funcionario/home']);
-    } else {
-      this.router.navigate(['/dashboard']);
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
-  } else {
-    alert('E-mail ou senha incorretos. Por favor, tente novamente.');
+
+    this.enviando = true;
+
+    this.authService.fazerLogin(this.email, this.senha).subscribe({
+      next: (usuario) => {
+        this.enviando = false;
+        this.router.navigate([
+          usuario.perfil === 'funcionario' ? '/funcionario/home' : '/dashboard',
+        ]);
+      },
+      error: (erro) => {
+        this.enviando = false;
+        if (erro.status === 401) {
+          alert('E-mail ou senha incorretos. Por favor, tente novamente.');
+        } else {
+          alert('Não foi possível conectar ao servidor. Verifique se o backend está no ar.');
+        }
+      },
+    });
   }
-}
 }
