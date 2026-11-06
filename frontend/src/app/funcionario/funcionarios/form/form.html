@@ -95,8 +95,16 @@
           CANCELAR
         </button>
 
-        <button type="submit" class="w-1/2 btn-primario">
-          SALVAR
+        <button
+          type="submit"
+          class="w-1/2 btn-primario"
+          [disabled]="salvando || carregando"
+        >
+          @if (salvando) {
+            SALVANDO...
+          } @else {
+            {{ modoEdicao ? 'ATUALIZAR' : 'SALVAR' }}
+          }
         </button>
 
       </div>

@@ -3,6 +3,4 @@ export interface Funcionario {
   nome: string;
   email: string;
   dataNascimento: string;
-  senha: string;
-  ativo: boolean;
 }
