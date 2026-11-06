@@ -42,7 +42,7 @@ public class CategoriaService{
 
     if (repository.existsByNomeIgnoreCase(nome)){
         throw new IllegalArgumentException(
-            "Nome de categotia já existente, tente outro nome"
+            "Nome de categoria já existente, tente outro nome"
         );
     }
 

@@ -16,6 +16,18 @@
 
   </div>
 
+    @if (carregando) {
+    <p class="mb-4 text-center text-sm text-gray-500">
+      Carregando funcionários...
+    </p>
+  }
+
+    @if (erro) {
+      <p class="mb-4 text-center text-sm text-red-600">
+        {{ erro }}
+      </p>
+    }
+
   <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
 
     <div class="overflow-x-auto">

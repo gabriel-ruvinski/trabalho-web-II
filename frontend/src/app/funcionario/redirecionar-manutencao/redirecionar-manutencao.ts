@@ -22,6 +22,10 @@ export class RedirecionarManutencao implements OnInit {
   private readonly solicitacaoService = inject(SolicitacaoService);
   private readonly funcionarioService = inject(FuncionarioService);
 
+  funcionarioOrigem: Funcionario | undefined;
+  carregandoFuncionarios = true;
+  erroFuncionarios = '';
+
   solicitacao: Solicitacao | undefined;
   funcionarios: Funcionario[] = [];
   erro = '';
@@ -30,21 +34,40 @@ export class RedirecionarManutencao implements OnInit {
     funcionarioDestinoId: new FormControl<number | null>(null, [Validators.required]),
   });
 
-  ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacaoService.obterPorId(id);
+ngOnInit(): void {
+  const id = Number(this.route.snapshot.paramMap.get('id'));
+  this.solicitacao = this.solicitacaoService.obterPorId(id);
 
-    if (!this.solicitacao) {
-      this.erro = 'Solicitação não encontrada.';
-    } else if (this.solicitacao.estado !== 'APROVADA' && this.solicitacao.estado !== 'REDIRECIONADA') {
-      this.erro = 'Só é possível redirecionar solicitações APROVADA ou REDIRECIONADA.';
-    }
-
-    const emailLogado = this.authService.getUsuario()?.email ?? '';
-    this.funcionarios = this.funcionarioService
-      .listarAtivos()
-      .filter(f => f.email !== emailLogado);
+  if (!this.solicitacao) {
+    this.erro = 'Solicitação não encontrada.';
+  } else if (
+    this.solicitacao.estado !== 'APROVADA' &&
+    this.solicitacao.estado !== 'REDIRECIONADA'
+  ) {
+    this.erro = 'Só é possível redirecionar solicitações APROVADA ou REDIRECIONADA.';
   }
+
+  const emailLogado = this.authService.getUsuario()?.email ?? '';
+
+  this.funcionarioService.listar().subscribe({
+    next: (funcionarios) => {
+      this.funcionarioOrigem = funcionarios.find(
+        f => f.email === emailLogado
+      );
+
+      this.funcionarios = funcionarios.filter(
+        f => f.email !== emailLogado
+      );
+
+      this.carregandoFuncionarios = false;
+    },
+    error: (erro) => {
+      console.error('Erro ao carregar funcionários:', erro);
+      this.erroFuncionarios = 'Não foi possível carregar os funcionários.';
+      this.carregandoFuncionarios = false;
+    }
+  });
+}
 
   rotuloEstado(solicitacao: Solicitacao): string {
     return ROTULO_ESTADO[solicitacao.estado];
@@ -68,10 +91,7 @@ export class RedirecionarManutencao implements OnInit {
     return;
   }
 
-  const emailLogado = this.authService.getUsuario()?.email ?? '';
-  const funcionarioOrigem = this.funcionarioService
-    .listarAtivos()
-    .find(f => f.email === emailLogado);
+  const funcionarioOrigem = this.funcionarioOrigem;
 
   if (!funcionarioOrigem) {
     alert('Não foi possível identificar o funcionário logado.');

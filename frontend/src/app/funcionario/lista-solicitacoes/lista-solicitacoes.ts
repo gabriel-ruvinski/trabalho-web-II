@@ -25,11 +25,20 @@ export class ListaSolicitacoes implements OnInit {
   dataFim = '';
   funcionarioLogadoId: number | null = null;
 
-  ngOnInit(): void {
-    const email = this.authService.getUsuario()?.email ?? '';
-    const funcionario = this.funcionarioService.listarAtivos().find(f => f.email === email);
-    this.funcionarioLogadoId = funcionario?.id ?? null;
-  }
+ngOnInit(): void {
+  const email = this.authService.getUsuario()?.email ?? '';
+
+  this.funcionarioService.listar().subscribe({
+    next: (funcionarios) => {
+      const funcionario = funcionarios.find(f => f.email === email);
+      this.funcionarioLogadoId = funcionario?.id ?? null;
+    },
+    error: (erro) => {
+      console.error('Erro ao identificar funcionário logado:', erro);
+      this.funcionarioLogadoId = null;
+    }
+  });
+}
 
   get solicitacoes(): Solicitacao[] {
     return this.solicitacaoService.listar();

@@ -1,5 +1,11 @@
+
 import { Component, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { FuncionarioService } from '../../../services/funcionario.service';
@@ -18,12 +24,16 @@ export class Form implements OnInit {
 
   funcionarioId: number | null = null;
   erro = '';
+  carregando = false;
+  salvando = false;
 
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    nome: new FormControl('', [Validators.required, Validators.maxLength(80)]),
+    nome: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(80),
+    ]),
     dataNascimento: new FormControl('', [Validators.required]),
-    senha: new FormControl('', [Validators.required, Validators.pattern(/^\d{4}$/)]),
   });
 
   ngOnInit(): void {
@@ -31,17 +41,23 @@ export class Form implements OnInit {
 
     if (idParam) {
       this.funcionarioId = Number(idParam);
+      this.carregando = true;
 
-      const funcionario = this.funcionarioService.obterPorId(this.funcionarioId);
-
-      if (funcionario) {
-        this.form.patchValue({
-          email: funcionario.email,
-          nome: funcionario.nome,
-          dataNascimento: funcionario.dataNascimento,
-          senha: funcionario.senha,
-        });
-      }
+      this.funcionarioService.obterPorId(this.funcionarioId).subscribe({
+        next: (funcionario) => {
+          this.form.patchValue({
+            email: funcionario.email,
+            nome: funcionario.nome,
+            dataNascimento: funcionario.dataNascimento,
+          });
+          this.carregando = false;
+        },
+        error: (erro) => {
+          console.error('Erro ao carregar funcionário:', erro);
+          this.erro = 'Não foi possível carregar o funcionário.';
+          this.carregando = false;
+        },
+      });
     }
   }
 
@@ -50,12 +66,13 @@ export class Form implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.salvando) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.erro = '';
+    this.salvando = true;
 
     const valor = this.form.getRawValue();
 
@@ -63,21 +80,28 @@ export class Form implements OnInit {
       nome: valor.nome ?? '',
       email: valor.email ?? '',
       dataNascimento: valor.dataNascimento ?? '',
-      senha: valor.senha ?? '',
     };
 
-    const resultado =
+    const requisicao =
       this.modoEdicao && this.funcionarioId !== null
         ? this.funcionarioService.atualizar(this.funcionarioId, dados)
         : this.funcionarioService.inserir(dados);
 
-    if (!resultado) {
-      this.erro = 'Já existe um funcionário cadastrado com este e-mail.';
-      return;
-    }
+    requisicao.subscribe({
+      next: () => {
+        this.router.navigate(['/funcionario/funcionarios/lista']);
+      },
+      error: (erro) => {
+        console.error('Erro ao salvar funcionário:', erro);
 
-    this.authService.registrarFuncionario(dados);
-    this.router.navigate(['/funcionario/funcionarios/lista']);
+        this.erro =
+          erro.error?.detail ??
+          erro.error?.message ??
+          'Não foi possível salvar o funcionário. Verifique os dados informados.';
+
+        this.salvando = false;
+      },
+    });
   }
 
   cancelar(): void {
