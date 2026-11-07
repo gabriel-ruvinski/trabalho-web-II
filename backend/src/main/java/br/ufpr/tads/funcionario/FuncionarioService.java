@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import br.ufpr.tads.usuario.Usuario;
 import br.ufpr.tads.usuario.UsuarioService;
-import br.ufpr.tads.usuario.UsuarioService.NovoUsuario;
 
 @Service
 public class FuncionarioService {
@@ -35,19 +35,20 @@ public class FuncionarioService {
 
     @Transactional
     public Funcionario cadastrar(FuncionarioDTO request) {
-        NovoUsuario novo = usuarioService.criar(
+        if (request.senha() == null || request.senha().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Informe a senha.");
+        }
+
+        Usuario usuario = usuarioService.criarComSenha(
                 request.nome(),
                 request.email(),
-                "FUNCIONARIO");
+                "FUNCIONARIO",
+                request.senha());
 
-        Funcionario funcionario = repository.save(
-                new Funcionario(novo.usuario(), request.dataNascimento()));
-
-        usuarioService.enviarSenhaTemporaria(
-                novo.usuario().getEmail(),
-                novo.senhaTemporaria());
-
-        return funcionario;
+        return repository.save(
+                new Funcionario(usuario, request.dataNascimento()));
     }
 
     @Transactional
@@ -60,6 +61,8 @@ public class FuncionarioService {
                 request.email());
 
         funcionario.setDataNascimento(request.dataNascimento());
+
+        usuarioService.alterarSenha(funcionario.getUsuario(), request.senha());
 
         return funcionario;
     }

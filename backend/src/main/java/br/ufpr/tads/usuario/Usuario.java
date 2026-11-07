@@ -1,5 +1,7 @@
 package br.ufpr.tads.usuario;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
@@ -93,5 +94,10 @@ public class Usuario {
     public void atualizarDados(String nome, String email) {
     this.nome = nome;
     this.email = email;
+    }
+
+    public void alterarSenha(String senhaHash, String salt) {
+    this.senhaHash = senhaHash;
+    this.salt = salt;
     }
 }

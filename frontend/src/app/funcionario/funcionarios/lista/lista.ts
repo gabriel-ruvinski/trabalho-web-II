@@ -1,5 +1,4 @@
-
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Funcionario } from '../../../models/funcionario';
@@ -16,27 +15,27 @@ export class Lista implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  funcionarios: Funcionario[] = [];
-  carregando = false;
-  erro = '';
+  funcionarios = signal<Funcionario[]>([]);
+  carregando = signal(false);
+  erro = signal('');
 
   ngOnInit(): void {
     this.carregar();
   }
 
   carregar(): void {
-    this.carregando = true;
-    this.erro = '';
+    this.carregando.set(true);
+    this.erro.set('');
 
     this.funcionarioService.listar().subscribe({
       next: (funcionarios) => {
-        this.funcionarios = funcionarios;
-        this.carregando = false;
+        this.funcionarios.set(funcionarios);
+        this.carregando.set(false);
       },
       error: (erro) => {
         console.error('Erro ao carregar funcionários:', erro);
-        this.erro = 'Não foi possível carregar os funcionários.';
-        this.carregando = false;
+        this.erro.set('Não foi possível carregar os funcionários.');
+        this.carregando.set(false);
       },
     });
   }
@@ -63,7 +62,7 @@ export class Lista implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao remover funcionário:', erro);
-        this.erro = 'Não foi possível remover o funcionário.';
+        this.erro.set('Não foi possível remover o funcionário.');
       },
     });
   }

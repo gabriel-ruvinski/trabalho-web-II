@@ -34,6 +34,20 @@ public class UsuarioService {
 
     @Transactional
     public NovoUsuario criar(String nome, String email, String codigoPerfil) {
+        String senhaTemporaria = passwordService.gerarSenhaTemporaria();
+        Usuario usuario = salvarNovo(nome, email, codigoPerfil, senhaTemporaria);
+
+        return new NovoUsuario(usuario, senhaTemporaria);
+    }
+
+    @Transactional
+    public Usuario criarComSenha(
+            String nome, String email, String codigoPerfil, String senha) {
+        return salvarNovo(nome, email, codigoPerfil, senha);
+    }
+
+    private Usuario salvarNovo(
+            String nome, String email, String codigoPerfil, String senha) {
         String emailNormalizado = normalizarEmail(email);
 
         if (usuarioRepository.existsByEmailIgnoreCase(emailNormalizado)) {
@@ -46,17 +60,12 @@ public class UsuarioService {
                 .orElseThrow(() -> new IllegalStateException(
                         "Perfil " + codigoPerfil + " não encontrado no banco."));
 
-        String senhaTemporaria = passwordService.gerarSenhaTemporaria();
         String salt = passwordService.gerarSalt();
-        String hash = passwordService.gerarHash(senhaTemporaria, salt);
+        String hash = passwordService.gerarHash(senha, salt);
 
-        // saveAndFlush para já termos o ID quando a tabela filha for salva.
-        Usuario usuario = usuarioRepository.saveAndFlush(
+        return usuarioRepository.saveAndFlush(
                 new Usuario(nome.trim(), emailNormalizado, hash, salt, perfil));
-
-        return new NovoUsuario(usuario, senhaTemporaria);
     }
-
     @Transactional
     public void atualizarDados(Usuario usuario, String nome, String email) {
         String emailNormalizado = normalizarEmail(email);
@@ -86,5 +95,13 @@ public class UsuarioService {
 
     private String normalizarEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    @Transactional
+    public void alterarSenha(Usuario usuario, String senha) {
+        String salt = passwordService.gerarSalt();
+        String hash = passwordService.gerarHash(senha, salt);
+
+        usuario.alterarSenha(hash, salt);
     }
 }
