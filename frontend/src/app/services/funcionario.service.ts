@@ -8,6 +8,7 @@ export interface FuncionarioDTO {
   nome: string;
   email: string;
   dataNascimento: string;
+  senha?: string;
 }
 
 @Injectable({
