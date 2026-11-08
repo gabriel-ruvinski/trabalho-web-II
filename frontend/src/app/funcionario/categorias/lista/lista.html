@@ -22,6 +22,18 @@
 
   </div>
 
+  @if (carregando()) {
+    <p class="mb-4 text-center text-sm text-gray-500">
+      Carregando categorias...
+    </p>
+  }
+
+  @if (erro()) {
+    <p class="mb-4 text-center text-sm text-red-600">
+      {{ erro() }}
+    </p>
+  }
+
   <table class="w-full text-left text-sm">
 
     <thead>
@@ -40,7 +52,15 @@
 
     <tbody>
 
-      @for (categoria of categorias; track categoria.id) {
+      @if (!carregando() && categorias().length === 0) {
+      <tr>
+        <td colspan="2" class="py-6 text-center text-sm text-gray-500">
+          Nenhuma categoria cadastrada.
+        </td>
+      </tr>
+      }
+
+      @for (categoria of categorias(); track categoria.id) {
 
       <tr class="border-b last:border-0">
 

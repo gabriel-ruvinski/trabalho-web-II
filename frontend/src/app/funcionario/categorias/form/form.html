@@ -14,14 +14,14 @@
     </p>
   </div>
 
-   @if (carregando) {
+   @if (carregando()) {
     <p class="text-sm text-gray-500">
       Carregando categoria...
     </p>
   } @else {
-    @if (erro) {
+    @if (erro()) {
       <p class="mb-4 text-sm text-red-500">
-        {{ erro }}
+        {{ erro() }}
       </p>
     }
 
@@ -42,7 +42,7 @@
           placeholder="Ex.: Notebook"
           maxlength="50"
           class="input-padrao w-full"
-          [disabled]="salvando"
+          [disabled]="salvando()"
         />
 
         @if (nome.errors?.['apenasLetras']) {
@@ -61,7 +61,7 @@
           type="button"
           class="w-1/2 btn-secundario"
           (click)="cancelar()"
-          [disabled]="salvando"
+          [disabled]="salvando()"
         >
           CANCELAR
         </button>
@@ -69,9 +69,9 @@
         <button
           type="submit"
           class="w-1/2 btn-primario"
-          [disabled]="salvando"
+          [disabled]="salvando()"
         >
-          @if (salvando) {
+          @if (salvando()) {
             SALVANDO...
           } @else {
             {{ categoria.id === 0 ? 'SALVAR' : 'ATUALIZAR' }}
