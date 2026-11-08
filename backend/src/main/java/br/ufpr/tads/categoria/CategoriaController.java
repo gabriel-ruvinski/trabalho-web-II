@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import br.ufpr.tads.dto.CategoriaDTO;
 
 @RestController
 @RequestMapping("/api/categorias")
@@ -35,9 +39,9 @@ public class CategoriaController {
 
     @PostMapping
     public ResponseEntity <?> cadastrar (
-        @RequestBody Map<String, String> dados){
+        @Valid @RequestBody CategoriaDTO dto){
             try{
-                Categoria categoria =  service.cadastrar(dados.get("nome"));
+                Categoria categoria =  service.cadastrar(dto.getNome());
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(categoria);
             
@@ -49,10 +53,10 @@ public class CategoriaController {
      @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(
         @PathVariable Integer id,
-        @RequestBody Map<String, String> dados
+        @Valid @RequestBody CategoriaDTO dto
     ) {
         try {
-            Categoria categoria = service.atualizar(id, dados.get("nome"));
+            Categoria categoria = service.atualizar(id, dto.getNome());
 
             return ResponseEntity.ok(categoria);
 

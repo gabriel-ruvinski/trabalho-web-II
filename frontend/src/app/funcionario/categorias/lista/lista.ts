@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { CategoriaService } from '../../../services/categoria.service';
@@ -11,9 +11,9 @@ import { Categoria } from '../../../models/categoria';
 })
 export class Lista implements OnInit {
 
-  categorias: Categoria[] = [];
-  carregando = false;
-  erro = '';
+  categorias = signal<Categoria[]>([]);
+  carregando = signal(false);
+  erro = signal('');
 
   constructor(
     private categoriaService: CategoriaService,
@@ -25,18 +25,18 @@ export class Lista implements OnInit {
   }
 
   carregarCategorias(): void {
-    this.carregando = true;
-    this.erro = '';
+    this.carregando.set(true);
+    this.erro.set('');
 
     this.categoriaService.listar().subscribe({
       next: (categorias) => {
-        this.categorias = categorias;
-        this.carregando = false;
+        this.categorias.set(categorias);
+        this.carregando.set(false);
       },
       error: (erro) => {
         console.error('Erro ao carregar categorias:', erro);
-        this.erro = 'Não foi possível carregar as categorias.';
-        this.carregando = false;
+        this.erro.set('Não foi possível carregar as categorias.');
+        this.carregando.set(false);
       }
     });
   }
@@ -55,7 +55,7 @@ export class Lista implements OnInit {
   }
 
   remover(id: number): void {
-    const categoria = this.categorias.find(
+    const categoria = this.categorias().find(
       (categoria) => categoria.id === id
     );
 
@@ -74,7 +74,7 @@ export class Lista implements OnInit {
         },
         error: (erro) => {
           console.error('Erro ao remover categoria:', erro);
-          this.erro = 'Não foi possível excluir a categoria.';
+          this.erro.set('Não foi possível excluir a categoria.');
         }
       });
     }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CategoriaService } from '../../../services/categoria.service';
@@ -14,9 +14,9 @@ import { Categoria } from '../../../models/categoria';
 export class Form implements OnInit {
   categoria: Categoria = { id: 0, nome: '' };
 
-  erro = '';
-  salvando = false;
-  carregando = false;
+  erro = signal('');
+  salvando = signal(false);
+  carregando = signal(false);
 
   constructor(
     private categoriaService: CategoriaService,
@@ -28,17 +28,17 @@ export class Form implements OnInit {
     const id = Number(this.route.snapshot.queryParamMap.get('id'));
 
     if (id) {
-      this.carregando = true;
+      this.carregando.set(true);
 
       this.categoriaService.obterPorId(id).subscribe({
         next: (categoria) => {
           this.categoria = { ...categoria };
-          this.carregando = false;
+          this.carregando.set(false);
         },
         error: (erro) => {
           console.error('Erro ao carregar categoria:', erro);
-          this.erro = 'Não foi possível carregar a categoria.';
-          this.carregando = false;
+          this.erro.set('Não foi possível carregar a categoria.');
+          this.carregando.set(false);
         },
       });
     }
@@ -51,8 +51,8 @@ export class Form implements OnInit {
       return;
     }
 
-    this.salvando = true;
-    this.erro = '';
+    this.salvando.set(true);
+    this.erro.set('');
 
     const requisicao =
       this.categoria.id === 0
@@ -65,9 +65,10 @@ export class Form implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao salvar categoria:', erro);
-        this.erro =
-          erro.error?.erro ?? 'Não foi possível salvar a categoria.';
-        this.salvando = false;
+        this.erro.set(
+          erro.error?.message ?? erro.error?.erro ?? 'Não foi possível salvar a categoria.'
+        );
+        this.salvando.set(false);
       },
     });
   }
