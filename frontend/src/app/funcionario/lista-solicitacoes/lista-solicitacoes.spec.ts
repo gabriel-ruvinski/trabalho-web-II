@@ -7,7 +7,6 @@ describe('ListaSolicitacoes', () => {
   let fixture: ComponentFixture<ListaSolicitacoes>;
 
   beforeEach(async () => {
-    localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [ListaSolicitacoes],
       providers: [provideRouter([])],
@@ -16,10 +15,6 @@ describe('ListaSolicitacoes', () => {
     fixture = TestBed.createComponent(ListaSolicitacoes);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    localStorage.clear();
   });
 
   it('should create', () => {
