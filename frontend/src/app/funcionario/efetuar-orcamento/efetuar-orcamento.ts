@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { formatarDataHora, formatarMoeda, parseMoedaBr } from '../../shared/utils/formatacao';
 
 @Component({
@@ -17,10 +17,12 @@ export class EfetuarOrcamento implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
-  private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly solicitacaoApi = inject(SolicitacaoApiService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   solicitacao: Solicitacao | undefined;
   erro = '';
+  enviando = false;
 
   form = new FormGroup({
     valor: new FormControl('', [Validators.required]),
@@ -28,12 +30,29 @@ export class EfetuarOrcamento implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacaoService.obterPorId(id);
-    if (!this.solicitacao) {
-      this.erro = 'Solicitação não encontrada.';
-    } else if (this.solicitacao.estado !== 'ABERTA') {
-      this.erro = 'Só é possível orçar solicitações no estado ABERTA.';
+    const funcionarioId = this.authService.getUsuario()?.id;
+
+    if (!funcionarioId) {
+      this.erro = 'Não foi possível identificar o funcionário logado. Faça login novamente.';
+      return;
     }
+
+    this.solicitacaoApi.obterPorId(id, funcionarioId).subscribe({
+      next: (solicitacao) => {
+        this.solicitacao = solicitacao;
+
+        if (solicitacao.estado !== 'ABERTA') {
+          this.erro = 'Só é possível orçar solicitações no estado ABERTA.';
+        }
+
+        this.cdr.markForCheck();
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar solicitação:', erro);
+        this.erro = erro.error?.message ?? 'Solicitação não encontrada.';
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   rotuloEstado(solicitacao: Solicitacao): string {
@@ -44,7 +63,7 @@ export class EfetuarOrcamento implements OnInit {
   formatarMoeda = formatarMoeda;
 
   onSubmit(): void {
-    if (!this.solicitacao || this.erro) {
+    if (!this.solicitacao || this.erro || this.enviando) {
       return;
     }
     if (this.form.invalid) {
@@ -58,10 +77,27 @@ export class EfetuarOrcamento implements OnInit {
       return;
     }
 
-    const funcionario = this.authService.getUsuario()?.nome ?? 'Funcionário';
-    this.solicitacaoService.efetuarOrcamento(this.solicitacao.id, valor, funcionario);
-    alert(`Orçamento registrado: ${formatarMoeda(valor)}`);
-    this.router.navigate(['/lista-solicitacoes']);
+    const funcionarioId = this.authService.getUsuario()?.id;
+    if (!funcionarioId) {
+      alert('Não foi possível identificar o funcionário logado.');
+      return;
+    }
+
+    this.enviando = true;
+
+    this.solicitacaoApi
+      .registrarOrcamento(this.solicitacao.id, valor, funcionarioId)
+      .subscribe({
+        next: () => {
+          alert(`Orçamento registrado: ${formatarMoeda(valor)}`);
+          this.router.navigate(['/lista-solicitacoes']);
+        },
+        error: (erro) => {
+          console.error('Erro ao registrar orçamento:', erro);
+          alert(erro.error?.message ?? 'Não foi possível registrar o orçamento.');
+          this.enviando = false;
+        },
+      });
   }
 
   sair(): void {

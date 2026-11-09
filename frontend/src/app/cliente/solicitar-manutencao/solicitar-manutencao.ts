@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { Categoria } from '../../models/categoria';
 import { CategoriaService } from '../../services/categoria.service';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 
 @Component({
   selector: 'app-solicitar-manutencao',
@@ -16,10 +16,12 @@ export class SolicitarManutencao implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly categoriaService = inject(CategoriaService);
-  private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly solicitacaoApi = inject(SolicitacaoApiService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   categorias: Categoria[] = [];
   erroCategorias = '';
+  enviando = false;
 
   form = new FormGroup({
     descricaoEquipamento: new FormControl('', [
@@ -39,23 +41,25 @@ export class SolicitarManutencao implements OnInit {
     this.categoriaService.listar().subscribe({
       next: (categorias) => {
         this.categorias = categorias;
+        this.cdr.markForCheck();
       },
       error: (erro) => {
         console.error('Erro ao carregar categorias:', erro);
         this.erroCategorias = 'Não foi possível carregar as categorias.';
+        this.cdr.markForCheck();
       },
     });
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.enviando) {
       this.form.markAllAsTouched();
       return;
     }
 
     const valor = this.form.getRawValue();
     const categoria = this.categorias.find(
-      (item) => item.id === Number(valor.categoriaId)
+      (item) => item.id === Number(valor.categoriaId),
     );
 
     if (!categoria) {
@@ -63,21 +67,33 @@ export class SolicitarManutencao implements OnInit {
       return;
     }
 
-    const usuario = this.authService.getUsuario();
+    const clienteId = this.authService.getUsuario()?.id;
 
-    this.solicitacaoService.criar({
-      descricaoEquipamento: valor.descricaoEquipamento ?? '',
-      categoriaId: categoria.id,
-      categoriaNome: categoria.nome,
-      descricaoDefeito: valor.descricaoDefeito ?? '',
-      clienteNome: usuario?.nome,
-      clienteCpf: usuario?.cpf,
-      clienteEmail: usuario?.email,
-      clienteTelefone: usuario?.telefone,
-    });
+    if (!clienteId) {
+      alert('Não foi possível identificar o cliente logado. Faça login novamente.');
+      return;
+    }
 
-    alert('Solicitação registrada com estado ABERTA.');
-    this.router.navigate(['/dashboard']);
+    this.enviando = true;
+
+    this.solicitacaoApi
+      .abrir(
+        clienteId,
+        categoria.id,
+        (valor.descricaoEquipamento ?? '').trim(),
+        (valor.descricaoDefeito ?? '').trim(),
+      )
+      .subscribe({
+        next: () => {
+          alert('Solicitação registrada com estado ABERTA.');
+          this.router.navigate(['/dashboard']);
+        },
+        error: (erro) => {
+          console.error('Erro ao registrar solicitação:', erro);
+          alert(erro.error?.message ?? 'Não foi possível registrar a solicitação.');
+          this.enviando = false;
+        },
+      });
   }
 
   sair(): void {

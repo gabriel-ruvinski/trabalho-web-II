@@ -46,10 +46,6 @@ public class FluxoSolicitacaoService {
         }
     }
 
-    /*
-     * Centraliza a alteração do estado e o registro do histórico.
-     * Os métodos públicos chamam este método dentro de uma transação.
-     */
     private void transicionar(
             Solicitacao solicitacao,
             String novoCodigo,
@@ -133,7 +129,7 @@ public class FluxoSolicitacaoService {
                 "Orçamento rejeitado: " + motivo.trim());
     }
 
-    @Transactional
+        @Transactional
     public void resgatarSolicitacao(
             Long solicitacaoId,
             Integer usuarioId) {
@@ -143,13 +139,10 @@ public class FluxoSolicitacaoService {
         Solicitacao s = buscarSolicitacao(solicitacaoId);
         exigirEstado(s, "REJEITADA");
 
-        s.setValorOrcado(null);
-        s.setFuncionarioOrcamentoId(null);
-        s.setDataHoraOrcamento(null);
         s.setMotivoRejeicao(null);
 
-        transicionar(s, "ABERTA", usuarioId, null,
-                "Solicitação resgatada para novo orçamento.");
+        transicionar(s, "APROVADA", usuarioId, null,
+                "Cliente resgatou o serviço, voltando de rejeitada para aprovada.");
     }
 
     @Transactional

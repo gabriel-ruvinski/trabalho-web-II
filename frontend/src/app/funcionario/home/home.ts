@@ -1,9 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 
 @Component({
   selector: 'app-home',
@@ -14,12 +14,31 @@ import { SolicitacaoService } from '../../services/solicitacao.service';
 export class Home implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly solicitacaoApi = inject(SolicitacaoApiService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   solicitacoes: Solicitacao[] = [];
+  erro = '';
 
   ngOnInit(): void {
-    this.solicitacoes = this.solicitacaoService.listarAbertas();
+    const funcionarioId = this.authService.getUsuario()?.id;
+
+    if (!funcionarioId) {
+      this.erro = 'Não foi possível identificar o funcionário logado. Faça login novamente.';
+      return;
+    }
+
+    this.solicitacaoApi.listarAbertas(funcionarioId).subscribe({
+      next: (solicitacoes) => {
+        this.solicitacoes = solicitacoes;
+        this.cdr.markForCheck();
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar solicitações abertas:', erro);
+        this.erro = erro.error?.message ?? 'Não foi possível carregar as solicitações.';
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   rotuloEstado(solicitacao: Solicitacao): string {

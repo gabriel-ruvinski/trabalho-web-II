@@ -1,8 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { Solicitacao } from '../../models/solicitacao';
 
 @Component({
@@ -15,29 +15,63 @@ export class ResgatarServico implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
-  private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly solicitacaoApi = inject(SolicitacaoApiService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   solicitacao: Solicitacao | undefined;
+  erro = '';
+  enviando = false;
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacaoService.obterPorId(id);
+    const clienteId = this.authService.getUsuario()?.id;
+
+    if (!clienteId) {
+      this.erro = 'Não foi possível identificar o cliente logado. Faça login novamente.';
+      return;
+    }
+
+    this.solicitacaoApi.obterPorId(id, clienteId).subscribe({
+      next: (solicitacao) => {
+        if (solicitacao.estado !== 'REJEITADA') {
+          this.erro = 'Só é possível resgatar solicitações no estado REJEITADA.';
+        } else {
+          this.solicitacao = solicitacao;
+        }
+        this.cdr.markForCheck();
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar solicitação:', erro);
+        this.erro = erro.error?.message ?? 'Solicitação não encontrada.';
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   get motivoRejeicao(): string {
-    const passo = this.solicitacao?.historico
-      .filter((item) => item.estado === 'REJEITADA')
-      .pop();
-    return passo?.observacao ?? 'Motivo não informado';
+    return this.solicitacao?.motivoRejeicao ?? 'Motivo não informado';
   }
 
   resgatarServico(): void {
-    if (!this.solicitacao) {
+    const clienteId = this.authService.getUsuario()?.id;
+
+    if (!this.solicitacao || !clienteId || this.enviando) {
       return;
     }
-    this.solicitacao = this.solicitacaoService.resgatar(this.solicitacao.id);
-    alert('Serviço resgatado, voltando ao fluxo de aprovação');
-    this.router.navigate(['/dashboard']);
+
+    this.enviando = true;
+
+    this.solicitacaoApi.resgatar(this.solicitacao.id, clienteId).subscribe({
+      next: () => {
+        alert('Serviço resgatado.');
+        this.router.navigate(['/dashboard']);
+      },
+      error: (erro) => {
+        console.error('Erro ao resgatar serviço:', erro);
+        alert(erro.error?.message ?? 'Não foi possível resgatar o serviço.');
+        this.enviando = false;
+      },
+    });
   }
 
   sair(): void {
