@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ReceitaPorCategoria } from '../../../models/receita';
@@ -18,23 +18,28 @@ export class ReceitasCategoria implements OnInit {
   private readonly router = inject(Router);
   private readonly relatorioService = inject(RelatorioService);
 
-  linhas: ReceitaPorCategoria[] = [];
+  linhas = signal<ReceitaPorCategoria[]>([]);
+  carregando = signal(false);
+  erro = signal('');
+  total = computed(() => this.relatorioService.total(this.linhas()));
+
   formatarMoeda = formatarMoeda;
   confirmandoPdf = false;
 
   ngOnInit(): void {
+    this.carregando.set(true);
+
     this.relatorioService.receitaPorCategoria().subscribe({
       next: (linhas) => {
-        this.linhas = linhas;
+        this.linhas.set(linhas);
+        this.carregando.set(false);
       },
       error: (erro) => {
         console.error('Erro ao carregar receitas por categoria:', erro);
+        this.erro.set('Não foi possível carregar o relatório.');
+        this.carregando.set(false);
       },
     });
-  }
-
-  get total(): number {
-    return this.relatorioService.total(this.linhas);
   }
 
   pedirPdf(): void {
@@ -56,11 +61,11 @@ export class ReceitasCategoria implements OnInit {
       subtitulo: 'Receita desde sempre, agrupada por categoria de equipamento.',
       nomeArquivo: 'relatorio-receitas-categoria.pdf',
       colunas: ['Categoria', 'Receita'],
-      linhas: this.linhas.map((linha) => [
+      linhas: this.linhas().map((linha) => [
         linha.categoriaNome,
         formatarMoeda(linha.valor),
       ]),
-      rodape: ['Total', formatarMoeda(this.total)],
+      rodape: ['Total', formatarMoeda(this.total())],
     });
   }
 

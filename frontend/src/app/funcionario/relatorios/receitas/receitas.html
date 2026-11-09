@@ -26,8 +26,12 @@
     (cancelado)="cancelarPdf()"
   />
 
-  @if (erro) {
-  <p class="mt-4 text-sm text-erro">{{ erro }}</p>
+  @if (carregando()) {
+  <p class="mt-4 text-sm text-gray-500">Carregando relatório...</p>
+  }
+
+  @if (erro()) {
+  <p class="mt-4 text-sm text-erro">{{ erro() }}</p>
   }
 
   <div class="mt-8 overflow-x-auto">
@@ -39,12 +43,12 @@
         </tr>
       </thead>
       <tbody>
-        @if (linhas.length === 0 && !erro) {
+        @if (!carregando() && linhas().length === 0 && !erro()) {
         <tr>
           <td colspan="2" class="text-center py-6 text-gray-500">Nenhuma receita no período.</td>
         </tr>
         }
-        @for (linha of linhas; track linha.dataIso) {
+        @for (linha of linhas(); track linha.dataIso) {
         <tr class="border-b border-gray-200">
           <td class="py-3 px-4">{{ formatarData(linha.data) }}</td>
           <td class="py-3 px-4 text-right">{{ formatarMoeda(linha.valor) }}</td>
@@ -54,7 +58,7 @@
       <tfoot>
         <tr>
           <td class="py-3 px-4 font-bold">Total</td>
-          <td class="py-3 px-4 text-right font-bold">{{ formatarMoeda(total) }}</td>
+          <td class="py-3 px-4 text-right font-bold">{{ formatarMoeda(total()) }}</td>
         </tr>
       </tfoot>
     </table>
