@@ -3,8 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
-import { AcaoBotao, SolicitacaoService } from '../../services/solicitacao.service';
-import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
+import { AcaoBotao, SolicitacaoApiService } from '../../services/solicitacao-api.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +14,6 @@ import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 export class Dashboard implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly solicitacaoService = inject(SolicitacaoService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -44,7 +42,7 @@ export class Dashboard implements OnInit {
   }
 
   getAcaoBotao(solicitacao: Solicitacao): AcaoBotao | null {
-    return this.solicitacaoService.getAcaoBotao(solicitacao);
+    return this.solicitacaoApi.getAcaoBotao(solicitacao);
   }
 
   rotuloEstado(solicitacao: Solicitacao): string {
