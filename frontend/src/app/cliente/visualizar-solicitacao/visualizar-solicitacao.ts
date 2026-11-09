@@ -4,8 +4,7 @@ import { CurrencyPipe } from '@angular/common';
 import { AuthService } from '../../auth/services/auth.service';
 import { Solicitacao } from '../../models/solicitacao';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
-import { SolicitacaoService, AcaoBotao } from '../../services/solicitacao.service';
-import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
+import { AcaoBotao, SolicitacaoApiService } from '../../services/solicitacao-api.service';
 
 @Component({
   selector: 'app-visualizar-solicitacao',
@@ -17,7 +16,6 @@ export class VisualizarSolicitacao implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
-  private readonly solicitacaoService = inject(SolicitacaoService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -51,7 +49,7 @@ export class VisualizarSolicitacao implements OnInit {
   }
 
   getAcaoBotao(): AcaoBotao | null {
-    return this.solicitacao ? this.solicitacaoService.getAcaoBotao(this.solicitacao) : null;
+    return this.solicitacao ? this.solicitacaoApi.getAcaoBotao(this.solicitacao) : null;
   }
 
   voltar(): void {

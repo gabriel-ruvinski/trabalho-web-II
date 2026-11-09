@@ -4,6 +4,11 @@ import { catchError, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { EstadoSolicitacao } from '../models/estado-solicitacao';
 import { Solicitacao } from '../models/solicitacao';
 
+export interface AcaoBotao {
+  label: string;
+  rota: string;
+}
+
 interface HistoricoApi {
   estadoAnteriorId: number | null;
   estadoNovoId: number;
@@ -65,7 +70,7 @@ export class SolicitacaoApiService {
   private readonly apiUrl = 'http://localhost:8080/api/solicitacoes';
   private readonly clientesUrl = 'http://localhost:8080/api/clientes';
 
-    listarParaFuncionario(solicitanteId: number): Observable<Solicitacao[]> {
+  listarParaFuncionario(solicitanteId: number): Observable<Solicitacao[]> {
     const params = new HttpParams()
       .set('solicitanteId', solicitanteId)
       .set('filtro', 'TODAS');
@@ -224,7 +229,7 @@ export class SolicitacaoApiService {
       funcionariosEnvolvidosIds: [...envolvidos],
     };
   }
-    aprovarOrcamento(id: number, usuarioId: number): Observable<void> {
+  aprovarOrcamento(id: number, usuarioId: number): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${id}/aprovar-orcamento`, {
       usuarioId,
     });
@@ -251,5 +256,18 @@ export class SolicitacaoApiService {
     return this.http.post<void>(`${this.apiUrl}/${id}/pagamento`, {
       usuarioId,
     });
+  }
+
+  getAcaoBotao(solicitacao: Solicitacao): AcaoBotao | null {
+    switch (solicitacao.estado) {
+      case 'ORCADA':
+        return { label: 'Aprovar/Rejeitar Serviço', rota: `/orcamento/${solicitacao.id}` };
+      case 'REJEITADA':
+        return { label: 'Resgatar Serviço', rota: `/resgatar-servico/${solicitacao.id}` };
+      case 'ARRUMADA':
+        return { label: 'Pagar Serviço', rota: `/pagar-servico/${solicitacao.id}` };
+      default:
+        return null;
+    }
   }
 }
