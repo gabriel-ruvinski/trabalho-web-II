@@ -14,7 +14,8 @@ import br.ufpr.tads.auth.PasswordService;
 @Service
 public class UsuarioService {
 
-    public record NovoUsuario(Usuario usuario, String senhaTemporaria) {}
+    public record NovoUsuario(Usuario usuario, String senhaTemporaria) {
+    }
 
     private final UsuarioRepository usuarioRepository;
     private final PerfilRepository perfilRepository;
@@ -66,6 +67,7 @@ public class UsuarioService {
         return usuarioRepository.saveAndFlush(
                 new Usuario(nome.trim(), emailNormalizado, hash, salt, perfil));
     }
+
     @Transactional
     public void atualizarDados(Usuario usuario, String nome, String email) {
         String emailNormalizado = normalizarEmail(email);
@@ -89,6 +91,19 @@ public class UsuarioService {
                 "Seu cadastro foi realizado.\n\n"
                         + "Sua senha temporária é: " + senha + "\n\n"
                         + "Guarde essa informação em segurança.");
+
+        mailSender.send(mensagem);
+    }
+
+    public void enviarNovaSenha(String destinatario, String senha) {
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+
+        mensagem.setTo(destinatario);
+        mensagem.setSubject("Recuperação de senha - Sistema de manutenção");
+        mensagem.setText(
+                "Recebemos um pedido de recuperação de senha.\n\n"
+                        + "Sua nova senha é: " + senha + "\n\n"
+                        + "Use-a para entrar no sistema.");
 
         mailSender.send(mensagem);
     }

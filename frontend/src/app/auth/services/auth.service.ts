@@ -92,28 +92,14 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  private gerarSenha(): string {
-    return Math.floor(1000 + Math.random() * 9000).toString(); // 4 dígitos
-  }
-
   fazerRegistro(dados: DadosRegistro): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/cadastro`, dados);
   }
-  
-  recuperarSenha(email: string): boolean {
-  const usuario = this._usuariosMock.find(u => u.email === email);
-  if (!usuario) {
-    alert('E-mail não encontrado. Por favor, verifique e tente novamente.');
-    return false;
+
+  recuperarSenha(email: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/recuperar-senha`, { email });
   }
 
-  const novaSenha = this.gerarSenha();
-  usuario.senha = novaSenha;
-  console.log(`Nova senha enviada para ${email}: ${novaSenha}`);
-  alert(`Uma nova senha foi enviada para ${email}. (Senha mock: ${novaSenha})`);
-  this.salvarUsuarios();
-  return true;
-}
   registrarFuncionario(dados: { nome: string; email: string; senha: string }): void {
     const existente = this._usuariosMock.find((u) => u.email === dados.email);
 

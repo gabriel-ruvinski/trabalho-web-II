@@ -21,8 +21,7 @@ public class AuthController {
 
     @PostMapping("/cadastro")
     public ResponseEntity<Void> cadastrar(
-            @Valid @RequestBody CadastroClienteRequest request
-    ) {
+            @Valid @RequestBody CadastroClienteRequest request) {
         authService.cadastrar(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -30,10 +29,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody LoginRequest request
-    ) {
+            @Valid @RequestBody LoginRequest request) {
         LoginResponse resposta = authService.login(request);
 
         return ResponseEntity.ok(resposta);
+    }
+
+    @PostMapping("/recuperar-senha")
+    public ResponseEntity<Void> recuperarSenha(
+            @Valid @RequestBody RecuperarSenhaRequest request) {
+        authService.recuperarSenha(request);
+
+        return ResponseEntity.noContent().build();
     }
 }
