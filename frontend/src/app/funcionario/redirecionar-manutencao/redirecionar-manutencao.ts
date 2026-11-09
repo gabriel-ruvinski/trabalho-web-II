@@ -1,11 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
 import { Funcionario } from '../../models/funcionario';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { FuncionarioService } from '../../services/funcionario.service';
 import { formatarDataHora } from '../../shared/utils/formatacao';
 
@@ -19,12 +19,13 @@ export class RedirecionarManutencao implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
-  private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly funcionarioService = inject(FuncionarioService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  funcionarioOrigem: Funcionario | undefined;
   carregandoFuncionarios = true;
   erroFuncionarios = '';
+  enviando = false;
 
   solicitacao: Solicitacao | undefined;
   funcionarios: Funcionario[] = [];
@@ -34,40 +35,46 @@ export class RedirecionarManutencao implements OnInit {
     funcionarioDestinoId: new FormControl<number | null>(null, [Validators.required]),
   });
 
-ngOnInit(): void {
-  const id = Number(this.route.snapshot.paramMap.get('id'));
-  this.solicitacao = this.solicitacaoService.obterPorId(id);
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const funcionarioLogadoId = this.authService.getUsuario()?.id;
 
-  if (!this.solicitacao) {
-    this.erro = 'Solicitação não encontrada.';
-  } else if (
-    this.solicitacao.estado !== 'APROVADA' &&
-    this.solicitacao.estado !== 'REDIRECIONADA'
-  ) {
-    this.erro = 'Só é possível redirecionar solicitações APROVADA ou REDIRECIONADA.';
-  }
-
-  const emailLogado = this.authService.getUsuario()?.email ?? '';
-
-  this.funcionarioService.listar().subscribe({
-    next: (funcionarios) => {
-      this.funcionarioOrigem = funcionarios.find(
-        f => f.email === emailLogado
-      );
-
-      this.funcionarios = funcionarios.filter(
-        f => f.email !== emailLogado
-      );
-
-      this.carregandoFuncionarios = false;
-    },
-    error: (erro) => {
-      console.error('Erro ao carregar funcionários:', erro);
-      this.erroFuncionarios = 'Não foi possível carregar os funcionários.';
-      this.carregandoFuncionarios = false;
+    if (!funcionarioLogadoId) {
+      this.erro = 'Não foi possível identificar o funcionário logado. Faça login novamente.';
+      return;
     }
-  });
-}
+
+    this.solicitacaoApi.obterPorId(id, funcionarioLogadoId).subscribe({
+      next: (solicitacao) => {
+        this.solicitacao = solicitacao;
+
+        if (solicitacao.estado !== 'APROVADA' && solicitacao.estado !== 'REDIRECIONADA') {
+          this.erro = 'Só é possível redirecionar solicitações APROVADA ou REDIRECIONADA.';
+        }
+
+        this.cdr.markForCheck();
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar solicitação:', erro);
+        this.erro = erro.error?.message ?? 'Solicitação não encontrada.';
+        this.cdr.markForCheck();
+      },
+    });
+
+    this.funcionarioService.listar().subscribe({
+      next: (funcionarios) => {
+        this.funcionarios = funcionarios.filter((f) => f.id !== funcionarioLogadoId);
+        this.carregandoFuncionarios = false;
+        this.cdr.markForCheck();
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar funcionários:', erro);
+        this.erroFuncionarios = 'Não foi possível carregar os funcionários.';
+        this.carregandoFuncionarios = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
 
   rotuloEstado(solicitacao: Solicitacao): string {
     return ROTULO_ESTADO[solicitacao.estado];
@@ -76,41 +83,44 @@ ngOnInit(): void {
   formatarDataHora = formatarDataHora;
 
   onSubmit(): void {
-  if (!this.solicitacao || this.erro) {
-    return;
-  }
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
+    if (!this.solicitacao || this.erro || this.enviando) {
+      return;
+    }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const origemId = this.authService.getUsuario()?.id;
+    if (!origemId) {
+      alert('Não foi possível identificar o funcionário logado.');
+      return;
+    }
+
+    const destinoId = this.form.controls.funcionarioDestinoId.value!;
+    const destino = this.funcionarios.find((f) => f.id === destinoId);
+    if (!destino) {
+      alert('Funcionário selecionado inválido.');
+      return;
+    }
+
+    this.enviando = true;
+
+    this.solicitacaoApi
+      .redirecionar(this.solicitacao.id, origemId, destinoId)
+      .subscribe({
+        next: () => {
+          alert(`Solicitação redirecionada para ${destino.nome}.`);
+          this.router.navigate(['/lista-solicitacoes']);
+        },
+        error: (erro) => {
+          console.error('Erro ao redirecionar:', erro);
+          alert(erro.error?.message ?? 'Não foi possível redirecionar.');
+          this.enviando = false;
+        },
+      });
   }
 
-  const destinoId = this.form.controls.funcionarioDestinoId.value!;
-  const destino = this.funcionarios.find(f => f.id === destinoId);
-  if (!destino) {
-    alert('Funcionário selecionado inválido.');
-    return;
-  }
-
-  const funcionarioOrigem = this.funcionarioOrigem;
-
-  if (!funcionarioOrigem) {
-    alert('Não foi possível identificar o funcionário logado.');
-    return;
-  }
-
-  try {
-    this.solicitacaoService.redirecionar(
-      this.solicitacao.id,
-      destino,
-      funcionarioOrigem.id,
-      funcionarioOrigem.nome,
-    );
-    alert(`Solicitação redirecionada para ${destino.nome}.`);
-    this.router.navigate(['/lista-solicitacoes']);
-  } catch (e) {
-    alert(e instanceof Error ? e.message : 'Não foi possível redirecionar.');
-  }
-}
   sair(): void {
     this.authService.logout();
     this.router.navigate(['/']);

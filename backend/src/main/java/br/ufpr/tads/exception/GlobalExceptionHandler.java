@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import br.ufpr.tads.solicitacao.SolicitacaoService;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -52,7 +54,16 @@ public class GlobalExceptionHandler {
         String mensagem = ex.getReason() != null ? ex.getReason() : "Erro na requisição.";
         return montar(status != null ? status : HttpStatus.INTERNAL_SERVER_ERROR, mensagem, req, List.of());
     }
+        @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> argumentoInvalido(IllegalArgumentException ex, HttpServletRequest req) {
+        return montar(HttpStatus.BAD_REQUEST, ex.getMessage(), req, List.of());
+    }
 
+    @ExceptionHandler({IllegalStateException.class, SolicitacaoService.TransicaoInvalidaException.class})
+    public ResponseEntity<ApiError> estadoInvalido(RuntimeException ex, HttpServletRequest req) {
+        return montar(HttpStatus.CONFLICT, ex.getMessage(), req, List.of());
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> inesperado(Exception ex, HttpServletRequest req) {
         log.error("Erro inesperado em {}", req.getRequestURI(), ex);

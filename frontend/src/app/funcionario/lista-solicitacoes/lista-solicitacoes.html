@@ -150,6 +150,13 @@
 
 
   <!-- TABELA -->
+  @if (carregando()) {
+<p class="mb-4 text-center text-sm text-gray-500">Carregando solicitações...</p>
+}
+
+@if (erro()) {
+<p class="mb-4 text-center text-sm text-red-600">{{ erro() }}</p>
+}
   <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
 
     <div class="overflow-x-auto">
@@ -330,7 +337,7 @@
           }
 
           <!-- SEM RESULTADOS -->
-          @if (solicitacoesFiltradas.length === 0) {
+          @if (!carregando() && solicitacoesFiltradas.length === 0)  {
 
           <tr>
 

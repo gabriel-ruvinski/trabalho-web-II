@@ -1,8 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { Solicitacao } from '../../models/solicitacao';
 
 @Component({
@@ -15,23 +15,60 @@ export class MostrarOrcamento implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
-  private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly solicitacaoApi = inject(SolicitacaoApiService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   solicitacao: Solicitacao | undefined;
+  erro = '';
+  enviando = false;
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacaoService.obterPorId(id);
+    const clienteId = this.authService.getUsuario()?.id;
+
+    if (!clienteId) {
+      this.erro = 'Não foi possível identificar o cliente logado. Faça login novamente.';
+      return;
+    }
+
+    this.solicitacaoApi.obterPorId(id, clienteId).subscribe({
+      next: (solicitacao) => {
+        if (solicitacao.estado !== 'ORCADA') {
+          this.erro = 'Só é possível aprovar ou rejeitar solicitações no estado ORÇADA.';
+        } else {
+          this.solicitacao = solicitacao;
+        }
+        this.cdr.markForCheck();
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar solicitação:', erro);
+        this.erro = erro.error?.message ?? 'Solicitação não encontrada.';
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   aprovarServico(): void {
-    if (!this.solicitacao) {
+    const clienteId = this.authService.getUsuario()?.id;
+
+    if (!this.solicitacao || !clienteId || this.enviando) {
       return;
     }
-    this.solicitacao = this.solicitacaoService.aprovar(this.solicitacao.id);
+
     const valor = (this.solicitacao.valorOrcamento ?? 0).toFixed(2).replace('.', ',');
-    alert(`Serviço Aprovado no Valor R$ ${valor}`);
-    this.router.navigate(['/dashboard']);
+    this.enviando = true;
+
+    this.solicitacaoApi.aprovarOrcamento(this.solicitacao.id, clienteId).subscribe({
+      next: () => {
+        alert(`Serviço Aprovado no Valor R$ ${valor}`);
+        this.router.navigate(['/dashboard']);
+      },
+      error: (erro) => {
+        console.error('Erro ao aprovar serviço:', erro);
+        alert(erro.error?.message ?? 'Não foi possível aprovar o serviço.');
+        this.enviando = false;
+      },
+    });
   }
 
   sair(): void {

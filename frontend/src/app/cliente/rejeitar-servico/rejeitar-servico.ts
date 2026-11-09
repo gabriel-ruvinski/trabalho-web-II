@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../auth/services/auth.service';
 import { Solicitacao } from '../../models/solicitacao';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 
 @Component({
   selector: 'app-rejeitar-servico',
@@ -13,32 +14,77 @@ import { SolicitacaoService } from '../../services/solicitacao.service';
 export class RejeitarServico implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly authService = inject(AuthService);
+  private readonly solicitacaoApi = inject(SolicitacaoApiService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   solicitacao: Solicitacao | null = null;
+  erro = '';
+  enviando = false;
   private id!: number;
 
   form = new FormGroup({
-    motivo: new FormControl('', [Validators.required, Validators.minLength(10)]),
+    motivo: new FormControl('', [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(500),
+    ]),
   });
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.id = Number(idParam);
-      this.solicitacao = this.solicitacaoService.obterPorId(this.id) ?? null;
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    const clienteId = this.authService.getUsuario()?.id;
+
+    if (!clienteId) {
+      this.erro = 'Não foi possível identificar o cliente logado. Faça login novamente.';
+      return;
     }
+
+    this.solicitacaoApi.obterPorId(this.id, clienteId).subscribe({
+      next: (solicitacao) => {
+        if (solicitacao.estado !== 'ORCADA') {
+          this.erro = 'Só é possível rejeitar solicitações no estado ORÇADA.';
+        } else {
+          this.solicitacao = solicitacao;
+        }
+        this.cdr.markForCheck();
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar solicitação:', erro);
+        this.erro = erro.error?.message ?? 'Solicitação não encontrada.';
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
+    const clienteId = this.authService.getUsuario()?.id;
+
+    if (this.form.invalid || this.enviando) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.solicitacaoService.rejeitar(this.id, this.form.value.motivo!);
-    alert('Serviço Rejeitado.');
-    this.router.navigate(['/dashboard']);
+    if (!clienteId) {
+      alert('Não foi possível identificar o cliente logado.');
+      return;
+    }
+
+    this.enviando = true;
+
+    this.solicitacaoApi
+      .rejeitarOrcamento(this.id, clienteId, (this.form.value.motivo ?? '').trim())
+      .subscribe({
+        next: () => {
+          alert('Serviço Rejeitado.');
+          this.router.navigate(['/dashboard']);
+        },
+        error: (erro) => {
+          console.error('Erro ao rejeitar serviço:', erro);
+          alert(erro.error?.message ?? 'Não foi possível rejeitar o serviço.');
+          this.enviando = false;
+        },
+      });
   }
 
   cancelar(): void {

@@ -1,13 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EstadoSolicitacao, ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { formatarMoeda } from '../../shared/utils/formatacao';
 import { AuthService } from '../../auth/services/auth.service';
-import { FuncionarioService } from '../../services/funcionario.service';
+
 @Component({
   selector: 'app-lista-solicitacoes',
   standalone: true,
@@ -16,45 +16,56 @@ import { FuncionarioService } from '../../services/funcionario.service';
 })
 export class ListaSolicitacoes implements OnInit {
   private readonly router = inject(Router);
-  private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly authService = inject(AuthService);
-  private readonly funcionarioService = inject(FuncionarioService);
+
+  solicitacoes = signal<Solicitacao[]>([]);
+  carregando = signal(false);
+  erro = signal('');
 
   filtro: 'HOJE' | 'PERIODO' | 'TODAS' = 'TODAS';
   dataInicio = '';
   dataFim = '';
-  funcionarioLogadoId: number | null = null;
 
-ngOnInit(): void {
-  const email = this.authService.getUsuario()?.email ?? '';
+  get funcionarioLogadoId(): number | null {
+    return this.authService.getUsuario()?.id ?? null;
+  }
 
-  this.funcionarioService.listar().subscribe({
-    next: (funcionarios) => {
-      const funcionario = funcionarios.find(f => f.email === email);
-      this.funcionarioLogadoId = funcionario?.id ?? null;
-    },
-    error: (erro) => {
-      console.error('Erro ao identificar funcionário logado:', erro);
-      this.funcionarioLogadoId = null;
+  ngOnInit(): void {
+    this.carregar();
+  }
+
+  carregar(): void {
+    const id = this.funcionarioLogadoId;
+
+    if (id === null) {
+      this.erro.set(
+        'Não foi possível identificar o funcionário logado. Faça login novamente.',
+      );
+      return;
     }
-  });
-}
 
-  get solicitacoes(): Solicitacao[] {
-    return this.solicitacaoService.listar();
+    this.carregando.set(true);
+    this.erro.set('');
+
+    this.solicitacaoApi.listarParaFuncionario(id).subscribe({
+      next: (solicitacoes) => {
+        this.solicitacoes.set(solicitacoes);
+        this.carregando.set(false);
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar solicitações:', erro);
+        this.erro.set(
+          erro.error?.message ?? 'Não foi possível carregar as solicitações.',
+        );
+        this.carregando.set(false);
+      },
+    });
   }
 
   get solicitacoesFiltradas(): Solicitacao[] {
-  let resultado = [...this.solicitacoes];
+    let resultado = [...this.solicitacoes()];
 
-  resultado = resultado.filter((solicitacao) => {
-    if (solicitacao.estado === 'REDIRECIONADA') {
-      const envolvidos = solicitacao.funcionariosEnvolvidosIds ?? [];
-      return envolvidos.includes(this.funcionarioLogadoId ?? -1);
-    }
-    return true;
-  });
-  
     if (this.filtro === 'HOJE') {
       const hoje = new Date();
       resultado = resultado.filter((solicitacao) => {
@@ -66,7 +77,6 @@ ngOnInit(): void {
         );
       });
     }
-
 
     if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
       const inicio = new Date(`${this.dataInicio}T00:00:00`);
@@ -137,7 +147,7 @@ ngOnInit(): void {
     };
     return classes[estado];
   }
-  
+
   souDonoAtual(solicitacao: Solicitacao): boolean {
     if (solicitacao.estado !== 'REDIRECIONADA') {
       return true;
@@ -165,7 +175,8 @@ ngOnInit(): void {
   finalizarSolicitacao(solicitacao: Solicitacao): void {
     this.router.navigate(['/funcionario/finalizar-solicitacao', solicitacao.id]);
   }
-    sair(): void {
+
+  sair(): void {
     this.authService.logout();
     this.router.navigate(['/']);
   }
