@@ -3,6 +3,7 @@ package br.ufpr.tads.auth;
 import br.ufpr.tads.cliente.ClienteService;
 import br.ufpr.tads.usuario.Usuario;
 import br.ufpr.tads.usuario.UsuarioRepository;
+import br.ufpr.tads.usuario.UsuarioService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,14 +16,28 @@ public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordService passwordService;
     private final ClienteService clienteService;
+    private final UsuarioService usuarioService;
 
     public AuthService(
             UsuarioRepository usuarioRepository,
             PasswordService passwordService,
-            ClienteService clienteService) {
+            ClienteService clienteService,
+            UsuarioService usuarioService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordService = passwordService;
         this.clienteService = clienteService;
+        this.usuarioService = usuarioService;
+    }
+
+    @Transactional
+    public void recuperarSenha(RecuperarSenhaRequest request) {
+        usuarioRepository.findByEmailIgnoreCase(request.email().trim())
+                .filter(Usuario::isAtivo)
+                .ifPresent(usuario -> {
+                    String novaSenha = passwordService.gerarSenhaTemporaria();
+                    usuarioService.alterarSenha(usuario, novaSenha);
+                    usuarioService.enviarNovaSenha(usuario.getEmail(), novaSenha);
+                });
     }
 
     public void cadastrar(CadastroClienteRequest request) {
