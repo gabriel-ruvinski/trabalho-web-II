@@ -64,9 +64,11 @@ export class Lista implements OnInit {
       next: () => {
         this.carregar();
       },
-      error: (erro) => {
+        error: (erro) => {
         console.error('Erro ao remover funcionário:', erro);
-        this.erro.set('Não foi possível remover o funcionário.');
+        this.erro.set(
+          erro.error?.message ?? 'Não foi possível remover o funcionário.',
+        );
       },
     });
   }

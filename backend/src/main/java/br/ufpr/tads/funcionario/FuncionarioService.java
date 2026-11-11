@@ -68,9 +68,38 @@ public class FuncionarioService {
     }
 
     @Transactional
-    public void inativar(Integer id) {
-        // O status fica só em Usuario, o login já recusa usuários inativos.
+    public void inativar(Integer id, Integer solicitanteId) {
+        if (id.equals(solicitanteId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não pode inativar o seu próprio cadastro.");
+        }
+
+        // O status fica só em Usuario; o login já recusa usuários inativos.
         buscarAtivo(id).getUsuario().inativar();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Funcionario> listarInativos() {
+        return repository.findAllByUsuarioAtivoFalseOrderByUsuarioNomeAsc();
+    }
+
+    @Transactional
+    public Funcionario reativar(Integer id) {
+        Funcionario funcionario = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Funcionário não encontrado."));
+
+        if (funcionario.getUsuario().isAtivo()) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "O funcionário já está ativo.");
+        }
+
+        funcionario.getUsuario().ativar();
+
+        return funcionario;
     }
 
     private Funcionario buscarAtivo(Integer id) {

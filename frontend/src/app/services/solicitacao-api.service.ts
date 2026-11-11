@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { EstadoSolicitacao } from '../models/estado-solicitacao';
 import { Solicitacao } from '../models/solicitacao';
+import { AuthService } from '../auth/services/auth.service';
 
 export interface AcaoBotao {
   label: string;
@@ -66,7 +67,7 @@ const ESTADO_POR_ID: Record<number, EstadoSolicitacao> = {
 })
 export class SolicitacaoApiService {
   private readonly http = inject(HttpClient);
-
+  private readonly authService = inject(AuthService);
   private readonly apiUrl = 'http://localhost:8080/api/solicitacoes';
   private readonly clientesUrl = 'http://localhost:8080/api/clientes';
 
@@ -130,18 +131,20 @@ export class SolicitacaoApiService {
     );
   }
 
-  obterPorId(id: number, solicitanteId: number): Observable<Solicitacao> {
+    obterPorId(id: number, solicitanteId: number): Observable<Solicitacao> {
     const params = new HttpParams().set('solicitanteId', solicitanteId);
+    const ehFuncionario = this.authService.getUsuario()?.perfil === 'funcionario';
 
     return this.http
       .get<SolicitacaoApi>(`${this.apiUrl}/${id}`, { params })
       .pipe(
         switchMap((s) =>
-          this.http.get<ClienteApi>(`${this.clientesUrl}/${s.clienteId}`).pipe(
-            map((cliente) => this.paraModelo(s, cliente)),
-            // Cliente inativo/inexistente não pode impedir a tela de abrir.
-            catchError(() => of(this.paraModelo(s))),
-          ),
+          ehFuncionario
+            ? this.http.get<ClienteApi>(`${this.clientesUrl}/${s.clienteId}`).pipe(
+                map((cliente) => this.paraModelo(s, cliente)),
+                catchError(() => of(this.paraModelo(s))),
+              )
+            : of(this.paraModelo(s)),
         ),
       );
   }
