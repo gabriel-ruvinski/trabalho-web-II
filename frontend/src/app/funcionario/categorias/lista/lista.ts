@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 
 import { CategoriaService } from '../../../services/categoria.service';
 import { Categoria } from '../../../models/categoria';
-import { DialogService } from '../../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-lista',
@@ -15,14 +14,23 @@ export class Lista implements OnInit {
   categorias = signal<Categoria[]>([]);
   carregando = signal(false);
   erro = signal('');
+  aba = signal<'ATIVAS' | 'INATIVAS'>('ATIVAS');
 
   constructor(
     private categoriaService: CategoriaService,
-    private router: Router,
-    private dialog: DialogService
-  ) { }
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    this.carregarCategorias();
+  }
+
+  selecionarAba(aba: 'ATIVAS' | 'INATIVAS'): void {
+    if (this.aba() === aba) {
+      return;
+    }
+
+    this.aba.set(aba);
     this.carregarCategorias();
   }
 
@@ -30,7 +38,12 @@ export class Lista implements OnInit {
     this.carregando.set(true);
     this.erro.set('');
 
-    this.categoriaService.listar().subscribe({
+    const requisicao =
+      this.aba() === 'ATIVAS'
+        ? this.categoriaService.listar()
+        : this.categoriaService.listarInativas();
+
+    requisicao.subscribe({
       next: (categorias) => {
         this.categorias.set(categorias);
         this.carregando.set(false);
@@ -56,31 +69,43 @@ export class Lista implements OnInit {
     );
   }
 
-  async remover(id: number): Promise<void> {
-    const categoria = this.categorias().find((c) => c.id === id);
+  remover(id: number): void {
+    const categoria = this.categorias().find(
+      (categoria) => categoria.id === id
+    );
 
     if (!categoria) {
       return;
     }
 
-    const confirmou = await this.dialog.confirmar(
-      `Tem certeza que deseja excluir a categoria "${categoria.nome}"?`,
-      'Excluir categoria',
-      'Excluir',
+    const confirmar = confirm(
+      `Tem certeza que deseja excluir a categoria "${categoria.nome}"?`
     );
 
-    if (!confirmou) {
-      return;
+    if (confirmar) {
+      this.categoriaService.remover(id).subscribe({
+        next: () => {
+          this.carregarCategorias();
+        },
+        error: (erro) => {
+          console.error('Erro ao remover categoria:', erro);
+          this.erro.set('Não foi possível excluir a categoria.');
+        }
+      });
     }
+  }
 
-    this.categoriaService.remover(id).subscribe({
+  reativar(id: number): void {
+    this.categoriaService.reativar(id).subscribe({
       next: () => {
         this.carregarCategorias();
       },
       error: (erro) => {
-        console.error('Erro ao remover categoria:', erro);
-        this.erro.set('Não foi possível excluir a categoria.');
-      },
+        console.error('Erro ao reativar categoria:', erro);
+        this.erro.set(
+          erro.error?.erro ?? erro.error?.message ?? 'Não foi possível reativar a categoria.'
+        );
+      }
     });
   }
 }

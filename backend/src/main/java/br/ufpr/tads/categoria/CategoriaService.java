@@ -32,7 +32,27 @@ public class CategoriaService{
 
        return categoria;
 }
+    public List<Categoria> listarInativas() {
+    return repository.findAllByAtivoFalseOrderByNomeAsc();
+    }
 
+    @Transactional
+    public Categoria reativar(Integer id) {
+        Categoria categoria = repository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(
+                "Categoria não encontrada."
+            ));
+
+        if (categoria.isAtivo()) {
+            throw new IllegalArgumentException(
+                "A categoria já está ativa."
+            );
+        }
+
+        categoria.setAtivo(true);
+
+        return repository.save(categoria);
+    }
     @Transactional
     public Categoria cadastrar (String nome){
         
