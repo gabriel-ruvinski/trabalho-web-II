@@ -12,6 +12,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgxMaskDirective } from 'ngx-mask';
 import { AuthService } from '../services/auth.service';
 import { ViaCEPService } from '../../services/viacep.service';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 /** Valida CPF pelos dígitos verificadores. Espera o valor apenas com números. */
 function cpfValido(control: AbstractControl): ValidationErrors | null {
@@ -51,6 +52,7 @@ export class Registro {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly viaCEPService = inject(ViaCEPService);
+  private readonly dialog = inject(DialogService);
 
   buscandoCEP = false;
   erroCEP = '';
@@ -152,9 +154,9 @@ export class Registro {
         uf: v.uf!.toUpperCase(),
       })
       .subscribe({
-        next: () => {
+        next: async () => {
           this.enviando = false;
-          alert(`Cadastro realizado! A senha foi enviada para ${v.email}.`);
+          await this.dialog.avisar(`Cadastro realizado! A senha foi enviada para ${v.email}.`);
           this.router.navigate(['/']);
         },
         error: (erro) => {

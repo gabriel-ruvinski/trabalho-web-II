@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Funcionario } from '../../../models/funcionario';
 import { FuncionarioService } from '../../../services/funcionario.service';
+import { DialogService } from '../../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-lista',
@@ -14,6 +15,7 @@ export class Lista implements OnInit {
   private readonly funcionarioService = inject(FuncionarioService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(DialogService);
 
   funcionarios = signal<Funcionario[]>([]);
   carregando = signal(false);
@@ -40,16 +42,18 @@ export class Lista implements OnInit {
     });
   }
 
-  remover(funcionario: Funcionario): void {
+  async remover(funcionario: Funcionario): Promise<void> {
     const emailLogado = this.authService.getUsuario()?.email ?? '';
 
     if (funcionario.email === emailLogado) {
-      alert('Você não pode remover seu próprio cadastro.');
+      await this.dialog.erro('Você não pode remover seu próprio cadastro.');
       return;
     }
 
-    const confirmou = confirm(
+    const confirmou = await this.dialog.confirmar(
       `Tem certeza que deseja remover o funcionário "${funcionario.nome}"?`,
+      'Remover funcionário',
+      'Remover',
     );
 
     if (!confirmou) {

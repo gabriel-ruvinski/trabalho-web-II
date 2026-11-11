@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,8 @@ export class Login {
   // Injeta o AuthService e o Router no construtor da classe
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private dialog: DialogService
   ) { }
 
   // Getters para email e senha
@@ -58,9 +60,12 @@ export class Login {
       error: (erro) => {
         this.enviando = false;
         if (erro.status === 401) {
-          alert('E-mail ou senha incorretos. Por favor, tente novamente.');
+          this.dialog.erro('E-mail ou senha incorretos. Por favor, tente novamente.', 'Falha no login');
         } else {
-          alert('Não foi possível conectar ao servidor. Verifique se o backend está no ar.');
+          this.dialog.erro(
+            'Não foi possível conectar ao servidor. Verifique se o backend está no ar.',
+            'Falha no login',
+          );
         }
       },
     });

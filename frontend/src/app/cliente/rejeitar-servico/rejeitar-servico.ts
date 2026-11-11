@@ -4,6 +4,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { AuthService } from '../../auth/services/auth.service';
 import { Solicitacao } from '../../models/solicitacao';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-rejeitar-servico',
@@ -17,6 +18,7 @@ export class RejeitarServico implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dialog = inject(DialogService);
 
   solicitacao: Solicitacao | null = null;
   erro = '';
@@ -36,7 +38,7 @@ export class RejeitarServico implements OnInit {
     const clienteId = this.authService.getUsuario()?.id;
 
     if (!clienteId) {
-      this.erro = 'Não foi possível identificar o cliente logado. Faça login novamente.';
+      this.dialog.erro('Não foi possível identificar o cliente logado.');
       return;
     }
 
@@ -66,7 +68,7 @@ export class RejeitarServico implements OnInit {
     }
 
     if (!clienteId) {
-      alert('Não foi possível identificar o cliente logado.');
+      this.dialog.erro('Não foi possível identificar o cliente logado.');
       return;
     }
 
@@ -75,14 +77,14 @@ export class RejeitarServico implements OnInit {
     this.solicitacaoApi
       .rejeitarOrcamento(this.id, clienteId, (this.form.value.motivo ?? '').trim())
       .subscribe({
-        next: () => {
-          alert('Serviço Rejeitado.');
+        next: async () => {
+          await this.dialog.avisar('Serviço Rejeitado.');
           this.router.navigate(['/dashboard']);
         },
         error: (erro) => {
           console.error('Erro ao rejeitar serviço:', erro);
-          alert(erro.error?.message ?? 'Não foi possível rejeitar o serviço.');
           this.enviando = false;
+          this.dialog.erro(erro.error?.message ?? 'Não foi possível rejeitar o serviço.');
         },
       });
   }
