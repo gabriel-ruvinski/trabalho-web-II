@@ -5,6 +5,7 @@ import { AuthService } from '../../auth/services/auth.service';
 import { Categoria } from '../../models/categoria';
 import { CategoriaService } from '../../services/categoria.service';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-solicitar-manutencao',
@@ -18,6 +19,7 @@ export class SolicitarManutencao implements OnInit {
   private readonly categoriaService = inject(CategoriaService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dialog = inject(DialogService);
 
   categorias: Categoria[] = [];
   erroCategorias = '';
@@ -63,14 +65,14 @@ export class SolicitarManutencao implements OnInit {
     );
 
     if (!categoria) {
-      alert('Selecione uma categoria válida.');
+      this.dialog.erro('Selecione uma categoria válida.');
       return;
     }
 
     const clienteId = this.authService.getUsuario()?.id;
 
     if (!clienteId) {
-      alert('Não foi possível identificar o cliente logado. Faça login novamente.');
+      this.dialog.erro('Não foi possível identificar o cliente logado. Faça login novamente.');
       return;
     }
 
@@ -84,14 +86,14 @@ export class SolicitarManutencao implements OnInit {
         (valor.descricaoDefeito ?? '').trim(),
       )
       .subscribe({
-        next: () => {
-          alert('Solicitação registrada com estado ABERTA.');
+        next: async () => {
+          await this.dialog.avisar('Solicitação registrada com estado ABERTA.');
           this.router.navigate(['/dashboard']);
         },
         error: (erro) => {
           console.error('Erro ao registrar solicitação:', erro);
-          alert(erro.error?.message ?? 'Não foi possível registrar a solicitação.');
           this.enviando = false;
+          this.dialog.erro(erro.error?.message ?? 'Não foi possível registrar a solicitação.');
         },
       });
   }

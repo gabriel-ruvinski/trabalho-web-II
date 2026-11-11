@@ -6,6 +6,7 @@ import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { formatarDataHora, formatarMoeda, parseMoedaBr } from '../../shared/utils/formatacao';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-efetuar-orcamento',
@@ -19,6 +20,7 @@ export class EfetuarOrcamento implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dialog = inject(DialogService);
 
   solicitacao: Solicitacao | undefined;
   erro = '';
@@ -33,7 +35,7 @@ export class EfetuarOrcamento implements OnInit {
     const funcionarioId = this.authService.getUsuario()?.id;
 
     if (!funcionarioId) {
-      this.erro = 'Não foi possível identificar o funcionário logado. Faça login novamente.';
+      this.dialog.erro('Não foi possível identificar o funcionário logado.');
       return;
     }
 
@@ -79,7 +81,7 @@ export class EfetuarOrcamento implements OnInit {
 
     const funcionarioId = this.authService.getUsuario()?.id;
     if (!funcionarioId) {
-      alert('Não foi possível identificar o funcionário logado.');
+      this.dialog.erro('Não foi possível identificar o funcionário logado.');
       return;
     }
 
@@ -88,14 +90,14 @@ export class EfetuarOrcamento implements OnInit {
     this.solicitacaoApi
       .registrarOrcamento(this.solicitacao.id, valor, funcionarioId)
       .subscribe({
-        next: () => {
-          alert(`Orçamento registrado: ${formatarMoeda(valor)}`);
+        next: async () => {
+          await this.dialog.avisar(`Orçamento registrado: ${formatarMoeda(valor)}`);
           this.router.navigate(['/lista-solicitacoes']);
         },
         error: (erro) => {
           console.error('Erro ao registrar orçamento:', erro);
-          alert(erro.error?.message ?? 'Não foi possível registrar o orçamento.');
           this.enviando = false;
+          this.dialog.erro(erro.error?.message ?? 'Não foi possível registrar o orçamento.');
         },
       });
   }

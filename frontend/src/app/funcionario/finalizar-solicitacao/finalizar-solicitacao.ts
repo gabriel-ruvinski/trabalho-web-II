@@ -5,6 +5,7 @@ import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
 import { Solicitacao } from '../../models/solicitacao';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { formatarDataHora, formatarMoeda } from '../../shared/utils/formatacao';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-finalizar-solicitacao',
@@ -18,6 +19,7 @@ export class FinalizarSolicitacao implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dialog = inject(DialogService);
 
   solicitacao: Solicitacao | undefined;
   erro = '';
@@ -28,7 +30,7 @@ export class FinalizarSolicitacao implements OnInit {
     const funcionarioId = this.authService.getUsuario()?.id;
 
     if (!funcionarioId) {
-      this.erro = 'Não foi possível identificar o funcionário logado. Faça login novamente.';
+      this.dialog.erro('Não foi possível identificar o funcionário logado.');
       return;
     }
 
@@ -64,21 +66,21 @@ export class FinalizarSolicitacao implements OnInit {
 
     const funcionarioId = this.authService.getUsuario()?.id;
     if (!funcionarioId) {
-      alert('Não foi possível identificar o funcionário logado.');
+      this.dialog.erro('Não foi possível identificar o funcionário logado.');
       return;
     }
 
     this.enviando = true;
 
     this.solicitacaoApi.finalizar(this.solicitacao.id, funcionarioId).subscribe({
-      next: () => {
-        alert('Solicitação finalizada.');
+      next: async () => {
+        await this.dialog.avisar('Solicitação finalizada.');
         this.router.navigate(['/lista-solicitacoes']);
       },
       error: (erro) => {
         console.error('Erro ao finalizar:', erro);
-        alert(erro.error?.message ?? 'Não foi possível finalizar a solicitação.');
         this.enviando = false;
+        this.dialog.erro(erro.error?.message ?? 'Não foi possível finalizar a solicitação.');
       },
     });
   }
