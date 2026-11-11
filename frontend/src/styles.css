@@ -1,7 +1,7 @@
 /* ESTILOS GLOBAIS */
 /* Framework: Tailwind CSS v4 */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
 @import 'tailwindcss';
 
 html {
@@ -30,6 +30,7 @@ html {
     --spacing-lg: 24px;
 
     --font-sans: 'Inter', sans-serif;
+    --font-display: 'Space Grotesk', sans-serif;
 }
 
 @layer base {
@@ -53,30 +54,32 @@ html {
     label {
         @apply block text-xs font-semibold text-gray-500 mb-1;
     }
+
+    h1,
+    h2,
+    h3 {
+        @apply font-display;
+    }
 }
 
 @layer components {
 
     /* Botões */
     .btn-primario {
-        @apply bg-primaria text-secundaria px-md py-sm rounded-md text-xs font-bold cursor-pointer
-               hover:bg-primaria/70 transition disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply bg-primaria text-secundaria px-md py-sm rounded-md text-xs font-bold cursor-pointer hover:bg-primaria/70 transition disabled:opacity-50 disabled:cursor-not-allowed;
     }
 
     .btn-secundario {
-        @apply bg-secundaria text-primaria px-md py-sm rounded-md text-xs font-bold border border-gray-300
-               cursor-pointer hover:brightness-95 transition disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply bg-secundaria text-primaria px-md py-sm rounded-md text-xs font-bold border border-gray-300 cursor-pointer hover:brightness-95 transition disabled:opacity-50 disabled:cursor-not-allowed;
     }
 
     .btn-erro {
-        @apply bg-erro text-secundaria px-md py-sm rounded-md text-xs font-bold cursor-pointer
-               hover:brightness-90 transition disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply bg-erro text-secundaria px-md py-sm rounded-md text-xs font-bold cursor-pointer hover:brightness-90 transition disabled:opacity-50 disabled:cursor-not-allowed;
     }
 
     /* Campos */
     .input-padrao {
-        @apply w-full rounded-md border border-gray-200 px-md py-sm text-sm outline-none
-               focus:border-primaria transition disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply w-full rounded-md border border-gray-200 px-md py-sm text-sm outline-none focus:border-primaria transition disabled:opacity-50 disabled:cursor-not-allowed;
     }
 
     /* Textos auxiliares */
@@ -127,4 +130,9 @@ html {
     .link-menu.ativo {
         @apply bg-white/15 font-bold;
     }
+
+    .marca {
+        @apply font-display font-bold tracking-tight text-primaria;
+    }
+
 }
