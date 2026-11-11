@@ -202,10 +202,9 @@ public class SolicitacaoService {
             return solicitacao;
         }
         confirmarFuncionario(solicitante);
-        if (REDIRECIONADA == solicitacao.getEstadoId()
-                && !solicitante.getId().equals(solicitacao.getFuncionarioDestinoId())) {
+        if (!visivelParaFuncionario(solicitacao, solicitante.getId())) {
             throw new ResponseStatusException(
-                HttpStatus.FORBIDDEN, "Solicitação redirecionada a outro funcionário");
+            HttpStatus.FORBIDDEN, "Solicitação pertence a outro funcionário");
         }
         return solicitacao;
     }
@@ -216,12 +215,13 @@ public class SolicitacaoService {
         Integer funcionarioId = exigirFuncionario(solicitanteId).getId();
         String tipo = (filtro == null || filtro.isBlank())
             ? "TODAS" : filtro.trim().toUpperCase(Locale.ROOT);
-        return switch (tipo) {
-            case "TODAS" -> repository.listarVisiveisParaFuncionario(funcionarioId);
+
+        List<Solicitacao> base = switch (tipo) {
+            case "TODAS" -> repository.listarTodas();
             case "HOJE" -> {
                 LocalDate hoje = LocalDate.now();
-                yield repository.listarVisiveisPorPeriodo(
-                    hoje.atStartOfDay(), hoje.plusDays(1).atStartOfDay(), funcionarioId);
+                yield repository.listarPorPeriodoAbertura(
+                    hoje.atStartOfDay(), hoje.plusDays(1).atStartOfDay());
             }
             case "PERIODO" -> {
                 if (inicio == null || fim == null) {
@@ -232,12 +232,16 @@ public class SolicitacaoService {
                     throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "A data final não pode ser anterior à inicial");
                 }
-                yield repository.listarVisiveisPorPeriodo(
-                    inicio.atStartOfDay(), fim.plusDays(1).atStartOfDay(), funcionarioId);
+                yield repository.listarPorPeriodoAbertura(
+                    inicio.atStartOfDay(), fim.plusDays(1).atStartOfDay());
             }
             default -> throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST, "Filtro inválido. Use HOJE, PERIODO ou TODAS.");
         };
+
+        return base.stream()
+            .filter(s -> visivelParaFuncionario(s, funcionarioId))
+            .toList();
     }
 
     private Usuario exigirUsuario(Integer usuarioId) {
@@ -293,6 +297,17 @@ public class SolicitacaoService {
         registro.setObservacao(observacao);
         solicitacao.setEstadoId(novoEstado);
         solicitacao.getHistorico().add(registro);
+    }
+
+    private boolean visivelParaFuncionario(Solicitacao s, Integer funcionarioId) {
+        Integer dono = switch (s.getEstadoId()) {
+            case APROVADA -> s.getFuncionarioOrcamentoId();
+            case REDIRECIONADA -> s.getFuncionarioDestinoId();
+            case ARRUMADA, PAGA, FINALIZADA -> s.getFuncionarioManutencaoId();
+            default -> null; 
+        };
+
+        return dono == null || dono.equals(funcionarioId);
     }
 
     private void exigirId(Integer valor, String mensagem) {
