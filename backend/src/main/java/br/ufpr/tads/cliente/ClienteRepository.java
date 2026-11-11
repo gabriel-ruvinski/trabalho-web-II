@@ -11,4 +11,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
     boolean existsByCpfAndUsuarioIdNot(String cpf, Integer usuarioId);
 
     List<Cliente> findAllByUsuarioAtivoTrueOrderByUsuarioNomeAsc();
+
+    List<Cliente> findAllByUsuarioAtivoFalseOrderByUsuarioNomeAsc();    
 }

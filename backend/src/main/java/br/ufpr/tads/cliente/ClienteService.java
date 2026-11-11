@@ -106,6 +106,29 @@ public class ClienteService {
         buscarAtivo(id).getUsuario().inativar();
     }
 
+    @Transactional(readOnly = true)
+    public List<Cliente> listarInativos() {
+        return repository.findAllByUsuarioAtivoFalseOrderByUsuarioNomeAsc();
+    }
+
+    @Transactional
+    public Cliente reativar(Integer id) {
+        Cliente cliente = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Cliente não encontrado."));
+
+        if (cliente.getUsuario().isAtivo()) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "O cliente já está ativo.");
+        }
+
+        cliente.getUsuario().ativar();
+
+        return cliente;
+    }
+
     private Cliente buscarAtivo(Integer id) {
         return repository.findById(id)
                 .filter(c -> c.getUsuario().isAtivo())

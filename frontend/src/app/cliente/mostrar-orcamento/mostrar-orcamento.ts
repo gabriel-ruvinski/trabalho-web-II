@@ -1,14 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { Solicitacao } from '../../models/solicitacao';
 import { DialogService } from '../../shared/dialog/dialog.service';
-
+import { CurrencyPipe, DatePipe } from '@angular/common';
 @Component({
   selector: 'app-mostrar-orcamento',
-  imports: [RouterLink, CurrencyPipe],
+  imports: [RouterLink, CurrencyPipe, DatePipe],
   templateUrl: './mostrar-orcamento.html',
   styleUrl: './mostrar-orcamento.css',
 })

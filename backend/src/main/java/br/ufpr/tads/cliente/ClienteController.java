@@ -63,6 +63,23 @@ public class ClienteController {
         return service.atualizar(id, request);
     }
 
+    @GetMapping("/inativos")
+    public List<Cliente> listarInativos(
+            @RequestParam(name = "solicitanteId", required = false) Integer solicitanteId) {
+        usuarioService.exigirFuncionario(solicitanteId);
+
+        return service.listarInativos();
+    }
+
+    @PutMapping("/{id}/reativar")
+    public Cliente reativar(
+            @PathVariable Integer id,
+            @RequestParam(name = "solicitanteId", required = false) Integer solicitanteId) {
+        usuarioService.exigirFuncionario(solicitanteId);
+
+        return service.reativar(id);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> inativar(
             @PathVariable Integer id,
