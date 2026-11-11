@@ -20,8 +20,18 @@ export class Lista implements OnInit {
   funcionarios = signal<Funcionario[]>([]);
   carregando = signal(false);
   erro = signal('');
+  aba = signal<'ATIVOS' | 'INATIVOS'>('ATIVOS');
 
   ngOnInit(): void {
+    this.carregar();
+  }
+
+  selecionarAba(aba: 'ATIVOS' | 'INATIVOS'): void {
+    if (this.aba() === aba) {
+      return;
+    }
+
+    this.aba.set(aba);
     this.carregar();
   }
 
@@ -29,7 +39,12 @@ export class Lista implements OnInit {
     this.carregando.set(true);
     this.erro.set('');
 
-    this.funcionarioService.listar().subscribe({
+    const requisicao =
+      this.aba() === 'ATIVOS'
+        ? this.funcionarioService.listar()
+        : this.funcionarioService.listarInativos();
+
+    requisicao.subscribe({
       next: (funcionarios) => {
         this.funcionarios.set(funcionarios);
         this.carregando.set(false);
@@ -64,10 +79,24 @@ export class Lista implements OnInit {
       next: () => {
         this.carregar();
       },
-        error: (erro) => {
+      error: (erro) => {
         console.error('Erro ao remover funcionário:', erro);
         this.erro.set(
           erro.error?.message ?? 'Não foi possível remover o funcionário.',
+        );
+      },
+    });
+  }
+
+  reativar(funcionario: Funcionario): void {
+    this.funcionarioService.reativar(funcionario.id).subscribe({
+      next: () => {
+        this.carregar();
+      },
+      error: (erro) => {
+        console.error('Erro ao reativar funcionário:', erro);
+        this.erro.set(
+          erro.error?.message ?? 'Não foi possível reativar o funcionário.',
         );
       },
     });

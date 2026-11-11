@@ -22,6 +22,10 @@ export class FuncionarioService {
     return this.http.get<Funcionario[]>(this.apiUrl);
   }
 
+  listarInativos(): Observable<Funcionario[]> {
+    return this.http.get<Funcionario[]>(`${this.apiUrl}/inativos`);
+  }
+
   obterPorId(id: number): Observable<Funcionario> {
     return this.http.get<Funcionario>(`${this.apiUrl}/${id}`);
   }
@@ -39,5 +43,9 @@ export class FuncionarioService {
 
   remover(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  reativar(id: number): Observable<Funcionario> {
+    return this.http.put<Funcionario>(`${this.apiUrl}/${id}/reativar`, {});
   }
 }

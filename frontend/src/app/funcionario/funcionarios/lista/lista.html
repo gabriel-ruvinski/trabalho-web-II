@@ -10,10 +10,30 @@
       </p>
     </div>
 
+    @if (aba() === 'ATIVOS') {
     <a routerLink="/funcionario/funcionarios/form" class="btn-primario">
       + NOVO FUNCIONÁRIO
     </a>
+    }
 
+  </div>
+
+  <div class="mb-6 flex gap-2">
+    <button
+      type="button"
+      [class]="aba() === 'ATIVOS' ? 'btn-primario' : 'btn-secundario'"
+      (click)="selecionarAba('ATIVOS')"
+    >
+      Ativos
+    </button>
+
+    <button
+      type="button"
+      [class]="aba() === 'INATIVOS' ? 'btn-primario' : 'btn-secundario'"
+      (click)="selecionarAba('INATIVOS')"
+    >
+      Inativos
+    </button>
   </div>
 
   @if (carregando()) {
@@ -63,7 +83,7 @@
           @if (!carregando() && funcionarios().length === 0) {
           <tr>
             <td colspan="4" class="px-5 py-6 text-center text-sm text-gray-500">
-              Nenhum funcionário cadastrado.
+              {{ aba() === 'ATIVOS' ? 'Nenhum funcionário cadastrado.' : 'Nenhum funcionário inativo.' }}
             </td>
           </tr>
           }
@@ -87,6 +107,8 @@
 
               <div class="flex justify-end gap-2">
 
+                @if (aba() === 'ATIVOS') {
+
                 <a class="btn-secundario" [routerLink]="['/funcionario/funcionarios/form']"
                   [queryParams]="{ id: funcionario.id }">
                   Editar
@@ -97,6 +119,14 @@
                   (click)="remover(funcionario)">
                   Remover
                 </button>
+
+                } @else {
+
+                <button type="button" class="btn-secundario" (click)="reativar(funcionario)">
+                  Reativar
+                </button>
+
+                }
 
               </div>
 

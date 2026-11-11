@@ -15,6 +15,7 @@ export class Lista implements OnInit {
   categorias = signal<Categoria[]>([]);
   carregando = signal(false);
   erro = signal('');
+  aba = signal<'ATIVAS' | 'INATIVAS'>('ATIVAS');
 
   constructor(
     private categoriaService: CategoriaService,
@@ -26,11 +27,25 @@ export class Lista implements OnInit {
     this.carregarCategorias();
   }
 
+  selecionarAba(aba: 'ATIVAS' | 'INATIVAS'): void {
+    if (this.aba() === aba) {
+      return;
+    }
+
+    this.aba.set(aba);
+    this.carregarCategorias();
+  }
+
   carregarCategorias(): void {
     this.carregando.set(true);
     this.erro.set('');
 
-    this.categoriaService.listar().subscribe({
+    const requisicao =
+      this.aba() === 'ATIVAS'
+        ? this.categoriaService.listar()
+        : this.categoriaService.listarInativas();
+
+    requisicao.subscribe({
       next: (categorias) => {
         this.categorias.set(categorias);
         this.carregando.set(false);
@@ -80,6 +95,20 @@ export class Lista implements OnInit {
       error: (erro) => {
         console.error('Erro ao remover categoria:', erro);
         this.erro.set('Não foi possível excluir a categoria.');
+      },
+    });
+  }
+
+  reativar(id: number): void {
+    this.categoriaService.reativar(id).subscribe({
+      next: () => {
+        this.carregarCategorias();
+      },
+      error: (erro) => {
+        console.error('Erro ao reativar categoria:', erro);
+        this.erro.set(
+          erro.error?.erro ?? erro.error?.message ?? 'Não foi possível reativar a categoria.',
+        );
       },
     });
   }

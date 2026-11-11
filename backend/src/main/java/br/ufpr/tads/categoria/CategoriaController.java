@@ -79,4 +79,23 @@ public class CategoriaController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    @GetMapping("/inativas")
+    public List<Categoria> listarInativas() {
+        return service.listarInativas();
+    }
+
+    @PutMapping("/{id}/reativar")
+    public ResponseEntity<?> reativar(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(service.reativar(id));
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("erro", e.getMessage()));
+        }
+    }
 }

@@ -16,6 +16,10 @@ export class CategoriaService {
     return this.http.get<Categoria[]>(this.apiUrl);
   }
 
+  listarInativas(): Observable<Categoria[]> {
+    return this.http.get<Categoria[]>(`${this.apiUrl}/inativas`);
+  }
+
   obterPorId(id: number): Observable<Categoria> {
     return this.http.get<Categoria>(`${this.apiUrl}/${id}`);
   }
@@ -30,5 +34,9 @@ export class CategoriaService {
 
   remover(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  reativar(id: number): Observable<Categoria> {
+    return this.http.put<Categoria>(`${this.apiUrl}/${id}/reativar`, {});
   }
 }

@@ -12,6 +12,7 @@
       </p>
     </div>
 
+    @if (aba() === 'ATIVAS') {
     <button
       type="button"
       class="btn-primario"
@@ -19,7 +20,26 @@
     >
       + NOVA CATEGORIA
     </button>
+    }
 
+  </div>
+
+  <div class="mb-6 flex gap-2">
+    <button
+      type="button"
+      [class]="aba() === 'ATIVAS' ? 'btn-primario' : 'btn-secundario'"
+      (click)="selecionarAba('ATIVAS')"
+    >
+      Ativas
+    </button>
+
+    <button
+      type="button"
+      [class]="aba() === 'INATIVAS' ? 'btn-primario' : 'btn-secundario'"
+      (click)="selecionarAba('INATIVAS')"
+    >
+      Inativas
+    </button>
   </div>
 
   @if (carregando()) {
@@ -55,7 +75,7 @@
       @if (!carregando() && categorias().length === 0) {
       <tr>
         <td colspan="2" class="py-6 text-center text-sm text-gray-500">
-          Nenhuma categoria cadastrada.
+          {{ aba() === 'ATIVAS' ? 'Nenhuma categoria cadastrada.' : 'Nenhuma categoria inativa.' }}
         </td>
       </tr>
       }
@@ -72,6 +92,8 @@
 
           <div class="flex justify-end gap-2">
 
+            @if (aba() === 'ATIVAS') {
+
             <button
               type="button"
               class="btn-secundario"
@@ -87,6 +109,18 @@
             >
               Remover
             </button>
+
+            } @else {
+
+            <button
+              type="button"
+              class="btn-secundario"
+              (click)="reativar(categoria.id)"
+            >
+              Reativar
+            </button>
+
+            }
 
           </div>
 
