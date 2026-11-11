@@ -21,4 +21,6 @@ export interface Solicitacao {
   funcionarioDestinoId: number | null;
   motivoRejeicao?: string | null;
   funcionariosEnvolvidosIds?: number[];
+  funcionarioResponsavelId?: number | null;
+  funcionarioResponsavelNome?: string | null;
 }

@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
-
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 @Service
 public class SolicitacaoService {
 
@@ -210,6 +213,28 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
+    public Map<Integer, String> nomesDeFuncionarios(Solicitacao s) {
+        Set<Integer> ids = new HashSet<>();
+        ids.add(responsavel(s));
+
+        for (HistoricoSolicitacao h : s.getHistorico()) {
+            ids.add(h.getUsuarioId());
+        }
+
+        ids.remove(null);
+
+        Map<Integer, String> nomes = new HashMap<>();
+
+        for (Usuario u : usuarioRepository.findAllById(ids)) {
+            if ("FUNCIONARIO".equals(u.getPerfil().getCodigo())) {
+                nomes.put(u.getId(), u.getNome());
+            }
+        }
+
+        return nomes;
+    }
+
+    @Transactional(readOnly = true)
     public List<Solicitacao> listarParaFuncionario(String filtro, LocalDate inicio,
                                                    LocalDate fim, Integer solicitanteId) {
         Integer funcionarioId = exigirFuncionario(solicitanteId).getId();
@@ -299,13 +324,18 @@ public class SolicitacaoService {
         solicitacao.getHistorico().add(registro);
     }
 
-    private boolean visivelParaFuncionario(Solicitacao s, Integer funcionarioId) {
-        Integer dono = switch (s.getEstadoId()) {
+     public static Integer responsavel(Solicitacao s) {
+        return switch (s.getEstadoId()) {
             case APROVADA -> s.getFuncionarioOrcamentoId();
             case REDIRECIONADA -> s.getFuncionarioDestinoId();
             case ARRUMADA, PAGA, FINALIZADA -> s.getFuncionarioManutencaoId();
-            default -> null; 
+            default -> null;
         };
+    }
+
+    //Sem responsável (fase de orçamento ou dados antigos): todos veem.
+    private boolean visivelParaFuncionario(Solicitacao s, Integer funcionarioId) {
+        Integer dono = responsavel(s);
 
         return dono == null || dono.equals(funcionarioId);
     }

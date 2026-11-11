@@ -89,6 +89,32 @@ public class UsuarioService {
 
         return usuario;
     }
+
+        @Transactional(readOnly = true)
+    public Usuario exigirFuncionarioOuProprio(Integer solicitanteId, Integer idConsultado) {
+        if (solicitanteId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Usuário não identificado");
+        }
+
+        Usuario usuario = usuarioRepository.findById(solicitanteId)
+                .filter(Usuario::isAtivo)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Usuário inválido ou inativo"));
+
+        boolean funcionario = "FUNCIONARIO".equals(usuario.getPerfil().getCodigo());
+
+        if (!funcionario && !usuario.getId().equals(idConsultado)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso restrito a funcionários");
+        }
+
+        return usuario;
+    }
+    
     @Transactional
     public void atualizarDados(Usuario usuario, String nome, String email) {
         String emailNormalizado = normalizarEmail(email);

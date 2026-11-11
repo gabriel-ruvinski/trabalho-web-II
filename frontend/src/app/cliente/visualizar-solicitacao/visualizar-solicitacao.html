@@ -26,6 +26,13 @@
       <p>{{ solicitacao.dataHoraAbertura | date:'dd/MM/yyyy HH:mm' }}</p>
     </div>
 
+    @if (solicitacao.funcionarioResponsavelNome) {
+    <div>
+      <label class="block text-xs font-semibold text-gray-500 mb-1">Funcionário responsável</label>
+      <p>{{ solicitacao.funcionarioResponsavelNome }}</p>
+    </div>
+    }
+
     @if (solicitacao.valorOrcamento !== null) {
     <div>
       <label class="block text-xs font-semibold text-gray-500 mb-1">Valor orçado</label>
@@ -111,7 +118,7 @@
   </div>
 
   } @else {
-  <p class="text-gray-500 text-center">Carregando dados da solicitação...</p>
+  <p class="text-gray-500 text-center">{{ erro || 'Carregando dados da solicitação...' }}</p>
   }
 
 </div>

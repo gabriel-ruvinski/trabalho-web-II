@@ -17,6 +17,7 @@ interface HistoricoApi {
   usuarioId: number | null;
   funcionarioDestinoId: number | null;
   observacao: string | null;
+  funcionarioNome: string | null;
 }
 
 interface SolicitacaoApi {
@@ -34,6 +35,8 @@ interface SolicitacaoApi {
   orientacoesCliente: string | null;
   motivoRejeicao: string | null;
   historico: HistoricoApi[];
+  funcionarioResponsavelId: number | null;
+  funcionarioResponsavelNome: string | null;
 }
 
 interface ClienteApi {
@@ -133,18 +136,16 @@ export class SolicitacaoApiService {
 
     obterPorId(id: number, solicitanteId: number): Observable<Solicitacao> {
     const params = new HttpParams().set('solicitanteId', solicitanteId);
-    const ehFuncionario = this.authService.getUsuario()?.perfil === 'funcionario';
 
     return this.http
       .get<SolicitacaoApi>(`${this.apiUrl}/${id}`, { params })
       .pipe(
         switchMap((s) =>
-          ehFuncionario
-            ? this.http.get<ClienteApi>(`${this.clientesUrl}/${s.clienteId}`).pipe(
-                map((cliente) => this.paraModelo(s, cliente)),
-                catchError(() => of(this.paraModelo(s))),
-              )
-            : of(this.paraModelo(s)),
+          this.http.get<ClienteApi>(`${this.clientesUrl}/${s.clienteId}`).pipe(
+            map((cliente) => this.paraModelo(s, cliente)),
+            // Cliente inativo/inexistente não pode impedir a tela de abrir.
+            catchError(() => of(this.paraModelo(s))),
+          ),
         ),
       );
   }
@@ -190,15 +191,15 @@ export class SolicitacaoApiService {
     });
   }
 
-  private paraModelo(s: SolicitacaoApi, cliente?: ClienteApi): Solicitacao {
+    private paraModelo(s: SolicitacaoApi, cliente?: ClienteApi): Solicitacao {
     const historico = s.historico ?? [];
 
     const envolvidos = new Set<number>();
     for (const h of historico) {
-      if (h.usuarioId !== null) {
+      if (h.usuarioId != null) {
         envolvidos.add(h.usuarioId);
       }
-      if (h.funcionarioDestinoId !== null) {
+      if (h.funcionarioDestinoId != null) {
         envolvidos.add(h.funcionarioDestinoId);
       }
     }
@@ -214,7 +215,7 @@ export class SolicitacaoApiService {
       historico: historico.map((h) => ({
         dataHora: new Date(h.dataHora),
         estado: ESTADO_POR_ID[h.estadoNovoId] ?? 'ABERTA',
-        funcionarioNome: null,
+        funcionarioNome: h.funcionarioNome ?? null,
         observacao: h.observacao ?? '',
       })),
       clienteNome: cliente?.nome ?? `Cliente #${s.clienteId}`,
@@ -230,6 +231,8 @@ export class SolicitacaoApiService {
       funcionarioDestinoId: s.funcionarioDestinoId ?? null,
       motivoRejeicao: s.motivoRejeicao ?? null,
       funcionariosEnvolvidosIds: [...envolvidos],
+      funcionarioResponsavelId: s.funcionarioResponsavelId ?? null,
+      funcionarioResponsavelNome: s.funcionarioResponsavelNome ?? null,
     };
   }
   aprovarOrcamento(id: number, usuarioId: number): Observable<void> {
