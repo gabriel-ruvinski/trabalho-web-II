@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import br.ufpr.tads.validation.CpfValido;
 
 public record CadastroClienteRequest(
 
@@ -18,6 +19,7 @@ public record CadastroClienteRequest(
 
         @NotBlank
         @Pattern(regexp = "\\d{11}", message = "CPF deve conter 11 dígitos")
+        @CpfValido
         String cpf,
 
         @NotBlank
@@ -53,4 +55,6 @@ public record CadastroClienteRequest(
         @NotBlank
         @Pattern(regexp = "[A-Za-z]{2}", message = "UF deve ter duas letras")
         String uf
+
+        
 ) {}
