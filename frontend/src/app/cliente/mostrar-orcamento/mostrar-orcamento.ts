@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { Solicitacao } from '../../models/solicitacao';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-mostrar-orcamento',
@@ -17,6 +18,7 @@ export class MostrarOrcamento implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dialog = inject(DialogService);
 
   solicitacao: Solicitacao | undefined;
   erro = '';
@@ -59,14 +61,14 @@ export class MostrarOrcamento implements OnInit {
     this.enviando = true;
 
     this.solicitacaoApi.aprovarOrcamento(this.solicitacao.id, clienteId).subscribe({
-      next: () => {
-        alert(`Serviço Aprovado no Valor R$ ${valor}`);
+      next: async () => {
+        await this.dialog.avisar(`Serviço Aprovado no Valor R$ ${valor}`);
         this.router.navigate(['/dashboard']);
       },
       error: (erro) => {
         console.error('Erro ao aprovar serviço:', erro);
-        alert(erro.error?.message ?? 'Não foi possível aprovar o serviço.');
         this.enviando = false;
+        this.dialog.erro(erro.error?.message ?? 'Não foi possível aprovar o serviço.');
       },
     });
   }

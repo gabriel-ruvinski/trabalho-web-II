@@ -8,6 +8,7 @@ import { Funcionario } from '../../models/funcionario';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { FuncionarioService } from '../../services/funcionario.service';
 import { formatarDataHora } from '../../shared/utils/formatacao';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-redirecionar-manutencao',
@@ -22,6 +23,7 @@ export class RedirecionarManutencao implements OnInit {
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly funcionarioService = inject(FuncionarioService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dialog = inject(DialogService);
 
   carregandoFuncionarios = true;
   erroFuncionarios = '';
@@ -93,14 +95,14 @@ export class RedirecionarManutencao implements OnInit {
 
     const origemId = this.authService.getUsuario()?.id;
     if (!origemId) {
-      alert('Não foi possível identificar o funcionário logado.');
+      this.dialog.erro('Não foi possível identificar o funcionário logado.');
       return;
     }
 
     const destinoId = this.form.controls.funcionarioDestinoId.value!;
     const destino = this.funcionarios.find((f) => f.id === destinoId);
     if (!destino) {
-      alert('Funcionário selecionado inválido.');
+      this.dialog.erro('Funcionário selecionado inválido.');
       return;
     }
 
@@ -109,14 +111,14 @@ export class RedirecionarManutencao implements OnInit {
     this.solicitacaoApi
       .redirecionar(this.solicitacao.id, origemId, destinoId)
       .subscribe({
-        next: () => {
-          alert(`Solicitação redirecionada para ${destino.nome}.`);
+        next: async () => {
+          await this.dialog.avisar(`Solicitação redirecionada para ${destino.nome}.`);
           this.router.navigate(['/lista-solicitacoes']);
         },
         error: (erro) => {
           console.error('Erro ao redirecionar:', erro);
-          alert(erro.error?.message ?? 'Não foi possível redirecionar.');
           this.enviando = false;
+          this.dialog.erro(erro.error?.message ?? 'Não foi possível redirecionar.');
         },
       });
   }

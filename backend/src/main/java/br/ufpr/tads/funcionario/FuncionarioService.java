@@ -69,7 +69,7 @@ public class FuncionarioService {
 
     @Transactional
     public void inativar(Integer id) {
-        // O status fica só em Usuario; o login já recusa usuários inativos.
+        // O status fica só em Usuario, o login já recusa usuários inativos.
         buscarAtivo(id).getUsuario().inativar();
     }
 

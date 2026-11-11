@@ -1,1 +1,14 @@
 <router-outlet></router-outlet>
+
+@if (dialog.estado(); as d) {
+  <app-confirm-dialog
+    [aberto]="true"
+    [titulo]="d.titulo"
+    [mensagem]="d.mensagem"
+    [textoConfirmar]="d.textoConfirmar"
+    [mostrarCancelar]="d.tipo === 'confirmacao'"
+    [erro]="d.tipo === 'erro'"
+    (confirmado)="dialog.fechar(true)"
+    (cancelado)="dialog.fechar(false)"
+  />
+}

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { Solicitacao } from '../../models/solicitacao';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-pagar-servico',
@@ -17,6 +18,7 @@ export class PagarServico implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dialog = inject(DialogService);
 
   solicitacao: Solicitacao | undefined;
   erro = '';
@@ -58,14 +60,14 @@ export class PagarServico implements OnInit {
     this.enviando = true;
 
     this.solicitacaoApi.pagar(this.solicitacao.id, clienteId).subscribe({
-      next: () => {
-        alert('Pagamento confirmado com sucesso');
+      next: async () => {
+        await this.dialog.avisar('Pagamento confirmado com sucesso');
         this.router.navigate(['/dashboard']);
       },
       error: (erro) => {
         console.error('Erro ao registrar pagamento:', erro);
-        alert(erro.error?.message ?? 'Não foi possível registrar o pagamento.');
         this.enviando = false;
+        this.dialog.erro(erro.error?.message ?? 'Não foi possível registrar o pagamento.');
       },
     });
   }

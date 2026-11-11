@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 @Service
 public class FluxoSolicitacaoService {
 
@@ -163,7 +164,7 @@ public class FluxoSolicitacaoService {
             throw new IllegalStateException(
                     "A solicitação precisa estar aprovada ou redirecionada.");
         }
-
+        exigirDono(s, funcionarioId);
         s.setDescricaoManutencao(descricao.trim());
         s.setOrientacoesCliente(orientacoes.trim());
         s.setFuncionarioManutencaoId(funcionarioId);
@@ -194,7 +195,7 @@ public class FluxoSolicitacaoService {
             throw new IllegalStateException(
                     "Só é possível redirecionar uma solicitação aprovada.");
         }
-
+        exigirDono(s, funcionarioAtualId);
         s.setFuncionarioDestinoId(funcionarioDestinoId);
 
         transicionar(s, "REDIRECIONADA", funcionarioAtualId,
@@ -228,7 +229,7 @@ public class FluxoSolicitacaoService {
 
         Solicitacao s = buscarSolicitacao(solicitacaoId);
         exigirEstado(s, "PAGA");
-
+        exigirDono(s, funcionarioId);
         s.setFuncionarioFinalizacaoId(funcionarioId);
         s.setDataHoraFinalizacao(LocalDateTime.now());
 
@@ -240,6 +241,26 @@ public class FluxoSolicitacaoService {
         return buscarEstado(codigo).getId().equals(s.getEstadoId());
     }
 
+    private Integer donoAtual(Solicitacao s) {
+        if (estadoAtualEh(s, "REDIRECIONADA")) {
+            return s.getFuncionarioDestinoId();
+        }
+
+        if (estadoAtualEh(s, "APROVADA")) {
+            return s.getFuncionarioOrcamentoId();
+        }
+
+        return s.getFuncionarioManutencaoId();
+    }
+
+    private void exigirDono(Solicitacao s, Integer funcionarioId) {
+        Integer dono = donoAtual(s);
+        if (dono != null && !dono.equals(funcionarioId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Esta solicitação pertence a outro funcionário.");
+        }
+    }
     private void exigirUsuario(Integer usuarioId) {
         if (usuarioId == null) {
             throw new IllegalArgumentException(

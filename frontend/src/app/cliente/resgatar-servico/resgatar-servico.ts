@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { SolicitacaoApiService } from '../../services/solicitacao-api.service';
 import { Solicitacao } from '../../models/solicitacao';
+import { DialogService } from '../../shared/dialog/dialog.service';
 
 @Component({
   selector: 'app-resgatar-servico',
@@ -17,6 +18,7 @@ export class ResgatarServico implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly solicitacaoApi = inject(SolicitacaoApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dialog = inject(DialogService);
 
   solicitacao: Solicitacao | undefined;
   erro = '';
@@ -62,14 +64,14 @@ export class ResgatarServico implements OnInit {
     this.enviando = true;
 
     this.solicitacaoApi.resgatar(this.solicitacao.id, clienteId).subscribe({
-      next: () => {
-        alert('Serviço resgatado.');
+      next: async () => {
+        await this.dialog.avisar('Serviço resgatado.');
         this.router.navigate(['/dashboard']);
       },
       error: (erro) => {
         console.error('Erro ao resgatar serviço:', erro);
-        alert(erro.error?.message ?? 'Não foi possível resgatar o serviço.');
         this.enviando = false;
+        this.dialog.erro(erro.error?.message ?? 'Não foi possível resgatar o serviço.');
       },
     });
   }
