@@ -67,7 +67,28 @@ public class UsuarioService {
         return usuarioRepository.saveAndFlush(
                 new Usuario(nome.trim(), emailNormalizado, hash, salt, perfil));
     }
+    @Transactional(readOnly = true)
+    public Usuario exigirFuncionario(Integer solicitanteId) {
+        if (solicitanteId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Usuário não identificado");
+        }
 
+        Usuario usuario = usuarioRepository.findById(solicitanteId)
+                .filter(Usuario::isAtivo)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Usuário inválido ou inativo"));
+
+        if (!"FUNCIONARIO".equals(usuario.getPerfil().getCodigo())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso restrito a funcionários");
+        }
+
+        return usuario;
+    }
     @Transactional
     public void atualizarDados(Usuario usuario, String nome, String email) {
         String emailNormalizado = normalizarEmail(email);

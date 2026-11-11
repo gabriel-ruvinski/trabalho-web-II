@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { AuthService } from '../../auth/services/auth.service';
 import { Solicitacao } from '../../models/solicitacao';
 import { ROTULO_ESTADO } from '../../models/estado-solicitacao';
@@ -8,7 +8,7 @@ import { AcaoBotao, SolicitacaoApiService } from '../../services/solicitacao-api
 
 @Component({
   selector: 'app-visualizar-solicitacao',
-  imports: [RouterLink, CurrencyPipe],
+  imports: [RouterLink, CurrencyPipe, DatePipe],
   templateUrl: './visualizar-solicitacao.html',
   styleUrl: './visualizar-solicitacao.css',
 })
