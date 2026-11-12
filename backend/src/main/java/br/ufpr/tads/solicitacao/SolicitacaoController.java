@@ -72,6 +72,11 @@ public class SolicitacaoController {
     public SolicitacaoResponseDTO consultar(
             @PathVariable Long id,
             @RequestParam(required = false) Integer solicitanteId) {
-        return SolicitacaoResponseDTO.de(service.consultar(id, solicitanteId));
+        Solicitacao solicitacao = service.consultar(id, solicitanteId);
+
+        return SolicitacaoResponseDTO.de(
+            solicitacao,
+            SolicitacaoService.responsavel(solicitacao),
+            service.nomesDeFuncionarios(solicitacao));
     }
 }
