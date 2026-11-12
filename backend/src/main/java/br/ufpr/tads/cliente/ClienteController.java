@@ -33,11 +33,12 @@ public class ClienteController {
         return service.listar();
     }
 
-    @GetMapping("/{id}")
+        @GetMapping("/{id}")
     public Cliente buscarPorId(
             @PathVariable Integer id,
             @RequestParam(name = "solicitanteId", required = false) Integer solicitanteId) {
-        usuarioService.exigirFuncionario(solicitanteId);
+        // Funcionário consulta qualquer cliente; o cliente só o próprio cadastro.
+        usuarioService.exigirFuncionarioOuProprio(solicitanteId, id);
 
         return service.buscarPorId(id);
     }

@@ -5,6 +5,7 @@ import br.ufpr.tads.solicitacao.Solicitacao;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public record SolicitacaoResponseDTO(
     Long id,
@@ -27,7 +28,9 @@ public record SolicitacaoResponseDTO(
     LocalDateTime dataHoraPagamento,
     Integer funcionarioFinalizacaoId,
     LocalDateTime dataHoraFinalizacao,
-    List<HistoricoDTO> historico) {
+    List<HistoricoDTO> historico,
+    Integer funcionarioResponsavelId,
+    String funcionarioResponsavelNome) {
 
     public record HistoricoDTO(
         Integer estadoAnteriorId,
@@ -35,21 +38,27 @@ public record SolicitacaoResponseDTO(
         LocalDateTime dataHora,
         Integer usuarioId,
         Integer funcionarioDestinoId,
-        String observacao) {
+        String observacao,
+        String funcionarioNome) {
 
-        private static HistoricoDTO de(HistoricoSolicitacao h) {
+        private static HistoricoDTO de(HistoricoSolicitacao h, Map<Integer, String> nomes) {
             return new HistoricoDTO(
                 h.getEstadoAnteriorId(),
                 h.getEstadoNovoId(),
                 h.getDataHora(),
                 h.getUsuarioId(),
                 h.getFuncionarioDestinoId(),
-                h.getObservacao());
+                h.getObservacao(),
+                nome(nomes, h.getUsuarioId()));
         }
     }
 
-    /** Exige categoria e histórico já carregados (JOIN FETCH), pois open-in-view está desativado. */
     public static SolicitacaoResponseDTO de(Solicitacao s) {
+        return de(s, null, Map.of());
+    }
+
+    public static SolicitacaoResponseDTO de(
+            Solicitacao s, Integer responsavelId, Map<Integer, String> nomes) {
         return new SolicitacaoResponseDTO(
             s.getId(),
             s.getClienteId(),
@@ -71,6 +80,12 @@ public record SolicitacaoResponseDTO(
             s.getDataHoraPagamento(),
             s.getFuncionarioFinalizacaoId(),
             s.getDataHoraFinalizacao(),
-            s.getHistorico().stream().map(HistoricoDTO::de).toList());
+            s.getHistorico().stream().map(h -> HistoricoDTO.de(h, nomes)).toList(),
+            responsavelId,
+            nome(nomes, responsavelId));
+    }
+
+    private static String nome(Map<Integer, String> nomes, Integer id) {
+        return id == null ? null : nomes.get(id);
     }
 }
