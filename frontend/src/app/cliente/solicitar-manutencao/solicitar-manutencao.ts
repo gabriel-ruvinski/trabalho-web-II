@@ -23,6 +23,7 @@ export class SolicitarManutencao implements OnInit {
 
   categorias: Categoria[] = [];
   erroCategorias = '';
+  carregandoCategorias = false;
   enviando = false;
 
   form = new FormGroup({
@@ -39,19 +40,28 @@ export class SolicitarManutencao implements OnInit {
     ]),
   });
 
-  ngOnInit(): void {
-    this.categoriaService.listar().subscribe({
-      next: (categorias) => {
-        this.categorias = categorias;
-        this.cdr.markForCheck();
-      },
-      error: (erro) => {
-        console.error('Erro ao carregar categorias:', erro);
-        this.erroCategorias = 'Não foi possível carregar as categorias.';
-        this.cdr.markForCheck();
-      },
-    });
-  }
+ ngOnInit(): void {
+  this.carregarCategorias();
+}
+
+carregarCategorias(): void {
+  this.carregandoCategorias = true;
+  this.erroCategorias = '';
+
+  this.categoriaService.listar().subscribe({
+    next: (categorias) => {
+      this.categorias = categorias;
+      this.carregandoCategorias = false;
+      this.cdr.markForCheck();
+    },
+    error: (erro) => {
+      console.error('Erro ao carregar categorias:', erro);
+      this.erroCategorias = 'Não foi possível carregar as categorias.';
+      this.carregandoCategorias = false;
+      this.cdr.markForCheck();
+    },
+  });
+}
 
   onSubmit(): void {
     if (this.form.invalid || this.enviando) {

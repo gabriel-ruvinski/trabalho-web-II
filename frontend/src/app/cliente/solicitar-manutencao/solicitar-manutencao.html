@@ -1,6 +1,26 @@
 <section class="max-w-5xl overflow-hidden rounded-2xl bg-secundaria shadow-2xl m-7 p-10">
   <h2>Solicitação de manutenção</h2>
   <p class="subtitulo">Informe o equipamento, a categoria e o defeito. A solicitação será aberta para orçamento.</p>
+  @if (erroCategorias) {
+  <div class="my-3 rounded-lg bg-red-100 p-4">
+    <p class="text-erro">{{ erroCategorias }}</p>
+    <button
+      type="button"
+      class="btn-secundario mt-2"
+      (click)="carregarCategorias()"
+      [disabled]="carregandoCategorias">
+      {{ carregandoCategorias ? 'Carregando...' : 'Tentar novamente' }}
+    </button>
+  </div>
+}
+
+@if (carregandoCategorias) {
+  <p class="my-2 text-sm text-gray-500">Carregando categorias...</p>
+}
+
+@if (!carregandoCategorias && !erroCategorias && categorias.length === 0) {
+  <p class="my-2 text-sm text-gray-500">Nenhuma categoria disponível.</p>
+}
 
   <form class="my-3" [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="w-2/3">
@@ -35,7 +55,12 @@
 
     <div class="my-2 flex gap-3">
       <button type="button" class="btn-secundario" routerLink="/dashboard">Cancelar</button>
-      <button type="submit" class="btn-primario">Registrar solicitação</button>
+      <button
+        type="submit"
+        class="btn-primario"
+        [disabled]="enviando || carregandoCategorias || !!erroCategorias || categorias.length === 0">
+        {{ enviando ? 'Registrando...' : 'Registrar solicitação' }}
+      </button>
     </div>
   </form>
 </section>
